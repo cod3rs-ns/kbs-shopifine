@@ -1,0 +1,20 @@
+<html lang="en" ng-app="shopifine-app">
+	<head>
+		<title>Shopifine</title>
+
+		<meta charset="UTF-8">
+
+		<script src="assets/libs/angular/angular.min.js"></script>
+		<script src="assets/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
+	</head>
+	<body>
+		<section id="main" ui-view="content"></section>
+
+		<!-- TODO: Minimize all imports into one .js file -->
+		<script src="app/app.module.js"></script>
+  		<script src="app/app.route.js"></script>
+
+  		<script src="app/components/login/login.controller.js"></script>
+  		<script src="app/components/register/register.controller.js"></script>
+	</body>
+</html>
