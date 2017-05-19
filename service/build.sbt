@@ -1,17 +1,22 @@
-name := """service"""
-organization := "com.dmarjanovic"
+import Dependencies._
+import sbt.Keys._
 
-version := "1.0-SNAPSHOT"
+lazy val buildSettings = Seq(
+  name := "Shopifine service",
+  organization := "com.dmarjanovic",
+  version := "1.0.0",
+  scalaVersion := "2.11.11"
+)
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val coreLibs = Seq()
 
-scalaVersion := "2.11.11"
+lazy val testLibs = Seq(scalaTestPlus)
 
 libraryDependencies += filters
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test
 
-// Adds additional packages into Twirl
-//TwirlKeys.templateImports += "com.dmarjanovic.controllers._"
-
-// Adds additional packages into conf/routes
-// play.sbt.routes.RoutesKeys.routesImport += "com.dmarjanovic.binders._"
+lazy val root = (project in file("."))
+  .enablePlugins(PlayScala)
+  .settings(buildSettings: _*)
+  .settings(
+    libraryDependencies ++= (coreLibs ++ testLibs)
+  )
