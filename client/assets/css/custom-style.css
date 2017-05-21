@@ -1,4 +1,30 @@
+.sidebar-wrapper {
+    padding: 8px 4px;
+}
+
+.sidebar {
+    border-radius: 4px;
+    background-color: #dfdfdf;
+}
+
 .products-wrapper {
-    height: 40px !important;
-    background-color: red;
+
+}
+
+.product-wrapper {
+    background-color: #efefef;
+    padding: 8px;
+}
+
+.product-wrapper > img {
+    max-width: 96% !important;
+}
+
+
+.product-wrapper > h6 {
+    /* Product Name on Home page */
+}
+
+.product-wrapper > h4 {
+    /* Product Price on Home page */
 }
