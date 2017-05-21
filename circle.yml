@@ -1,0 +1,18 @@
+general:
+  build_dir: service/
+
+machine:
+  java:
+    version: oraclejdk8
+  timezone: UTC
+
+dependencies:
+  override:
+    - sbt update
+  cache_directories:
+    - "~/.ivy2"
+    - "~/.sbt"
+
+test:
+  override:
+    - sbt test
