@@ -11,7 +11,11 @@
 		<script src="assets/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
 	</head>
 	<body>
+        <header id="header" ng-include="'app/navbar/navbar.html'"></header>
 		<section id="main" ui-view="content"></section>
+        <footer>
+            <p class="text-center">All rights reserved - Dragutin Marjanović, 2017.</p>
+        </footer>
 
 		<!-- TODO: Minimize all imports into one .js file -->
 		<script src="app/app.module.js"></script>

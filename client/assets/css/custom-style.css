@@ -1,3 +1,7 @@
+.navbar {
+    border-radius: 0 !important;
+}
+
 .sidebar-wrapper {
     padding: 8px 4px;
 }
