@@ -8,7 +8,7 @@ lazy val buildSettings = Seq(
   scalaVersion := "2.11.11"
 )
 
-lazy val coreLibs = Seq()
+lazy val coreLibs = Seq(mysql, slick, slickEvolutions)
 
 lazy val testLibs = Seq(scalaTestPlus)
 
