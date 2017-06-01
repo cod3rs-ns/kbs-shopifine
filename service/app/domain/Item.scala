@@ -1,11 +1,11 @@
 package domain
 
-case class Item(id: Long,
+case class Item(id: Option[Long],
                 ordinal: Int,
-                product: Product,
+                productId: Long,
+                billId: Long,
                 price: Double,
                 quantity: Int,
                 amount: Double,
                 discount: Double,
-                discountAmount: Double,
-                discounts: Seq[ItemDiscount])
+                discountAmount: Double)

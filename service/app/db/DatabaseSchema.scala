@@ -16,6 +16,11 @@ trait DatabaseSchema {
   val productCategories: TableQuery[ProductCategories] = TableQuery[ProductCategories]
   val products: TableQuery[Products] = TableQuery[Products]
 
+  val bills: TableQuery[Bills] = TableQuery[Bills]
+  val billItems: TableQuery[BillItems] = TableQuery[BillItems]
+  val billDiscounts: TableQuery[BillDiscounts] = TableQuery[BillDiscounts]
+  val itemDiscounts: TableQuery[ItemDiscounts] = TableQuery[ItemDiscounts]
+
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
     ts => new DateTime(ts.getTime)
@@ -24,6 +29,10 @@ trait DatabaseSchema {
   implicit val userRoleMapping: JdbcType[UserRole] with BaseTypedType[UserRole] = MappedColumnType.base[UserRole, String](_.name, UserRole.valueOf)
 
   implicit val productStatusMapping: JdbcType[ProductStatus] with BaseTypedType[ProductStatus] = MappedColumnType.base[ProductStatus, String](_.name, ProductStatus.valueOf)
+
+  implicit val billStateMapper: JdbcType[BillState] with BaseTypedType[BillState] = MappedColumnType.base[BillState, String](_.name, BillState.valueOf)
+
+  implicit val discountTypeMapper: JdbcType[DiscountType] with BaseTypedType[DiscountType] = MappedColumnType.base[DiscountType, String](_.name, DiscountType.valueOf)
 
   class BuyerCategories(tag: Tag) extends Table[BuyerCategory](tag, "buyer_categories") {
     def * : ProvenShape[BuyerCategory] = {
@@ -112,4 +121,99 @@ trait DatabaseSchema {
 
     def category: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("category_fk", categoryId, productCategories)(_.id)
   }
+
+  class Bills(tag: Tag) extends Table[Bill](tag, "bills") {
+    def * : ProvenShape[Bill] = {
+      val props = (id.?, createdAt, customerId, state, amount, discount, discountAmount, pointsSpent, pointsGained)
+
+      props <> (Bill.tupled, Bill.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def createdAt: Rep[DateTime] = column[DateTime]("created_at")
+
+    def customerId: Rep[Long] = column[Long]("customer")
+
+    def state: Rep[BillState] = column[BillState]("state")
+
+    def amount: Rep[Double] = column[Double]("amount")
+
+    def discount: Rep[Double] = column[Double]("discount")
+
+    def discountAmount: Rep[Double] = column[Double]("discount_amount")
+
+    def pointsSpent: Rep[Long] = column[Long]("points_spent")
+
+    def pointsGained: Rep[Long] = column[Long]("points_gained")
+
+    def customer: ForeignKeyQuery[Users, User] = foreignKey("customer_fk", customerId, users)(_.id)
+  }
+
+  class BillItems(tag: Tag) extends Table[Item](tag, "bill_items") {
+    def * : ProvenShape[Item] = {
+      val props = (id.?, ordinal, productId, billId, price, quantity, amount, discount, discountAmount)
+
+      props <> (Item.tupled, Item.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def ordinal: Rep[Int] = column[Int]("ordinal")
+
+    def productId: Rep[Long] = column[Long]("product")
+
+    def billId: Rep[Long] = column[Long]("bill")
+
+    def price: Rep[Double] = column[Double]("price")
+
+    def quantity: Rep[Int] = column[Int]("quantity")
+
+    def amount: Rep[Double] = column[Double]("amount")
+
+    def discount: Rep[Double] = column[Double]("discount")
+
+    def discountAmount: Rep[Double] = column[Double]("discount_amount")
+
+    def product: ForeignKeyQuery[Products, Product] = foreignKey("product_fk", productId, products)(_.id)
+
+    def bill: ForeignKeyQuery[Bills, Bill] = foreignKey("bill_i_id", billId, bills)(_.id)
+  }
+
+  class BillDiscounts(tag: Tag) extends Table[BillDiscount](tag, "bill_discounts") {
+    def * : ProvenShape[BillDiscount] = {
+      val props = (id.?, billId, discount, `type`)
+
+      props <> (BillDiscount.tupled, BillDiscount.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def billId: Rep[Long] = column[Long]("bill")
+
+    def discount: Rep[Double] = column[Double]("discount")
+
+    def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
+
+    def bill: ForeignKeyQuery[Bills, Bill] = foreignKey("bill_d_fk", billId, bills)(_.id)
+  }
+
+  class ItemDiscounts(tag: Tag) extends Table[ItemDiscount](tag, "item_discounts") {
+    def * : ProvenShape[ItemDiscount] = {
+      val props = (id.?, itemId, discount, `type`)
+
+      props <> (ItemDiscount.tupled, ItemDiscount.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def itemId: Rep[Long] = column[Long]("item")
+
+    def discount: Rep[Double] = column[Double]("discount")
+
+    def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
+
+    def item: ForeignKeyQuery[BillItems, Item] = foreignKey("item_fk", itemId, billItems)(_.id)
+  }
+
 }
