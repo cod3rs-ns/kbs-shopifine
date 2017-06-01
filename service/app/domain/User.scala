@@ -2,7 +2,7 @@ package domain
 
 import org.joda.time.DateTime
 
-case class User(id: Long,
+case class User(id: Option[Long] = None,
                 username: String,
                 password: String,
                 firstName: String,
