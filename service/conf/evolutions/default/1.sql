@@ -102,6 +102,25 @@ CREATE TABLE item_discounts (
   -- FOREIGN KEY (item) REFERENCES bill_items(item)
 );
 
+CREATE TABLE consumption_thresholds (
+  id              INT NOT NULL AUTO_INCREMENT,
+  `from`          INT NOT NULL,
+  `to`            INT NOT NULL,
+  award           DOUBLE NOT NULL,
+
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE action_discounts (
+  id              INT NOT NULL AUTO_INCREMENT,
+  name            VARCHAR(40) NOT NULL,
+  `from`          DATETIME NOT NULL,
+  `to`            DATETIME NOT NULL,
+  discount         DOUBLE NOT NULL,
+
+  PRIMARY KEY (id)
+);
+
 # --- !Downs
 DROP TABLE IF EXISTS buyer_categories;
 DROP TABLE IF EXISTS users;
@@ -111,3 +130,5 @@ DROP TABLE IF EXISTS bills;
 DROP TABLE IF EXISTS bill_items;
 DROP TABLE IF EXISTS bill_discounts;
 DROP TABLE IF EXISTS item_discounts;
+DROP TABLE IF EXISTS consumption_thresholds;
+DROP TABLE IF EXISTS action_discounts;

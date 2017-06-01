@@ -21,6 +21,9 @@ trait DatabaseSchema {
   val billDiscounts: TableQuery[BillDiscounts] = TableQuery[BillDiscounts]
   val itemDiscounts: TableQuery[ItemDiscounts] = TableQuery[ItemDiscounts]
 
+  val consumptionThresholds: TableQuery[ConsumptionThresholds] = TableQuery[ConsumptionThresholds]
+  val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
+
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
     ts => new DateTime(ts.getTime)
@@ -216,4 +219,37 @@ trait DatabaseSchema {
     def item: ForeignKeyQuery[BillItems, Item] = foreignKey("item_fk", itemId, billItems)(_.id)
   }
 
+  class ConsumptionThresholds(tag: Tag) extends Table[ConsumptionThreshold](tag, "consumption_thresholds") {
+    def * : ProvenShape[ConsumptionThreshold] = {
+      val props = (id.?, from, to, award)
+
+      props <> (ConsumptionThreshold.tupled, ConsumptionThreshold.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def from: Rep[Int] = column[Int]("from")
+
+    def to: Rep[Int] = column[Int]("to")
+
+    def award: Rep[Double] = column[Double]("award")
+  }
+
+  class ActionDiscounts(tag: Tag) extends Table[ActionDiscount](tag, "action_discounts") {
+    def * : ProvenShape[ActionDiscount] = {
+      val props = (id.?, name, from, to, discount)
+
+      props <> (ActionDiscount.tupled, ActionDiscount.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def name: Rep[String] = column[String]("name")
+
+    def from: Rep[DateTime] = column[DateTime]("from")
+
+    def to: Rep[DateTime] = column[DateTime]("to")
+
+    def discount: Rep[Double] = column[Double]("discount")
+  }
 }
