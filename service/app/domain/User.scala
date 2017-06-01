@@ -8,4 +8,7 @@ case class User(id: Option[Long] = None,
                 firstName: String,
                 lastName: String,
                 role: UserRole,
+                address: Option[String],
+                buyerCategoryId: Option[Long] = None,
+                points: Option[Long],
                 registeredAt: DateTime)
