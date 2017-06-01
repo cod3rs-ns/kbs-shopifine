@@ -4,7 +4,7 @@ import org.joda.time.DateTime
 
 case class Product(id: Option[Long] = None,
                    name: String,
-                   category: ProductCategory,
+                   categoryId: Long,
                    price: Double,
                    quantity: Long,
                    createdAt: DateTime,
