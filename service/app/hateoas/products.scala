@@ -27,16 +27,9 @@ package object products {
       val attributes = data.attributes
       val categoryRel = data.relationships.category.data
 
-      // TODO Get Product Category
-      val category = ProductCategory(
-        id = Some(categoryRel.id),
-        name = "test",
-        maximumDiscount = 42.0
-      )
-
       Product(
         name = attributes.name,
-        category = category,
+        categoryId = categoryRel.id,
         price = attributes.price,
         quantity = attributes.quantity,
         createdAt = attributes.createdAt,
@@ -77,7 +70,7 @@ package object products {
       val relationships = ProductResponseRelationships(
         category = ResponseRelationship(
           links = RelationshipLinks("self", "related"),
-          data = RelationshipData(ProductCategories, product.category.id.get)
+          data = RelationshipData(ProductCategories, product.categoryId)
         )
       )
 

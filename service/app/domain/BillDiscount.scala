@@ -1,3 +1,3 @@
 package domain
 
-case class BillDiscount(id: Long, bill: Bill, discount: Double, `type`: DiscountType)
+case class BillDiscount(id: Option[Long], billId: Long, discount: Double, `type`: DiscountType)

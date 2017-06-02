@@ -2,14 +2,12 @@ package domain
 
 import org.joda.time.DateTime
 
-case class Bill(id: Long,
+case class Bill(id: Option[Long],
                 createdAt: DateTime,
-                customer: User,
+                customerId: Long,
                 state: BillState,
                 amount: Double,
                 discount: Double,
                 discountAmount: Double,
                 pointsSpent: Long,
-                pointsGained: Long,
-                products: Seq[Item],
-                discounts: Seq[BillDiscount])
+                pointsGained: Long)
