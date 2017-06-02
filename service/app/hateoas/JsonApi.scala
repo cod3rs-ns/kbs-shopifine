@@ -24,4 +24,6 @@ object JsonApi {
   implicit val prodRes: OFormat[ProductResponse] = Json.format[ProductResponse]
   implicit val prodResCollection: OFormat[ProductCollectionResponse] = Json.format[ProductCollectionResponse]
 
+
+
 }
