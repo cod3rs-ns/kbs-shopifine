@@ -90,4 +90,10 @@ package object users {
     }
   }
 
+  case class UserResponse(data: UserResponseData)
+
+  object UserResponse {
+    def fromDomain(user: User): UserResponse = UserResponse(data = UserResponseData.fromDomain(user))
+  }
+
 }

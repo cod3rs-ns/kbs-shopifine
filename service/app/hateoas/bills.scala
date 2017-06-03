@@ -4,8 +4,6 @@ import relationships.RequestRelationship
 
 package object bills {
 
-  import hateoas._
-
   case class BillRequestAttributes(state: String)
 
   case class BillRequestRelationships(customer: RequestRelationship, items: Seq[RequestRelationship])
@@ -30,6 +28,5 @@ package object bills {
       )
     }
   }
-
 
 }
