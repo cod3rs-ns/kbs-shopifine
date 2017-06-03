@@ -1,9 +1,11 @@
 package hateoas
 
+import bills.{BillRequest, BillRequestAttributes, BillRequestData, BillRequestRelationships}
 import play.api.libs.json.{Json, OFormat}
 import commons.CollectionLinks
 import relationships._
 import products._
+import users._
 
 object JsonApi {
 
@@ -23,5 +25,19 @@ object JsonApi {
   implicit val prodResData: OFormat[ProductResponseData] = Json.format[ProductResponseData]
   implicit val prodRes: OFormat[ProductResponse] = Json.format[ProductResponse]
   implicit val prodResCollection: OFormat[ProductCollectionResponse] = Json.format[ProductCollectionResponse]
+
+  implicit val userReqAttrs: OFormat[UserRequestAttributes] = Json.format[UserRequestAttributes]
+  implicit val userReqRels: OFormat[UserRequestRelationships] = Json.format[UserRequestRelationships]
+  implicit val userReqData: OFormat[UserRequestData] = Json.format[UserRequestData]
+  implicit val userReq: OFormat[UserRequest] = Json.format[UserRequest]
+  implicit val userResAttrs: OFormat[UserResponseAttributes] = Json.format[UserResponseAttributes]
+  implicit val userResRels: OFormat[UserResponseRelationships] = Json.format[UserResponseRelationships]
+  implicit val userResData: OFormat[UserResponseData] = Json.format[UserResponseData]
+  implicit val userRes: OFormat[UserResponse] = Json.format[UserResponse]
+
+  implicit val billReqAttrs: OFormat[BillRequestAttributes] = Json.format[BillRequestAttributes]
+  implicit val billReqRels: OFormat[BillRequestRelationships] = Json.format[BillRequestRelationships]
+  implicit val billReqData: OFormat[BillRequestData] = Json.format[BillRequestData]
+  implicit val billReq: OFormat[BillRequest] = Json.format[BillRequest]
 
 }
