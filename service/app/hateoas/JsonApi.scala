@@ -32,6 +32,7 @@ object JsonApi {
   implicit val userReq: OFormat[UserRequest] = Json.format[UserRequest]
   implicit val userResAttrs: OFormat[UserResponseAttributes] = Json.format[UserResponseAttributes]
   implicit val userResRels: OFormat[UserResponseRelationships] = Json.format[UserResponseRelationships]
+  implicit val userResMeta: OFormat[UserResponseMeta] = Json.format[UserResponseMeta]
   implicit val userResData: OFormat[UserResponseData] = Json.format[UserResponseData]
   implicit val userRes: OFormat[UserResponse] = Json.format[UserResponse]
 
