@@ -5,7 +5,7 @@ import javax.inject.Singleton
 import com.google.inject.Inject
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import products.{ProductRequest, ProductResponse}
+import products.{ProductCollectionResponse, ProductRequest, ProductResponse}
 import repositories.ProductRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,10 +31,8 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
     Future.successful(Ok(Json.toJson(id)))
   }
 
-  def retrieveAll(limit: Int, offset: Int): Action[AnyContent] = Action.async {
-    implicit request => {
-      Future.successful(Ok("ok"))
-    }
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async {
+    products.retrieveAll(offset, limit).map(products => Ok(Json.toJson(ProductCollectionResponse.fromDomain(products))))
   }
 
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {

@@ -19,6 +19,8 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
 
   override def retrieve(id: Long): Future[Option[Product]] = ???
 
-  override def retrieveAll: Future[Seq[Product]] = ???
+  override def retrieveAll(offset: Int, limit: Int): Future[Seq[Product]] = {
+    db.run(products.drop(offset).take(limit).result)
+  }
 
 }
