@@ -69,7 +69,7 @@ package object products {
 
       val relationships = ProductResponseRelationships(
         category = ResponseRelationship(
-          links = RelationshipLinks("self", "related"),
+          links = RelationshipLinks(s"/api/products/${product.id.get}/product-categories/${product.categoryId}", s"/api/product-categories/${product.categoryId}"),
           data = RelationshipData(ProductCategories, product.categoryId)
         )
       )
