@@ -2,6 +2,7 @@ package controllers
 
 import javax.inject.Singleton
 
+import domain.Product
 import com.google.inject.Inject
 import commons.CollectionLinks
 import play.api.libs.json.{JsValue, Json}
@@ -42,7 +43,10 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
   }
 
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {
-    Future.successful(Ok("ok"))
+    products.retrieve(id) map {
+      case Some(product) => Ok(Json.toJson(ProductResponse.fromDomain(product)))
+      case None => NotFound(s"Project with $id doesn't exist!")
+    }
   }
 
   def fillStock(id: Long, quantity: Int): Action[AnyContent] = Action.async {
