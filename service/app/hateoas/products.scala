@@ -92,10 +92,10 @@ package object products {
   case class ProductCollectionResponse(data: Seq[ProductResponseData], links: CollectionLinks)
 
   object ProductCollectionResponse {
-    def fromDomain(products: Seq[Product]): ProductCollectionResponse = {
+    def fromDomain(products: Seq[Product], links: CollectionLinks): ProductCollectionResponse = {
       ProductCollectionResponse(
         data = products.map(ProductResponseData.fromDomain),
-        links = CollectionLinks("self", "next")
+        links = links
       )
     }
   }

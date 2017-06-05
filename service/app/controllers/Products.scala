@@ -3,6 +3,7 @@ package controllers
 import javax.inject.Singleton
 
 import com.google.inject.Inject
+import commons.CollectionLinks
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import products.{ProductCollectionResponse, ProductRequest, ProductResponse}
@@ -31,8 +32,13 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
     Future.successful(Ok(Json.toJson(id)))
   }
 
-  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async {
-    products.retrieveAll(offset, limit).map(products => Ok(Json.toJson(ProductCollectionResponse.fromDomain(products))))
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    products.retrieveAll(offset, limit).map(products => {
+      val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
+      val next = if (limit == products.length) Some(routes.Products.retrieveAll(offset + limit, limit).absoluteURL()) else None
+
+      Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(self, next))))
+    })
   }
 
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {
