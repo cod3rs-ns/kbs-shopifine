@@ -10,7 +10,6 @@ package object products {
   case class ProductRequestAttributes(name: String,
                                       price: Double,
                                       quantity: Long,
-                                      createdAt: DateTime,
                                       fillStock: Option[Boolean],
                                       status: Option[String],
                                       minQuantity: Long)
@@ -27,12 +26,13 @@ package object products {
       val attributes = data.attributes
       val categoryRel = data.relationships.category.data
 
+      // TODO Fix if `fillStock` and `status` is defined
       Product(
         name = attributes.name,
         categoryId = categoryRel.id,
         price = attributes.price,
         quantity = attributes.quantity,
-        createdAt = attributes.createdAt,
+        createdAt = DateTime.now,
         minQuantity = attributes.minQuantity
       )
     }
