@@ -18,7 +18,6 @@ class ProductRequestSpec extends WordSpecLike with MustMatchers with BeforeAndAf
         name = "test-product",
         price = 21.10,
         quantity = 4,
-        createdAt = DateTime.now,
         fillStock = None,
         status = None,
         minQuantity = 1

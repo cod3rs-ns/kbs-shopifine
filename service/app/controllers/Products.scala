@@ -2,7 +2,6 @@ package controllers
 
 import javax.inject.Singleton
 
-import domain.Product
 import com.google.inject.Inject
 import commons.CollectionLinks
 import play.api.libs.json.{JsValue, Json}
