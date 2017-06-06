@@ -25,4 +25,18 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
     db.run(products.drop(offset).take(limit).result)
   }
 
+  override def fillStock(id: Long, quantity: Long): Future[Int] = {
+    val query =
+      sql"""
+           UPDATE
+              products,
+              (SELECT COUNT(*) AS result FROM products WHERE id = $id AND quantity + $quantity > min_quantity) stock
+           SET
+              quantity = quantity + $quantity,
+              fill_stock = stock.result
+           WHERE id = $id;
+        """.as[Int].head
+    db.run(query)
+  }
+
 }

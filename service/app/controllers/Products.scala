@@ -28,10 +28,6 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
     )
   }
 
-  def modify(id: Long): Action[AnyContent] = Action.async {
-    Future.successful(Ok(Json.toJson(id)))
-  }
-
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     products.retrieveAll(offset, limit).map(products => {
       val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
@@ -44,12 +40,21 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {
     products.retrieve(id) map {
       case Some(product) => Ok(Json.toJson(ProductResponse.fromDomain(product)))
-      case None => NotFound(s"Project with $id doesn't exist!")
+      case None => NotFound(Json.toJson(s"Project with $id doesn't exist!"))
     }
   }
 
   def fillStock(id: Long, quantity: Int): Action[AnyContent] = Action.async {
-    Future.successful(Ok(Json.toJson(id)))
+    products.fillStock(id, quantity).flatMap(updated => {
+      if (updated > 0) {
+        products.retrieve(id) map {
+          case Some(product) => Ok(Json.toJson(ProductResponse.fromDomain(product)))
+          case None => NotFound(Json.toJson(s"Project with $id doesn't exist!"))
+        }
+      }
+      else
+        Future.successful(NotFound(Json.toJson(s"Project with $id doesn't exist!")))
+    })
   }
 
 }

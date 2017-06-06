@@ -7,9 +7,7 @@ GET     /api/products               controllers.Products.retrieveAll(`page[offse
 
 GET     /api/products/:id           controllers.Products.retrieveOne(id: Long)
 
-PATCH   /api/products/:id           controllers.Products.fillStock(id: Long, quantity: Int)
-
-PUT     /api/products/:id           controllers.Products.modify(id: Long)
+PUT     /api/products/:id           controllers.Products.fillStock(id: Long, quantity: Int)
 
 POST    /api/products               controllers.Products.add()
 

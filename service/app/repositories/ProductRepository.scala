@@ -11,4 +11,6 @@ trait ProductRepository {
 
   def retrieveAll(offset: Int, limit: Int): Future[Seq[Product]]
 
+  def fillStock(id: Long, quantity: Long): Future[Int]
+
 }
