@@ -10,7 +10,6 @@ package object products {
   case class ProductRequestAttributes(name: String,
                                       price: Double,
                                       quantity: Long,
-                                      createdAt: DateTime,
                                       fillStock: Option[Boolean],
                                       status: Option[String],
                                       minQuantity: Long)
@@ -27,12 +26,13 @@ package object products {
       val attributes = data.attributes
       val categoryRel = data.relationships.category.data
 
+      // TODO Fix if `fillStock` and `status` is defined
       Product(
         name = attributes.name,
         categoryId = categoryRel.id,
         price = attributes.price,
         quantity = attributes.quantity,
-        createdAt = attributes.createdAt,
+        createdAt = DateTime.now,
         minQuantity = attributes.minQuantity
       )
     }
@@ -69,7 +69,7 @@ package object products {
 
       val relationships = ProductResponseRelationships(
         category = ResponseRelationship(
-          links = RelationshipLinks("self", "related"),
+          links = RelationshipLinks(s"/api/products/${product.id.get}/product-categories/${product.categoryId}", s"/api/product-categories/${product.categoryId}"),
           data = RelationshipData(ProductCategories, product.categoryId)
         )
       )
@@ -92,10 +92,10 @@ package object products {
   case class ProductCollectionResponse(data: Seq[ProductResponseData], links: CollectionLinks)
 
   object ProductCollectionResponse {
-    def fromDomain(products: Seq[Product]): ProductCollectionResponse = {
+    def fromDomain(products: Seq[Product], links: CollectionLinks): ProductCollectionResponse = {
       ProductCollectionResponse(
         data = products.map(ProductResponseData.fromDomain),
-        links = CollectionLinks("self", "next")
+        links = links
       )
     }
   }
