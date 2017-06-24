@@ -1,7 +1,7 @@
 # Routes
 
 ###
-#
+#       PRODUCT ENDPOINTS
 ###
 GET     /api/products           controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
@@ -12,12 +12,12 @@ PUT     /api/products/:id       controllers.Products.fillStock(id: Long, quantit
 POST    /api/products           controllers.Products.add()
 
 ###
-#
+#       USER ENDPOINTS
 ###
 POST    /api/users              controllers.Users.registerUser()
 
 ###
-#
+#       BUYER CATEGORY ENDPOINTS
 ###
 POST    /api/buyer-categories                           controllers.BuyerCategories.create()
 
