@@ -1,7 +1,7 @@
 package hateoas
 
 import commons.CollectionLinks
-import domain.BuyerCategory
+import domain.{BuyerCategory, ConsumptionThreshold}
 
 package object buyer_categories {
 
@@ -48,4 +48,53 @@ package object buyer_categories {
       )
     }
   }
+
+  case class ConsumptionThresholdAttributes(from: Int, to: Int, award: Double)
+
+  case class ConsumptionThresholdRequestData(`type`: String, attributes: ConsumptionThresholdAttributes)
+
+  case class ConsumptionThresholdRequest(data: ConsumptionThresholdRequestData) {
+    def toDomain: ConsumptionThreshold =
+      ConsumptionThreshold(
+        from = data.attributes.from,
+        to = data.attributes.to,
+        award = data.attributes.award
+      )
+  }
+
+  case class ConsumptionThresholdResponseData(`type`: String, id: Long, attributes: ConsumptionThresholdAttributes)
+
+  object ConsumptionThresholdResponseData {
+    def fromDomain(threshold: ConsumptionThreshold): ConsumptionThresholdResponseData = {
+      ConsumptionThresholdResponseData(
+        `type` = ConsumptionThresholdsType,
+        id = threshold.id.get,
+        attributes = ConsumptionThresholdAttributes(
+          from = threshold.from,
+          to = threshold.to,
+          award = threshold.award
+        )
+      )
+    }
+  }
+
+  case class ConsumptionThresholdResponse(data: ConsumptionThresholdResponseData)
+
+  object ConsumptionThresholdResponse {
+    def fromDomain(threshold: ConsumptionThreshold): ConsumptionThresholdResponse = {
+      ConsumptionThresholdResponse(ConsumptionThresholdResponseData.fromDomain(threshold))
+    }
+  }
+
+  case class ConsumptionThresholdCollectionResponse(data: Seq[ConsumptionThresholdResponseData], links: CollectionLinks)
+
+  object ConsumptionThresholdCollectionResponse {
+    def fromDomain(thresholds: Seq[ConsumptionThreshold], links: CollectionLinks): ConsumptionThresholdCollectionResponse = {
+      ConsumptionThresholdCollectionResponse(
+        data = thresholds.map(ConsumptionThresholdResponseData.fromDomain),
+        links = links
+      )
+    }
+  }
+
 }

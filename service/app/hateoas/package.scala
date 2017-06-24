@@ -3,4 +3,5 @@ package object hateoas {
   val ProductCategories: String = "product-categories"
   val UsersType: String = "users"
   val BuyerCategoriesType: String = "buyer-categories"
+  val ConsumptionThresholdsType: String = "consumption-thresholds"
 }
