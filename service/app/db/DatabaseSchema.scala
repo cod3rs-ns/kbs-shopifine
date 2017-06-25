@@ -153,11 +153,11 @@ trait DatabaseSchema {
     def customer: ForeignKeyQuery[Users, User] = foreignKey("customer_fk", customerId, users)(_.id)
   }
 
-  class BillItems(tag: Tag) extends Table[Item](tag, "bill_items") {
-    def * : ProvenShape[Item] = {
+  class BillItems(tag: Tag) extends Table[BillItem](tag, "bill_items") {
+    def * : ProvenShape[BillItem] = {
       val props = (id.?, ordinal, productId, billId, price, quantity, amount, discount, discountAmount)
 
-      props <> (Item.tupled, Item.unapply)
+      props <> (BillItem.tupled, BillItem.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -201,11 +201,11 @@ trait DatabaseSchema {
     def bill: ForeignKeyQuery[Bills, Bill] = foreignKey("bill_d_fk", billId, bills)(_.id)
   }
 
-  class ItemDiscounts(tag: Tag) extends Table[ItemDiscount](tag, "item_discounts") {
-    def * : ProvenShape[ItemDiscount] = {
+  class ItemDiscounts(tag: Tag) extends Table[BillItemDiscount](tag, "item_discounts") {
+    def * : ProvenShape[BillItemDiscount] = {
       val props = (id.?, itemId, discount, `type`)
 
-      props <> (ItemDiscount.tupled, ItemDiscount.unapply)
+      props <> (BillItemDiscount.tupled, BillItemDiscount.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
@@ -216,7 +216,7 @@ trait DatabaseSchema {
 
     def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
 
-    def item: ForeignKeyQuery[BillItems, Item] = foreignKey("item_fk", itemId, billItems)(_.id)
+    def item: ForeignKeyQuery[BillItems, BillItem] = foreignKey("item_fk", itemId, billItems)(_.id)
   }
 
   class ConsumptionThresholds(tag: Tag) extends Table[ConsumptionThreshold](tag, "consumption_thresholds") {
