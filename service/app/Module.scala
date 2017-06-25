@@ -1,7 +1,7 @@
 import com.google.inject.AbstractModule
-import db.{MySqlBuyerCategoryRepository, MySqlConsumptionThresholdRepository, MySqlProductRepository, MySqlUserRepository}
+import db._
 import play.api.libs.concurrent.AkkaGuiceSupport
-import repositories.{BuyerCategoryRepository, ConsumptionThresholdRepository, ProductRepository, UserRepository}
+import repositories._
 
 class Module extends AbstractModule with AkkaGuiceSupport {
   def configure(): Unit = {
@@ -9,5 +9,7 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[ProductRepository]).to(classOf[MySqlProductRepository])
     bind(classOf[BuyerCategoryRepository]).to(classOf[MySqlBuyerCategoryRepository])
     bind(classOf[ConsumptionThresholdRepository]).to(classOf[MySqlConsumptionThresholdRepository])
+    bind(classOf[BillRepository]).to(classOf[MySqlBillRepository])
+    bind(classOf[BillItemRepository]).to(classOf[MySqlBillItemRepository])
   }
 }
