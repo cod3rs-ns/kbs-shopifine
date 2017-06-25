@@ -1,3 +1,3 @@
 package domain
 
-case class ConsumptionThreshold(id: Option[Long], from: Int, to: Int, award: Double)
+case class ConsumptionThreshold(id: Option[Long] = None, from: Int, to: Int, award: Double)

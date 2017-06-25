@@ -3,6 +3,7 @@ package hateoas
 import bills.{BillRequest, BillRequestAttributes, BillRequestData, BillRequestRelationships}
 import play.api.libs.json.{Json, OFormat}
 import commons.CollectionLinks
+import hateoas.buyer_categories._
 import relationships._
 import products._
 import users._
@@ -40,5 +41,19 @@ object JsonApi {
   implicit val billReqRels: OFormat[BillRequestRelationships] = Json.format[BillRequestRelationships]
   implicit val billReqData: OFormat[BillRequestData] = Json.format[BillRequestData]
   implicit val billReq: OFormat[BillRequest] = Json.format[BillRequest]
+
+  implicit val buyerCatReqAttrs: OFormat[BuyerCategoryRequestAttributes] = Json.format[BuyerCategoryRequestAttributes]
+  implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]
+  implicit val buyerCatReq: OFormat[BuyerCategoryRequest] = Json.format[BuyerCategoryRequest]
+  implicit val buyerCatResAttrs: OFormat[BuyerCategoryResponseAttributes] = Json.format[BuyerCategoryResponseAttributes]
+  implicit val buyerCatResData: OFormat[BuyerCategoryResponseData] = Json.format[BuyerCategoryResponseData]
+  implicit val buyerCatRes: OFormat[BuyerCategoryResponse] = Json.format[BuyerCategoryResponse]
+  implicit val buyerCatCollection: OFormat[BuyerCategoryCollectionResponse] = Json.format[BuyerCategoryCollectionResponse]
+  implicit val thresholdsAttrs: OFormat[ConsumptionThresholdAttributes] = Json.format[ConsumptionThresholdAttributes]
+  implicit val thresholdsReqData: OFormat[ConsumptionThresholdRequestData] = Json.format[ConsumptionThresholdRequestData]
+  implicit val thresholdsReq: OFormat[ConsumptionThresholdRequest] = Json.format[ConsumptionThresholdRequest]
+  implicit val thresholdsResData: OFormat[ConsumptionThresholdResponseData] = Json.format[ConsumptionThresholdResponseData]
+  implicit val thresholdsRes: OFormat[ConsumptionThresholdResponse] = Json.format[ConsumptionThresholdResponse]
+  implicit val thresholdsResCollection: OFormat[ConsumptionThresholdCollectionResponse] = Json.format[ConsumptionThresholdCollectionResponse]
 
 }
