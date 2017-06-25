@@ -1,6 +1,6 @@
 package hateoas
 
-import bills.{BillRequest, BillRequestAttributes, BillRequestData, BillRequestRelationships}
+import bills._
 import play.api.libs.json.{Json, OFormat}
 import commons.CollectionLinks
 import hateoas.buyer_categories._
@@ -41,6 +41,11 @@ object JsonApi {
   implicit val billReqRels: OFormat[BillRequestRelationships] = Json.format[BillRequestRelationships]
   implicit val billReqData: OFormat[BillRequestData] = Json.format[BillRequestData]
   implicit val billReq: OFormat[BillRequest] = Json.format[BillRequest]
+  implicit val billResAttrs: OFormat[BillResponseAttributes] = Json.format[BillResponseAttributes]
+  implicit val billResRels: OFormat[BillResponseRelationships] = Json.format[BillResponseRelationships]
+  implicit val billResData: OFormat[BillResponseData] = Json.format[BillResponseData]
+  implicit val billRes: OFormat[BillResponse] = Json.format[BillResponse]
+  implicit val billResCollection: OFormat[BillCollectionResponse] = Json.format[BillCollectionResponse]
 
   implicit val buyerCatReqAttrs: OFormat[BuyerCategoryRequestAttributes] = Json.format[BuyerCategoryRequestAttributes]
   implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]

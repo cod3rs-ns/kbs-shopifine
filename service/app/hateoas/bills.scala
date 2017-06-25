@@ -1,8 +1,11 @@
+import commons.CollectionLinks
 import domain.{Bill, BillState}
 import org.joda.time.DateTime
-import relationships.RequestRelationship
+import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
 
 package object bills {
+
+  import hateoas._
 
   case class BillRequestAttributes(state: String)
 
@@ -12,7 +15,7 @@ package object bills {
 
   case class BillRequest(data: BillRequestData) {
 
-    def toDomain(): Bill = {
+    def toDomain: Bill = {
       val attributes = data.attributes
       val relationships = data.relationships
 
@@ -25,6 +28,64 @@ package object bills {
         discountAmount = 0,
         pointsGained = 0,
         pointsSpent = 0
+      )
+    }
+  }
+
+  case class BillResponseAttributes(createdAt: DateTime,
+                                    state: String,
+                                    amount: Double,
+                                    discount: Double,
+                                    discountAmount: Double,
+                                    pointsGained: Long,
+                                    pointsSpent: Long)
+
+  case class BillResponseRelationships(customer: ResponseRelationship, items: Seq[ResponseRelationship])
+
+  case class BillResponseData(`type`: String, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
+
+  object BillResponseData {
+
+    def fromDomain(bill: Bill): BillResponseData = {
+
+      val attributes = BillResponseAttributes(
+        createdAt = bill.createdAt,
+        state = bill.state.toString,
+        amount = bill.amount,
+        discount = bill.discount,
+        discountAmount = bill.discountAmount,
+        pointsGained = bill.pointsGained,
+        pointsSpent = bill.pointsSpent
+      )
+
+      // FIXME
+      val relationships = BillResponseRelationships(
+        customer = ResponseRelationship(RelationshipLinks("self", "related"), RelationshipData(`type` = UsersType, id = bill.customerId)),
+        items = Seq()
+      )
+
+      BillResponseData(
+        `type` = BillsType,
+        attributes = attributes,
+        relationships = relationships
+      )
+    }
+
+  }
+
+  case class BillResponse(data: BillResponseData)
+
+  object BillResponse {
+    def fromDomain(bill: Bill): BillResponse = BillResponse(data = BillResponseData.fromDomain(bill))
+  }
+
+  case class BillCollectionResponse(data: Seq[BillResponseData], links: CollectionLinks)
+
+  object BillCollectionResponse {
+    def fromDomain(bills: Seq[Bill], links: CollectionLinks): BillCollectionResponse = {
+      BillCollectionResponse(
+        data = bills.map(BillResponseData.fromDomain),
+        links = links
       )
     }
   }
