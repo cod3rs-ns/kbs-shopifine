@@ -10,7 +10,8 @@ import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
 
-class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends ProductRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+  extends ProductRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
 
   override def save(product: Product): Future[Product] = {
     val items = products returning products.map(_.id) into ((item, id) => item.copy(id = Some(id)))
