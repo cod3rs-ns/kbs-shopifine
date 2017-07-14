@@ -1,7 +1,7 @@
 import commons.CollectionLinks
-import domain.{Bill, BillState}
+import domain.{Bill, BillItem, BillState}
 import org.joda.time.DateTime
-import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
+import relationships._
 
 package object bills {
 
@@ -9,7 +9,7 @@ package object bills {
 
   case class BillRequestAttributes(state: String)
 
-  case class BillRequestRelationships(customer: RequestRelationship, items: Seq[RequestRelationship])
+  case class BillRequestRelationships(customer: RequestRelationship)
 
   case class BillRequestData(`type`: String, attributes: BillRequestAttributes, relationships: BillRequestRelationships)
 
@@ -40,7 +40,7 @@ package object bills {
                                     pointsGained: Long,
                                     pointsSpent: Long)
 
-  case class BillResponseRelationships(customer: ResponseRelationship, items: Seq[ResponseRelationship])
+  case class BillResponseRelationships(customer: ResponseRelationship, items: ResponseRelationshipCollection)
 
   case class BillResponseData(`type`: String, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
 
@@ -58,10 +58,16 @@ package object bills {
         pointsSpent = bill.pointsSpent
       )
 
-      // FIXME
       val relationships = BillResponseRelationships(
-        customer = ResponseRelationship(RelationshipLinks("self", "related"), RelationshipData(`type` = UsersType, id = bill.customerId)),
-        items = Seq()
+        customer = ResponseRelationship(
+          links = RelationshipLinks("self", "related"),
+          data = RelationshipData(
+            `type` = UsersType,
+            id = bill.customerId
+          )),
+        items = ResponseRelationshipCollection(
+          links = RelationshipLinks("self", "related")
+        )
       )
 
       BillResponseData(

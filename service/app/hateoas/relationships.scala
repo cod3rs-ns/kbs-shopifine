@@ -8,4 +8,6 @@ package object relationships {
 
   case class ResponseRelationship(links: RelationshipLinks, data: RelationshipData)
 
+  case class ResponseRelationshipCollection(links: RelationshipLinks)
+
 }

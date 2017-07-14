@@ -1,6 +1,6 @@
 package domain
 
-case class BillItem(id: Option[Long],
+case class BillItem(id: Option[Long] = None,
                     ordinal: Int,
                     productId: Long,
                     billId: Long,

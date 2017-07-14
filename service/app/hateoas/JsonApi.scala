@@ -3,6 +3,7 @@ package hateoas
 import bills._
 import play.api.libs.json.{Json, OFormat}
 import commons.CollectionLinks
+import hateoas.bill_items._
 import hateoas.buyer_categories._
 import relationships._
 import products._
@@ -16,6 +17,7 @@ object JsonApi {
   implicit val relLinks: OFormat[RelationshipLinks] = Json.format[RelationshipLinks]
   implicit val reqRels: OFormat[RequestRelationship] = Json.format[RequestRelationship]
   implicit val resRels: OFormat[ResponseRelationship] = Json.format[ResponseRelationship]
+  implicit val resRelsCollection: OFormat[ResponseRelationshipCollection] = Json.format[ResponseRelationshipCollection]
 
   implicit val prodReqAttrs: OFormat[ProductRequestAttributes] = Json.format[ProductRequestAttributes]
   implicit val prodReqRels: OFormat[ProductRequestRelationships] = Json.format[ProductRequestRelationships]
@@ -46,6 +48,16 @@ object JsonApi {
   implicit val billResData: OFormat[BillResponseData] = Json.format[BillResponseData]
   implicit val billRes: OFormat[BillResponse] = Json.format[BillResponse]
   implicit val billResCollection: OFormat[BillCollectionResponse] = Json.format[BillCollectionResponse]
+
+  implicit val billItemReqAttrs: OFormat[BillItemRequestAttributes] = Json.format[BillItemRequestAttributes]
+  implicit val billItemReqRels: OFormat[BillItemRequestRelationships] = Json.format[BillItemRequestRelationships]
+  implicit val billItemReqData: OFormat[BillItemRequestData] = Json.format[BillItemRequestData]
+  implicit val billItemReq: OFormat[BillItemRequest] = Json.format[BillItemRequest]
+  implicit val billItemResAttrs: OFormat[BillItemResponseAttributes] = Json.format[BillItemResponseAttributes]
+  implicit val billItemResRels: OFormat[BillItemResponseRelationships] = Json.format[BillItemResponseRelationships]
+  implicit val billItemResData: OFormat[BillItemResponseData] = Json.format[BillItemResponseData]
+  implicit val billItemRes: OFormat[BillItemResponse] = Json.format[BillItemResponse]
+  implicit val billItemResCollection: OFormat[BillItemCollectionResponse] = Json.format[BillItemCollectionResponse]
 
   implicit val buyerCatReqAttrs: OFormat[BuyerCategoryRequestAttributes] = Json.format[BuyerCategoryRequestAttributes]
   implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]
