@@ -75,7 +75,9 @@ package object users {
         if (user.role == UserRole.CUSTOMER)
           Some(UserResponseRelationships(
             buyerCategory = ResponseRelationship(
-              links = RelationshipLinks("self", s"/api/users/${user.id.get}/categories/${user.buyerCategoryId}"),
+              links = RelationshipLinks(
+                related = s"/api/users/${user.id.get}/categories/${user.buyerCategoryId}"
+              ),
               data = RelationshipData(BuyerCategoriesType, user.buyerCategoryId.get)
             )))
         else None

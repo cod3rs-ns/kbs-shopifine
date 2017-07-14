@@ -1,5 +1,5 @@
 import commons.CollectionLinks
-import domain.{Bill, BillItem, BillState}
+import domain.{Bill, BillState}
 import org.joda.time.DateTime
 import relationships._
 
@@ -60,13 +60,17 @@ package object bills {
 
       val relationships = BillResponseRelationships(
         customer = ResponseRelationship(
-          links = RelationshipLinks("self", "related"),
+          links = RelationshipLinks(
+            related = s"api/users/${bill.customerId}"
+          ),
           data = RelationshipData(
             `type` = UsersType,
             id = bill.customerId
           )),
         items = ResponseRelationshipCollection(
-          links = RelationshipLinks("self", "related")
+          links = RelationshipLinks(
+            related = s"api/users/${bill.customerId}/bills/${bill.id.get}/bill-items"
+          )
         )
       )
 

@@ -42,7 +42,7 @@ package object bill_items {
 
   object BillItemResponseData {
 
-    def fromDomain(billItem: BillItem): BillItemResponseData = {
+    def fromDomain(billItem: BillItem, customer: Long): BillItemResponseData = {
       val attributes = BillItemResponseAttributes(
         ordinal = billItem.ordinal,
         price = billItem.price,
@@ -59,8 +59,7 @@ package object bill_items {
             id = billItem.productId
           ),
           links = RelationshipLinks(
-            self = "self",
-            related = "related"
+            related = s"api/products/${billItem.productId}"
           )
         ),
         bill = ResponseRelationship(
@@ -69,8 +68,7 @@ package object bill_items {
             id = billItem.billId
           ),
           links = RelationshipLinks(
-            self = "self",
-            related = "related"
+            related = s"api/users/$customer/bills/${billItem.billId}"
           )
         )
       )
@@ -87,15 +85,15 @@ package object bill_items {
   case class BillItemResponse(data: BillItemResponseData)
 
   object BillItemResponse {
-    def fromDomain(billItem: BillItem): BillItemResponse = BillItemResponse(data = BillItemResponseData.fromDomain(billItem))
+    def fromDomain(billItem: BillItem, customer: Long): BillItemResponse = BillItemResponse(data = BillItemResponseData.fromDomain(billItem, customer))
   }
 
   case class BillItemCollectionResponse(data: Seq[BillItemResponseData], links: CollectionLinks)
 
   object BillItemCollectionResponse {
-    def fromDomain(billItems: Seq[BillItem], links: CollectionLinks): BillItemCollectionResponse = {
+    def fromDomain(billItems: Seq[BillItem], customer: Long, links: CollectionLinks): BillItemCollectionResponse = {
       BillItemCollectionResponse(
-        data = billItems.map(BillItemResponseData.fromDomain),
+        data = billItems.map(item => BillItemResponseData.fromDomain(item, customer)),
         links = links
       )
     }

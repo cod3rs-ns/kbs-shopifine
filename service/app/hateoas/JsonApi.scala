@@ -63,6 +63,7 @@ object JsonApi {
   implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]
   implicit val buyerCatReq: OFormat[BuyerCategoryRequest] = Json.format[BuyerCategoryRequest]
   implicit val buyerCatResAttrs: OFormat[BuyerCategoryResponseAttributes] = Json.format[BuyerCategoryResponseAttributes]
+  implicit val buyerCatResRels: OFormat[BuyerCategoryResponseRelationships] = Json.format[BuyerCategoryResponseRelationships]
   implicit val buyerCatResData: OFormat[BuyerCategoryResponseData] = Json.format[BuyerCategoryResponseData]
   implicit val buyerCatRes: OFormat[BuyerCategoryResponse] = Json.format[BuyerCategoryResponse]
   implicit val buyerCatCollection: OFormat[BuyerCategoryCollectionResponse] = Json.format[BuyerCategoryCollectionResponse]

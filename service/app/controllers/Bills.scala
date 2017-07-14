@@ -42,6 +42,13 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
     })
   }
 
+  def retrieveOneByUser(userId: Long, billId: Long): Action[AnyContent] = Action.async {
+    bills.retrieveOne(billId).flatMap {
+      case Some(bill) => Future.successful(Ok(Json.toJson(BillResponse.fromDomain(bill))))
+      case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
+    }
+  }
+
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     bills.retrieveAll(offset, limit).map({ result =>
       val self = routes.Bills.retrieveAll(offset, limit).absoluteURL()
@@ -80,22 +87,27 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
         bills.retrieveOne(billId) flatMap {
           case Some(bill) =>
             billItems.save(spec.toDomain).map({
-              billItem => Created(Json.toJson(BillItemResponse.fromDomain(billItem)))
+              billItem => Created(Json.toJson(BillItemResponse.fromDomain(billItem, bill.id.get)))
             })
 
-          case None => Future.successful(NotFound("test-message"))
+          case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
         }
       }
     )
   }
 
   def retrieveBillItems(userId: Long, billId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
-    billItems.retrieveByBill(billId, offset, limit).map(result => {
-      val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
-      val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
+    bills.retrieveOne(billId) flatMap {
+      case Some(bill) =>
+        billItems.retrieveByBill(billId, offset, limit).map(result => {
+          val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
+          val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 
-      Ok(Json.toJson(BillItemCollectionResponse.fromDomain(result, CollectionLinks(self, next))))
-    })
+          Ok(Json.toJson(BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self, next))))
+        })
+
+      case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
+    }
   }
 
 }
