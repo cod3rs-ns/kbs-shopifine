@@ -6,6 +6,7 @@ import bills.{BillCollectionResponse, BillRequest, BillResponse}
 import com.google.inject.Inject
 import commons.CollectionLinks
 import domain.BillState
+import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{BillItemRepository, BillRepository}
@@ -69,6 +70,32 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
         }
       }
     )
+  }
+
+  def addBillItem(userId: Long, billId: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[BillItemRequest].fold(
+      failures => Future.successful(BadRequest(Json.toJson("Malformed JSON specified."))),
+
+      spec => {
+        bills.retrieveOne(billId) flatMap {
+          case Some(bill) =>
+            billItems.save(spec.toDomain).map({
+              billItem => Created(Json.toJson(BillItemResponse.fromDomain(billItem)))
+            })
+
+          case None => Future.successful(NotFound("test-message"))
+        }
+      }
+    )
+  }
+
+  def retrieveBillItems(userId: Long, billId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    billItems.retrieveByBill(billId, offset, limit).map(result => {
+      val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
+      val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
+
+      Ok(Json.toJson(BillItemCollectionResponse.fromDomain(result, CollectionLinks(self, next))))
+    })
   }
 
 }

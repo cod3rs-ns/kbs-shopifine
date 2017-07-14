@@ -8,6 +8,6 @@ trait BillItemRepository {
 
   def save(billItem: BillItem): Future[BillItem]
 
-  def retrieveByBill(billId: Long): Future[Seq[BillItem]]
+  def retrieveByBill(billId: Long, offset: Int, limit: Int): Future[Seq[BillItem]]
 
 }
