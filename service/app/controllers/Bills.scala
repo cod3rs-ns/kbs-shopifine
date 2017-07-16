@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import bills.{BillCollectionResponse, BillRequest, BillResponse}
 import com.google.inject.Inject
-import commons.CollectionLinks
+import commons.{CollectionLinks, Error, ErrorResponse}
 import domain.BillState
 import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
@@ -21,18 +21,22 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
 
   def create(userId: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[BillRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson("Malformed JSON specified."))),
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
 
       spec => {
-        bills.save(spec.toDomain).map({
-          bill => Created(Json.toJson(BillResponse.fromDomain(bill)))
-        })
+        bills.save(spec.toDomain).map(bill =>
+          Accepted(Json.toJson(
+            BillResponse.fromDomain(bill)
+          ))
+        )
       }
     )
   }
 
   def retrieveAllByUser(userId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
-    bills.retrieveByUser(userId, offset, limit).map({ result =>
+    bills.retrieveByUser(userId, offset, limit).map(result => {
       val self = routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()
       val next = if (result.size == limit) Some(routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()) else None
 
@@ -45,12 +49,15 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
   def retrieveOneByUser(userId: Long, billId: Long): Action[AnyContent] = Action.async {
     bills.retrieveOne(billId).flatMap {
       case Some(bill) => Future.successful(Ok(Json.toJson(BillResponse.fromDomain(bill))))
-      case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
+
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $billId doesn't exist!")))
+      )))
     }
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
-    bills.retrieveAll(offset, limit).map({ result =>
+    bills.retrieveAll(offset, limit).map(result => {
       val self = routes.Bills.retrieveAll(offset, limit).absoluteURL()
       val next = if (result.size == limit) Some(routes.Bills.retrieveAll(offset, limit).absoluteURL()) else None
 
@@ -61,36 +68,48 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
   }
 
   def changeState(id: Long, state: String): Action[AnyContent] = Action.async {
-    // FIXME Handle error
-    val toState = BillState.valueOf(state.toUpperCase)
-
-    bills.setState(id, toState).flatMap(
-      affected => {
-        // FIXME Handle Not Found
+    try {
+      val toState = BillState.valueOf(state.toUpperCase)
+      bills.setState(id, toState).flatMap(affected => {
         if (affected > 0) {
-          bills.retrieveOne(id).map({ bill =>
+          bills.retrieveOne(id).map(bill =>
             Ok(Json.toJson(BillResponse.fromDomain(bill.get)))
-          })
+          )
         }
         else {
-          Future.successful(NotFound("test-message"))
+          Future.successful(NotFound(Json.toJson(
+            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $id doesn't exist!")))
+          )))
         }
       }
-    )
+      )
+    }
+    catch {
+      case e: IllegalArgumentException =>
+        Future.successful(BadRequest(Json.toJson(
+          ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, e.getMessage)))
+        )))
+    }
   }
 
   def addBillItem(userId: Long, billId: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[BillItemRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson("Malformed JSON specified."))),
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
 
       spec => {
         bills.retrieveOne(billId) flatMap {
           case Some(bill) =>
-            billItems.save(spec.toDomain).map({
-              billItem => Created(Json.toJson(BillItemResponse.fromDomain(billItem, bill.id.get)))
-            })
+            billItems.save(spec.toDomain).map(billItem =>
+              Created(Json.toJson(
+                BillItemResponse.fromDomain(billItem, bill.id.get)
+              ))
+            )
 
-          case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
+          case None => Future.successful(NotFound(Json.toJson(
+            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $billId doesn't exist!")))
+          )))
         }
       }
     )
@@ -103,10 +122,14 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
           val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
           val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 
-          Ok(Json.toJson(BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self, next))))
+          Ok(Json.toJson(
+            BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self, next))
+          ))
         })
 
-      case None => Future.successful(NotFound(s"Bill $billId Not Found!"))
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $billId doesn't exist!")))
+      )))
     }
   }
 

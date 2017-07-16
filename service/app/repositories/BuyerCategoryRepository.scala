@@ -8,6 +8,8 @@ trait BuyerCategoryRepository {
 
   def save(buyerCategory: BuyerCategory): Future[BuyerCategory]
 
+  def retrieveOne(id: Long): Future[Option[BuyerCategory]]
+
   def retrieveAll(offset: Int, limit: Int): Future[Seq[BuyerCategory]]
 
 }

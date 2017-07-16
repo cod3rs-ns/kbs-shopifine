@@ -14,7 +14,6 @@ package object bills {
   case class BillRequestData(`type`: String, attributes: BillRequestAttributes, relationships: BillRequestRelationships)
 
   case class BillRequest(data: BillRequestData) {
-
     def toDomain: Bill = {
       val attributes = data.attributes
       val relationships = data.relationships
@@ -45,9 +44,7 @@ package object bills {
   case class BillResponseData(`type`: String, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
 
   object BillResponseData {
-
     def fromDomain(bill: Bill): BillResponseData = {
-
       val attributes = BillResponseAttributes(
         createdAt = bill.createdAt,
         state = bill.state.toString,
@@ -80,7 +77,6 @@ package object bills {
         relationships = relationships
       )
     }
-
   }
 
   case class BillResponse(data: BillResponseData)

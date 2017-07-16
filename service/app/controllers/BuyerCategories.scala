@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Singleton
 
 import com.google.inject.Inject
-import commons.CollectionLinks
+import commons.{CollectionLinks, Error, ErrorResponse}
 import hateoas.buyer_categories._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
@@ -19,12 +19,16 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[BuyerCategoryRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson("Malformed JSON specified."))),
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
 
       spec => {
-        buyerCategories.save(spec.toDomain).map({
-          category => Ok(Json.toJson(BuyerCategoryResponse.fromDomain(category)))
-        })
+        buyerCategories.save(spec.toDomain).map(category =>
+          Accepted(Json.toJson(
+            BuyerCategoryResponse.fromDomain(category)
+          ))
+        )
       }
     )
   }
@@ -53,24 +57,37 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
   def addThreshold(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[ConsumptionThresholdRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson("Malformed JSON specified."))),
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
 
       spec =>
-        thresholds.save(spec.toDomain).map({
-          threshold => Ok(Json.toJson(ConsumptionThresholdResponse.fromDomain(threshold)))
-        })
+        thresholds.save(spec.toDomain).map(threshold =>
+          Ok(Json.toJson(
+            ConsumptionThresholdResponse.fromDomain(threshold)
+          ))
+        )
     )
   }
 
   def removeThreshold(categoryId: Long, thresholdId: Long): Action[AnyContent] = Action.async {
-    // Bad Request  If category doesn't exist
-    // Forbidden    If no privileges
-    // Not Found    If threshold doesn't exist
-    // No Content   Successfully deleted
-    thresholds.delete(thresholdId).map(
-      affected =>
-        if (affected > 0) NoContent else NotFound("Threshold not found")
-    )
+    buyerCategories.retrieveOne(categoryId) flatMap {
+      case Some(category) =>
+        thresholds.delete(thresholdId).map(affected =>
+          if (affected > 0) {
+            NoContent
+          }
+          else {
+            NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Threshold $thresholdId doesn't exist!")))
+            ))
+          }
+        )
+
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $categoryId doesn't exist!")))
+      )))
+    }
   }
 
 }

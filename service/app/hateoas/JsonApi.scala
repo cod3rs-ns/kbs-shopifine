@@ -2,7 +2,7 @@ package hateoas
 
 import bills._
 import play.api.libs.json.{Json, OFormat}
-import commons.CollectionLinks
+import commons.{CollectionLinks, Error, ErrorResponse, Meta}
 import hateoas.bill_items._
 import hateoas.buyer_categories._
 import relationships._
@@ -12,6 +12,9 @@ import users._
 object JsonApi {
 
   implicit val collectionLinks: OFormat[CollectionLinks] = Json.format[CollectionLinks]
+  implicit val error: OFormat[Error] = Json.format[Error]
+  implicit val meta: OFormat[Meta] = Json.format[Meta]
+  implicit val errorResponse: OFormat[ErrorResponse] = Json.format[ErrorResponse]
 
   implicit val relData: OFormat[RelationshipData] = Json.format[RelationshipData]
   implicit val relLinks: OFormat[RelationshipLinks] = Json.format[RelationshipLinks]

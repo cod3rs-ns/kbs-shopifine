@@ -20,9 +20,7 @@ package object users {
                              relationships: Option[UserRequestRelationships])
 
   case class UserRequest(data: UserRequestData) {
-
     def toDomain: User = {
-
       val attributes = data.attributes
       val relationships = data.relationships
       val isCustomer = relationships.isDefined && attributes.role.toUpperCase == "CUSTOMER"
@@ -59,9 +57,7 @@ package object users {
                               relationships: Option[UserResponseRelationships] = None)
 
   object UserResponseData {
-
     def fromDomain(user: User): UserResponseData = {
-
       val attributes = UserResponseAttributes(
         username = user.username,
         firstName = user.firstName,

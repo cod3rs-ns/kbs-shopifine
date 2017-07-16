@@ -6,8 +6,6 @@ import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, 
 
 package object bill_items {
 
-  import hateoas.JsonApi._
-
   case class BillItemRequestAttributes(price: Double, quantity: Int, discount: Double)
 
   case class BillItemRequestRelationships(product: RequestRelationship, bill: RequestRelationship)
@@ -15,7 +13,6 @@ package object bill_items {
   case class BillItemRequestData(`type`: String, attributes: BillItemRequestAttributes, relationships: BillItemRequestRelationships)
 
   case class BillItemRequest(data: BillItemRequestData) {
-
     def toDomain: BillItem = {
       val attributes = data.attributes
       val relationships = data.relationships
@@ -29,7 +26,7 @@ package object bill_items {
         quantity = attributes.quantity,
         amount = amount,
         discount = attributes.discount,
-        discountAmount = attributes.discount/100.0 * amount
+        discountAmount = attributes.discount / 100.0 * amount
       )
     }
   }
@@ -41,7 +38,6 @@ package object bill_items {
   case class BillItemResponseData(id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
 
   object BillItemResponseData {
-
     def fromDomain(billItem: BillItem, customer: Long): BillItemResponseData = {
       val attributes = BillItemResponseAttributes(
         ordinal = billItem.ordinal,
@@ -79,7 +75,6 @@ package object bill_items {
         relationships = relationships
       )
     }
-
   }
 
   case class BillItemResponse(data: BillItemResponseData)

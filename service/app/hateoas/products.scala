@@ -54,9 +54,7 @@ package object products {
                                  relationships: ProductResponseRelationships)
 
   object ProductResponseData {
-
     def fromDomain(product: Product): ProductResponseData = {
-
       val attributes = ProductResponseAttributes(
         name = product.name,
         price = product.price,
