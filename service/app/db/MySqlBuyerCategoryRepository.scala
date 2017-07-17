@@ -18,6 +18,10 @@ class MySqlBuyerCategoryRepository @Inject()(protected val dbConfigProvider: Dat
     db.run(items += buyerCategory)
   }
 
+  override def retrieveOne(id: Long): Future[Option[BuyerCategory]] = {
+    db.run(buyerCategories.filter(_.id === id).result.headOption)
+  }
+
   override def retrieveAll(offset: Int, limit: Int): Future[Seq[BuyerCategory]] = {
     db.run(buyerCategories.drop(offset).take(limit).result)
   }

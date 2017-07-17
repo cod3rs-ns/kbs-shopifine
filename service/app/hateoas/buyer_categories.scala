@@ -2,6 +2,7 @@ package hateoas
 
 import commons.CollectionLinks
 import domain.{BuyerCategory, ConsumptionThreshold}
+import relationships.{RelationshipLinks, ResponseRelationshipCollection}
 
 package object buyer_categories {
 
@@ -13,9 +14,11 @@ package object buyer_categories {
     def toDomain: BuyerCategory = BuyerCategory(name = data.attributes.name)
   }
 
-  case class BuyerCategoryResponseAttributes(name: String, thresholds: String)
+  case class BuyerCategoryResponseAttributes(name: String)
 
-  case class BuyerCategoryResponseData(`type`: String, id: Long, attributes: BuyerCategoryResponseAttributes)
+  case class BuyerCategoryResponseRelationships(thresholds: ResponseRelationshipCollection)
+
+  case class BuyerCategoryResponseData(`type`: String, id: Long, attributes: BuyerCategoryResponseAttributes, relationships: BuyerCategoryResponseRelationships)
 
   object BuyerCategoryResponseData {
     def fromDomain(buyerCategory: BuyerCategory): BuyerCategoryResponseData = {
@@ -23,8 +26,14 @@ package object buyer_categories {
         `type` = BuyerCategoriesType,
         id = buyerCategory.id.get,
         attributes = BuyerCategoryResponseAttributes(
-          name = buyerCategory.name,
-          thresholds = s"/api/buyer-categories/${buyerCategory.id.get}/thresholds"
+          name = buyerCategory.name
+        ),
+        relationships = BuyerCategoryResponseRelationships(
+          thresholds = ResponseRelationshipCollection(
+            links = RelationshipLinks(
+              related = s"/api/buyer-categories/${buyerCategory.id.get}/thresholds"
+            )
+          )
         )
       )
     }

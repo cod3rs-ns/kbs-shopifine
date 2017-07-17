@@ -1,5 +1,5 @@
 import commons.CollectionLinks
-import domain.{Product, ProductCategory}
+import domain.Product
 import org.joda.time.DateTime
 import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
 
@@ -54,9 +54,7 @@ package object products {
                                  relationships: ProductResponseRelationships)
 
   object ProductResponseData {
-
     def fromDomain(product: Product): ProductResponseData = {
-
       val attributes = ProductResponseAttributes(
         name = product.name,
         price = product.price,
@@ -69,7 +67,9 @@ package object products {
 
       val relationships = ProductResponseRelationships(
         category = ResponseRelationship(
-          links = RelationshipLinks(s"/api/products/${product.id.get}/product-categories/${product.categoryId}", s"/api/product-categories/${product.categoryId}"),
+          links = RelationshipLinks(
+            related = s"/api/products/${product.id.get}/product-categories/${product.categoryId}"
+          ),
           data = RelationshipData(ProductCategories, product.categoryId)
         )
       )
