@@ -5,7 +5,7 @@ import javax.inject.Singleton
 import com.google.inject.Inject
 import commons.{Error, ErrorResponse}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.UserRepository
 import users.{UserRequest, UserResponse}
 
@@ -28,6 +28,18 @@ class Users @Inject()(users: UserRepository)(implicit val ec: ExecutionContext) 
         })
       }
     )
+  }
+
+  def retrieveOne(id: Long): Action[AnyContent] = Action.async {
+    users.retrieve(id) map {
+      case Some(user) =>
+        Ok(Json.toJson(UserResponse.fromDomain(user)))
+
+      case None =>
+        NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"User $id doesn't exist!")))
+        ))
+    }
   }
 
 }

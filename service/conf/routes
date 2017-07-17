@@ -16,6 +16,8 @@ POST    /api/products           controllers.Products.add()
 ###
 POST    /api/users              controllers.Users.registerUser()
 
+GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
+
 ###
 #       BUYER CATEGORY ENDPOINTS
 ###
