@@ -1,0 +1,72 @@
+# Routes
+
+###
+#       PRODUCT ENDPOINTS
+###
+GET     /api/products           controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
+
+PUT     /api/products/:id       controllers.Products.fillStock(id: Long, quantity: Int)
+
+POST    /api/products           controllers.Products.add()
+
+###
+#       USER ENDPOINTS
+###
+POST    /api/users              controllers.Users.registerUser()
+
+GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
+
+###
+#       BUYER CATEGORY ENDPOINTS
+###
+POST    /api/buyer-categories                           controllers.BuyerCategories.create()
+
+GET     /api/buyer-categories                           controllers.BuyerCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+GET     /api/buyer-categories/:id/thresholds            controllers.BuyerCategories.retrieveThresholds(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+POST    /api/buyer-categories/:id/thresholds            controllers.BuyerCategories.addThreshold(id: Long)
+
+DELETE  /api/buyer-categories/:cid/thresholds/:tid      controllers.BuyerCategories.removeThreshold(cid: Long, tid: Long)
+
+###
+#       BILLS ENDPOINTS
+###
+POST    /api/users/:userId/bills                        controllers.Bills.create(userId: Long)
+
+GET     /api/users/:userId/bills                        controllers.Bills.retrieveAllByUser(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+GET     /api/users/:userId/bills/:billId                controllers.Bills.retrieveOneByUser(userId: Long, billId: Long)
+
+GET     /api/bills                                      controllers.Bills.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+PUT     /api/bills/:id                                  controllers.Bills.changeState(id: Long, state: String)
+
+POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBillItem(userId: Long, billId: Long)
+
+GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrieveBillItems(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
+#       PRODUCT CATEGORIES
+###
+POST    /api/product-categories             controllers.ProductCategories.create()
+
+GET     /api/product-categories             controllers.ProductCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+PUT     /api/product-categories/:id         controllers.ProductCategories.update(id: Long)
+
+GET     /api/product-categories/:id         controllers.ProductCategories.retrieveOne(id: Long)
+
+###
+#       ACTION DISCOUNTS
+###
+POST    /api/action-discounts               controllers.ActionDiscounts.create()
+
+PUT     /api/action-discounts/:id           controllers.ActionDiscounts.update(id: Long)
+
+GET     /api/action-discounts               controllers.ActionDiscounts.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
