@@ -35,7 +35,7 @@ package object bill_items {
 
   case class BillItemResponseRelationships(product: ResponseRelationship, bill: ResponseRelationship)
 
-  case class BillItemResponseData(id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
+  case class BillItemResponseData(`type`: String, id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
 
   object BillItemResponseData {
     def fromDomain(billItem: BillItem, customer: Long): BillItemResponseData = {
@@ -70,6 +70,7 @@ package object bill_items {
       )
 
       BillItemResponseData(
+        `type` = BillItemsType,
         id = billItem.id.get,
         attributes = attributes,
         relationships = relationships
