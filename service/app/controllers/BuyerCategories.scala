@@ -25,7 +25,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
       spec => {
         buyerCategories.save(spec.toDomain).map(category =>
-          Accepted(Json.toJson(
+          Created(Json.toJson(
             BuyerCategoryResponse.fromDomain(category)
           ))
         )
@@ -45,6 +45,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
   }
 
   def retrieveThresholds(buyerCategoryId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    // FIXME Buyer Category doesn't exist
     thresholds.retrieveByBuyerCategory(buyerCategoryId, offset, limit).map(result => {
       val self = routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset, limit).absoluteURL()
       val next = if (limit == result.length) Some(routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset + limit, limit).absoluteURL()) else None
@@ -56,6 +57,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
   }
 
   def addThreshold(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    // FIXME Buyer Category doesn't exist
     request.body.validate[ConsumptionThresholdRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -63,7 +65,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
       spec =>
         thresholds.save(spec.toDomain).map(threshold =>
-          Ok(Json.toJson(
+          Created(Json.toJson(
             ConsumptionThresholdResponse.fromDomain(threshold)
           ))
         )

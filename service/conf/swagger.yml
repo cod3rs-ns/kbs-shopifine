@@ -1,0 +1,1009 @@
+swagger: "2.0"
+info:
+  description: "Shopifine Service represents final exam project on the bachelor studies on subject Knowledge Based Systems."
+  version: "1.0.0"
+  title: "Shopifine"
+  contact:
+    email: "dmarjanovic94@gmail.com"
+consumes:
+  - application/json
+produces:
+  - application/json
+definitions:
+  ProductRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ProductRequestData'
+    required:
+      - data
+  ProductRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - products
+        description: Type of requested Product
+      attributes:
+        $ref: '#/definitions/ProductRequestAttributes'
+      relationships:
+        $ref: '#/definitions/ProductRequestRelationships'
+    required:
+      - type
+      - attributes
+      - relationships
+  ProductRequestAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the product
+        example: MacBook Pro 15-inch
+      price:
+        type: double
+        description: Product price
+        example: 1999.99
+      quantity:
+        type: integer
+        description: Number of Producst in stock
+        example: 21
+      fillStock:
+        type: boolean
+        description: Indicate if Product available on stock
+      status:
+        type: string
+        description: Current status of Product
+        enum:
+          - ACTIVE
+          - ARCHIVED
+      minQuantity:
+        type: integer
+        description: Minimum quantity on stock
+        example: 4
+    required:
+      - name
+      - price
+      - quantity
+      - minQuantity
+  ProductRequestRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to Product Category
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - category
+  ProductCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ProductResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  ProductResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ProductResponseData'
+    required:
+      - data
+  ProductResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - products
+        description: Type of retrieved Products
+      id:
+        type: integer
+        description: Unique identifier of Product
+        example: 1
+      attributes:
+        $ref: '#/definitions/ProductResponseAttributes'
+      relationships:
+        $ref: '#/definitions/ProductResponseRelationships'
+    required:
+      - type
+      - id
+      - attributes
+      - relationships
+  ProductResponseAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the product
+        example: MacBook Pro 15-inch
+      price:
+        type: double
+        description: Product price
+        example: 1999.99
+      quantity:
+        type: integer
+        description: Number of Producst in stock
+        example: 21
+      createdAt:
+        type: string
+        description: Time when Product is stored
+        example: '2017-08-06T01:56:10.000+02:00'
+      fillStock:
+        type: boolean
+        description: Indicate if Product available on stock
+      status:
+        type: string
+        description: Current status of Product
+        enum:
+          - ACTIVE
+          - ARCHIVED
+      minQuantity:
+        type: integer
+        description: Minimum quantity on stock
+        example: 4
+    required:
+      - name
+      - price
+      - quantity
+      - createdAt
+      - fillStock
+      - status
+      - minQuantity
+  ProductResponseRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to Product Category
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - category
+  UserRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UserRequestData'
+    required:
+      - data
+  UserRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - users
+        description: Type of requsted User
+      attributes:
+        $ref: '#/definitions/UserRequestAttributes'
+      relationships:
+        $ref: '#/definitions/UserRequestRelationships'
+    required:
+      - type
+      - attributes
+      - relationships
+  UserRequestAttributes:
+    type: object
+    properties:
+      username:
+        type: string
+        description: User username
+        example: dmarjanovic
+      password:
+        type: string
+        description: User password
+        example: realmadrid
+      firstName:
+        type: string
+        description: User first name
+        example: Dragutin
+      lastName:
+        type: string
+        description: User last name
+        example: Marjanovic
+      role:
+        type: string
+        description: Possible roles of user
+        enum:
+          - CUSTOMER
+          - SALES_MANAGER
+          - SALESMAN
+      address:
+        type: string
+        description: Address of the resident
+        example: Pozorisni Trg 6, Novi Sad
+    required:
+      - username
+      - password
+      - firstName
+      - lastName
+      - role
+  UserRequestRelationships:
+    type: object
+    properties:
+      buyerCategory:
+        description: Relationship to Buyer category
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - buyerCategory
+  UserResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UserResponseData'
+    required:
+      - data
+  UserResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - users
+        description: Type of retrieved User
+        id:
+          type: integer
+          description: Unique identifier of User
+          example: 1
+      attributes:
+        $ref: '#/definitions/UserResponseAttributes'
+      relationships:
+        $ref: '#/definitions/UserResponseRelationships'
+      meta:
+        $ref: '#/definitions/UserResponseMeta'
+    required:
+      - type
+      - id
+      - attributes
+      - meta
+  UserResponseAttributes:
+    type: object
+    properties:
+      username:
+        type: string
+        description: User username
+        example: dmarjanovic
+      firstName:
+        type: string
+        description: User first name
+        example: Dragutin
+      lastName:
+        type: string
+        description: User last name
+        example: Marjanovic
+      role:
+        type: string
+        description: Possible roles of user
+        enum:
+          - CUSTOMER
+          - SALES_MANAGER
+          - SALESMAN
+      address:
+        type: string
+        description: Address of the resident
+        example: Pozorisni Trg 6, Novi Sad
+    required:
+      - username
+      - firstName
+      - lastName
+      - role
+  UserResponseRelationships:
+    type: object
+    properties:
+      buyerCategory:
+        description: Relationship to Buyer category
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - buyerCategory
+  UserResponseMeta:
+    type: object
+    properties:
+      registeredAt:
+        type: string
+        description: Time when User is stored
+        example: '2017-08-06T01:56:10.000+02:00'
+  BuyerCategoryRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BuyerCategoryRequestData'
+    required:
+      - data
+  BuyerCategoryRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - buyer-categories
+        description: Type of requested Buyer Categories
+      attributes:
+        $ref: '#/definitions/BuyerCategoryRequestAttributes'
+    required:
+      - type
+      - attributes
+  BuyerCategoryRequestAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of Buyer Category
+        example: Gold buyer
+    required:
+      - name
+  BuyerCategoryResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BuyerCategoryResponseData'
+    required:
+      - data
+  BuyerCategoryCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BuyerCategoryResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BuyerCategoryResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - buyer-categories
+        description: Type of retrieved Buyer Categories
+      id:
+        type: integer
+        description: Unique identifier of Buyer Category
+        example: 1
+      attributes:
+        $ref: '#/definitions/BuyerCategoryResponseAttributes'
+      relationships:
+        $ref: '#/definitions/BuyerCategoryResponseRelationships'
+    required:
+      - type
+      - id
+      - attributes
+      - relationships
+  BuyerCategoryResponseAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of Buyer Category
+        example: Gold buyer
+    required:
+      - name
+  BuyerCategoryResponseRelationships:
+    type: object
+    properties:
+      thresholds:
+        description: Relationship to buyer categories thresholds
+        $ref: '#/definitions/ResponseRelationshipCollection'
+    required:
+      - thresholds
+  ThresholdRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ThresholdRequestData'
+    required:
+      - data
+  ThresholdRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - onsumption-thresholds
+        description: Type of requested Consumption Thresholds
+      attributes:
+        $ref: '#/definitions/ThresholdAttributes'
+    required:
+      - type
+      - attributes
+  ThresholdResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ThresholdResponseData'
+    required:
+      - data
+  ThresholdCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ThresholdResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  ThresholdResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - consumption-thresholds
+        description: Type of retrieved Consumption Threshold
+        id:
+          type: integer
+          description: Unique identifier of Consumption Threshold
+          example: 1
+      attributes:
+        $ref: '#/definitions/ThresholdAttributes'
+    required:
+      - type
+      - id
+      - attributes
+  ThresholdAttributes:
+    type: object
+    properties:
+      from:
+        type: integer
+        description: Minimum points for threshold
+        example: 4
+      to:
+        type: integer
+        description: Maximum points for threshold
+        example: 21
+      award:
+        type: double
+        description: Level of discount
+        example: 6.8
+  BillRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BillRequestData'
+    required:
+      - data
+  BillRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bills
+        description: Type of requested Bill
+      attributes:
+        $ref: '#/definitions/BillRequestAttributes'
+      relationships:
+        $ref: '#/definitions/BillRequestRelationships'
+    required:
+      - type
+      - attributes
+      - relationships
+  BillRequestAttributes:
+    type: object
+    properties:
+      state:
+        type: string
+        description: Bill state
+        enum:
+          - ORDERED
+          - CANCELLED
+          - SUCCESSFUL
+    required:
+      - state
+  BillRequestRelationships:
+    type: object
+    properties:
+      customer:
+        description: Relationship to Bill customer
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - customer
+  BillResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BillResponseData'
+    required:
+      - data
+  BillCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bills
+        description: Type of retrieved Bills
+      id:
+        type: integer
+        description: Unique identifier of Bill
+        example: 1
+      attributes:
+        $ref: '#/definitions/BillResponseAttributes'
+      relationships:
+        $ref: '#/definitions/BillResponseRelationships'
+    required:
+      - type
+      - id
+      - attributes
+      - relationships
+  BillResponseAttributes:
+    type: object
+    properties:
+      createdAt:
+        type: string
+        description: Date when Bill is stored
+        example: '2017-08-06T01:56:10.000+02:00'
+      state:
+        type: string
+        description: Bill state
+        enum:
+          - ORDERED
+          - CANCELLED
+          - SUCCESSFUL
+      amount:
+        type: double
+        description: Bill amount
+        example: 1389.21
+      discount:
+        type: double
+        description: Value of discount for whole bill
+        example: 10
+      discountAmount:
+        type: string
+        description: Amount of bill discount
+        example: 138.921
+      pointsGained:
+        type: long
+        format: int64
+        description: Total gained points in shopping
+        example: 21
+      pointsSpent:
+        type: long
+        format: int64
+        description: Total spent points in shopping
+        example: 10
+    required:
+      - createdAt
+      - state
+      - amount
+      - discount
+      - discountAmount
+      - pointsGained
+      - pointsSpent
+  BillResponseRelationships:
+    type: object
+    properties:
+      customer:
+        description: Relationship to Bill Customer
+        $ref: '#/definitions/ResponseRelationship'
+      items:
+        description: Relationship to bill items
+        $ref: '#/definitions/ResponseRelationshipCollection'
+    required:
+      - customer
+      - items
+  BillItemRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BillItemRequestData'
+    required:
+      - data
+  BillItemRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bill-items
+        description: Type of requested Bill Items
+      attributes:
+        $ref: '#/definitions/BillItemRequestAttributes'
+      relationships:
+        $ref: '#/definitions/BillItemRequestRelationships'
+    required:
+      - type
+      - attributes
+      - relationships
+  BillItemRequestAttributes:
+    type: object
+    properties:
+      price:
+        type: double
+        description: Bill item price
+        example: 1999.99
+      quantity:
+        type: integer
+        description: Number of ordered items
+        example: 4
+      discount:
+        type: double
+        description: Single discount for Bill item
+        example: 6.8
+    required:
+      - price
+      - quantity
+      - discount
+  BillItemRequestRelationships:
+    type: object
+    properties:
+      product:
+        description: Relationship to Product
+        $ref: '#/definitions/RequestRelationship'
+      bill:
+        description: Relationship to Bill
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - product
+      - bill
+  BillItemResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/BillItemResponseData'
+    required:
+      - data
+  BillItemCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillItemResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillItemResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bill-items
+        description: Type of retrieved Bill Items
+      id:
+        type: integer
+        description: Unique identifier of Bill Items
+        example: 1
+      attributes:
+        $ref: '#/definitions/BillItemResponseAttributes'
+      relationships:
+        $ref: '#/definitions/BillItemResponseRelationships'
+    required:
+      - type
+      - id
+      - attributes
+      - relationships
+  BillItemResponseAttributes:
+    type: object
+    properties:
+      ordinal:
+        type: integer
+        description: Ordinal number in Bill
+        example: 1
+      price:
+        type: double
+        description: Bill item price
+        example: 1999.99
+      quantity:
+        type: integer
+        description: Number of ordered items
+        example: 4
+      amount:
+        type: double
+        description: Total price of Bill item
+        example: 7999.96
+      discount:
+        type: double
+        description: Single discount for Bill item
+        example: 6.8
+      discountAmount:
+        type: double
+        description: Total discount amount for Bill item
+        example: 543.99728
+    required:
+      - ordinal
+      - price
+      - quantity
+      - amount
+      - discount
+      - discountAmount
+  BillItemResponseRelationships:
+    type: object
+    properties:
+      product:
+        description: Relationship to Product
+        $ref: '#/definitions/ResponseRelationship'
+      bill:
+        description: Relationship to Bill
+        $ref: '#/definitions/ResponseCollection'
+    required:
+      - product
+      - bill
+  ProductCategoryRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ProductCategoryRequestData'
+    required:
+      - data
+  ProductCategoryRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - product-categories
+        description: Type of requested Product Category
+      attributes:
+        $ref: '#/definitions/ProductCategoryAttributes'
+      relationships:
+        $ref: '#/definitions/ProductCategoryRequestRelationships'
+    required:
+      - type
+      - attributes
+  ProductCategoryRequestRelationships:
+    type: object
+    properties:
+      superCategory:
+        description: Relationship to super category
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - superCategory
+  ProductCategoryResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ProductCategoryResponseData'
+    required:
+      - data
+  ProductCategoryCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ProductCategoryResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  ProductCategoryResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - product-categories
+        description: Type of retrieved Product Categories
+      id:
+        type: integer
+        description: Unique identifier of Product category
+        example: 1
+      attributes:
+        $ref: '#/definitions/ProductCategoryAttributes'
+      relationships:
+        $ref: '#/definitions/ProductCategoryResponseRelationships'
+    required:
+      - type
+      - id
+      - attributes
+  ProductCategoryResponseRelationships:
+    type: object
+    properties:
+      superCategory:
+        description: Relationship to super category
+        $ref: '#/definitions/ResponseRelationship'
+  ProductCategoryAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: General product category
+        example: Electronics
+      maxDiscount:
+        type: double
+        description: Maximum allowed discount for product in specified category
+        example: 20
+    required:
+      - name
+      - maxDiscount
+  ActionDiscountRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ActionDiscountRequestData'
+    required:
+      - data
+  ActionDiscountRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - action-discounts
+        description: Type of requested Action Discount
+      attributes:
+        $ref: '#/definitions/ActionDiscountAttributes'
+    required:
+      - type
+      - attributes
+  ActionDiscountResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/ActionDiscountResponseData'
+    required:
+      - data
+  ActionDiscountCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/ActionDiscountResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  ActionDiscountResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - action-discounts
+        description: Type of retrieved Action Discount
+      id:
+        type: integer
+        description: Unique identifier of Action Discount
+        example: 1
+      attributes:
+        $ref: '#/definitions/ActionDiscountAttributes'
+    required:
+      - type
+      - id
+      - attributes
+  ActionDiscountAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of action discount
+        example: Black Friday
+      from:
+        type: string
+        description: Date when discount begins
+        example: '2017-07-20T01:56:10.000+02:00'
+      to:
+        type: string
+        description: Date when discount ends
+        example: '2017-08-06T01:56:10.000+02:00'
+      discount:
+        type: double
+        description: Action discount
+        example: 50
+    required:
+      - name
+      - from
+      - to
+      - discount
+  ErrorResponse:
+    type: object
+    properties:
+      meta:
+        $ref: '#/definitions/Meta'
+      errors:
+        type: array
+        minItems: 0
+        items:
+          $ref: '#/definitions/Error'
+    required:
+      - meta
+      - errors
+  Meta:
+    type: object
+    properties:
+      createdAt:
+        type: string
+    required:
+      - createdAt
+  Error:
+    type: object
+    properties:
+      status:
+        type: string
+      detail:
+        type: string
+    required:
+      - status
+      - detail
+  RequestRelationship:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/RelationshipData'
+    required:
+      - data
+  ResponseRelationship:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/RelationshipLinks'
+      data:
+        $ref: '#/definitions/RelationshipData'
+    required:
+      - links
+      - data
+  ResponseRelationshipCollection:
+    type: object
+    properties:
+      links:
+        $ref: '#/definitions/RelationshipLinks'
+    required:
+      - links
+  RelationshipLinks:
+    type: object
+    properties:
+      related:
+        type: string
+    required:
+      - related
+  RelationshipData:
+    type: object
+    properties:
+      type:
+        type: string
+      id:
+        type: integer
+        example: 1
+    required:
+      - type
+      - id
+  CollectionLinks:
+    type: object
+    properties:
+      self:
+        type: string
+      next:
+        type: next
+    required:
+      - self

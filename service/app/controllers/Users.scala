@@ -24,7 +24,7 @@ class Users @Inject()(users: UserRepository)(implicit val ec: ExecutionContext) 
 
       spec => {
         users.save(spec.toDomain).map({ user =>
-          Ok(Json.toJson(UserResponse.fromDomain(user)))
+          Created(Json.toJson(UserResponse.fromDomain(user)))
         })
       }
     )

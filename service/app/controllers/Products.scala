@@ -24,7 +24,7 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
 
       spec => {
         products.save(spec.toDomain).map({ product =>
-          Ok(Json.toJson(
+          Created(Json.toJson(
             ProductResponse.fromDomain(product)
           ))
         })
