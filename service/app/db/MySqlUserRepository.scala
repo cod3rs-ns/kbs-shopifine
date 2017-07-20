@@ -17,4 +17,7 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     db.run(items += user)
   }
 
+  override def retrieve(id: Long): Future[Option[User]] = {
+    db.run(users.filter(_.id === id).result.headOption)
+  }
 }

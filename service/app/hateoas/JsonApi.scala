@@ -7,6 +7,7 @@ import hateoas.bill_items._
 import hateoas.buyer_categories._
 import relationships._
 import products._
+import hateoas.product_categories._
 import users._
 
 object JsonApi {
@@ -31,6 +32,15 @@ object JsonApi {
   implicit val prodResData: OFormat[ProductResponseData] = Json.format[ProductResponseData]
   implicit val prodRes: OFormat[ProductResponse] = Json.format[ProductResponse]
   implicit val prodResCollection: OFormat[ProductCollectionResponse] = Json.format[ProductCollectionResponse]
+
+  implicit val prodCatAttrs: OFormat[ProductCategoryAttributes] = Json.format[ProductCategoryAttributes]
+  implicit val prodCatReqRels: OFormat[ProductCategoryRequestRelationships] = Json.format[ProductCategoryRequestRelationships]
+  implicit val prodCatReqData: OFormat[ProductCategoryRequestData] = Json.format[ProductCategoryRequestData]
+  implicit val prodCatReq: OFormat[ProductCategoryRequest] = Json.format[ProductCategoryRequest]
+  implicit val prodCatResRels: OFormat[ProductCategoryResponseRelationships] = Json.format[ProductCategoryResponseRelationships]
+  implicit val prodCatResData: OFormat[ProductCategoryResponseData] = Json.format[ProductCategoryResponseData]
+  implicit val prodCatRes: OFormat[ProductCategoryResponse] = Json.format[ProductCategoryResponse]
+  implicit val prodCatResCollection: OFormat[ProductCategoryCollectionResponse] = Json.format[ProductCategoryCollectionResponse]
 
   implicit val userReqAttrs: OFormat[UserRequestAttributes] = Json.format[UserRequestAttributes]
   implicit val userReqRels: OFormat[UserRequestRelationships] = Json.format[UserRequestRelationships]

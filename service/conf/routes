@@ -16,6 +16,8 @@ POST    /api/products           controllers.Products.add()
 ###
 POST    /api/users              controllers.Users.registerUser()
 
+GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
+
 ###
 #       BUYER CATEGORY ENDPOINTS
 ###
@@ -45,6 +47,17 @@ PUT     /api/bills/:id                                  controllers.Bills.change
 POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBillItem(userId: Long, billId: Long)
 
 GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrieveBillItems(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
+#       PRODUCT CATEGORIES
+###
+POST    /api/product-categories             controllers.ProductCategories.create()
+
+GET     /api/product-categories             controllers.ProductCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+PUT     /api/product-categories/:id         controllers.ProductCategories.update(id: Long)
+
+GET     /api/product-categories/:id         controllers.ProductCategories.retrieveOne(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
