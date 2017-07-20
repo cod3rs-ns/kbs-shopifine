@@ -6,4 +6,5 @@ package object hateoas {
   val ConsumptionThresholdsType: String = "consumption-thresholds"
   val BillsType: String = "bills"
   val BillItemsType: String = "bill-items"
+  val ActionDiscountsType: String = "action-discounts"
 }

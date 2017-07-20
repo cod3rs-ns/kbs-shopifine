@@ -3,6 +3,7 @@ package hateoas
 import bills._
 import play.api.libs.json.{Json, OFormat}
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
+import hateoas.action_discounts._
 import hateoas.bill_items._
 import hateoas.buyer_categories._
 import relationships._
@@ -86,5 +87,12 @@ object JsonApi {
   implicit val thresholdsResData: OFormat[ConsumptionThresholdResponseData] = Json.format[ConsumptionThresholdResponseData]
   implicit val thresholdsRes: OFormat[ConsumptionThresholdResponse] = Json.format[ConsumptionThresholdResponse]
   implicit val thresholdsResCollection: OFormat[ConsumptionThresholdCollectionResponse] = Json.format[ConsumptionThresholdCollectionResponse]
+
+  implicit val actionDiscAttrs: OFormat[ActionDiscountAttributes] = Json.format[ActionDiscountAttributes]
+  implicit val actionDiscReqData: OFormat[ActionDiscountRequestData] = Json.format[ActionDiscountRequestData]
+  implicit val actionDiscReq: OFormat[ActionDiscountRequest] = Json.format[ActionDiscountRequest]
+  implicit val actionDiscResData: OFormat[ActionDiscountResponseData] = Json.format[ActionDiscountResponseData]
+  implicit val actionDiscRes: OFormat[ActionDiscountResponse] = Json.format[ActionDiscountResponse]
+  implicit val actionDiscResCollection: OFormat[ActionDiscountCollectionResponse] = Json.format[ActionDiscountCollectionResponse]
 
 }
