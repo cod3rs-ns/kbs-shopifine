@@ -26,4 +26,8 @@ class MySqlBuyerCategoryRepository @Inject()(protected val dbConfigProvider: Dat
     db.run(buyerCategories.drop(offset).take(limit).result)
   }
 
+  override def modify(id: Long, category: BuyerCategory): Future[Int] = {
+    val q = for {c <- buyerCategories if c.id === id} yield c.name
+    db.run(q.update(category.name))
+  }
 }

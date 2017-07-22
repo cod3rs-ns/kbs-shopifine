@@ -44,6 +44,27 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
     })
   }
 
+  def update(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[BuyerCategoryRequest].fold(
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
+
+      spec => {
+        buyerCategories.modify(id, spec.toDomain).map(updated =>
+          if (updated > 0) {
+            Ok(Json.toJson(BuyerCategoryResponse.fromDomain(spec.toDomain.copy(id = Some(id)))))
+          }
+          else {
+            NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $id doesn't exist!")))
+            ))
+          }
+        )
+      }
+    )
+  }
+
   def retrieveThresholds(buyerCategoryId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     // FIXME Buyer Category doesn't exist
     thresholds.retrieveByBuyerCategory(buyerCategoryId, offset, limit).map(result => {
