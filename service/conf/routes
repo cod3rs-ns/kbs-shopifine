@@ -204,6 +204,42 @@ GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
 POST    /api/buyer-categories                           controllers.BuyerCategories.create()
 
 ###
+#  summary: Modifies buyer category
+#  parameters:
+#    - name: id
+#      description: Buyer category id
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: buyerCategorySpec
+#      description: JSON document containing a Buyer Category specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/BuyerCategoryRequest'
+#  tags:
+#    - Buyer Categories
+#  responses:
+#    200:
+#      description: Buyer category successfully modified.
+#      schema:
+#        $ref: '#/definitions/BuyerCategoryResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Action discount doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT     /api/buyer-categories/:id                       controllers.BuyerCategories.update(id: Long)
+
+###
 #  summary: Retrieve all buyer categories
 #  parameters:
 #    - name: page[offset]
