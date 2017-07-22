@@ -31,7 +31,7 @@ package object bills {
     }
   }
 
-  case class BillResponseAttributes(createdAt: DateTime,
+  case class BillResponseAttributes(createdAt: String,
                                     state: String,
                                     amount: Double,
                                     discount: Double,
@@ -46,7 +46,7 @@ package object bills {
   object BillResponseData {
     def fromDomain(bill: Bill): BillResponseData = {
       val attributes = BillResponseAttributes(
-        createdAt = bill.createdAt,
+        createdAt = bill.createdAt.toString,
         state = bill.state.toString,
         amount = bill.amount,
         discount = bill.discount,
