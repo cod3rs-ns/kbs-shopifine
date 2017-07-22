@@ -36,6 +36,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
   }
 
   def retrieveAllByUser(userId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    // FIXME Allowed and not allowed
     bills.retrieveByUser(userId, offset, limit).map(result => {
       val self = routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()
       val next = if (result.size == limit) Some(routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()) else None
@@ -47,6 +48,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository)
   }
 
   def retrieveOneByUser(userId: Long, billId: Long): Action[AnyContent] = Action.async {
+    // FIXME Allowed and not allowed
     bills.retrieveOne(billId).flatMap {
       case Some(bill) => Future.successful(Ok(Json.toJson(BillResponse.fromDomain(bill))))
 

@@ -12,11 +12,13 @@ lazy val coreLibs = Seq(mysql, slick, slickEvolutions)
 
 lazy val testLibs = Seq(scalaTestPlus)
 
+lazy val utils = Seq(swaggerUI)
+
 libraryDependencies += filters
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, SwaggerPlugin)
   .settings(buildSettings: _*)
   .settings(
-    libraryDependencies ++= (coreLibs ++ testLibs)
+    libraryDependencies ++= (coreLibs ++ testLibs ++ utils)
   )
