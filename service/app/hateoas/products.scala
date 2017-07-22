@@ -41,7 +41,7 @@ package object products {
   case class ProductResponseAttributes(name: String,
                                        price: Double,
                                        quantity: Long,
-                                       createdAt: DateTime,
+                                       createdAt: String,
                                        fillStock: Boolean,
                                        status: String,
                                        minQuantity: Long)
@@ -59,7 +59,7 @@ package object products {
         name = product.name,
         price = product.price,
         quantity = product.quantity,
-        createdAt = product.createdAt,
+        createdAt = product.createdAt.toString,
         fillStock = product.fillStock,
         status = product.status.name,
         minQuantity = product.minQuantity
