@@ -150,6 +150,32 @@ POST    /api/products           controllers.Products.add()
 POST    /api/users              controllers.Users.registerUser()
 
 ###
+#  summary: Authenticate user
+#  parameters:
+#    - name: userSpec
+#      description: JSON document containing a User specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UserRequest'
+#  tags:
+#    - Users
+#  responses:
+#    201:
+#      description: User successfully created.
+#      schema:
+#        $ref: '#/definitions/UserResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+POST    /api/users/auth         controllers.Users.auth()
+
+###
 #  summary: Retrieves an user
 #  parameters:
 #    - name: id

@@ -3,6 +3,7 @@ package hateoas
 import bills._
 import play.api.libs.json.{Json, OFormat}
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
+import user_auth.{UserAuthRequest, UserAuthResponse}
 import hateoas.action_discounts._
 import hateoas.bill_items._
 import hateoas.buyer_categories._
@@ -10,6 +11,7 @@ import relationships._
 import products._
 import hateoas.product_categories._
 import users._
+import util.JwtPayload
 
 object JsonApi {
 
@@ -94,5 +96,10 @@ object JsonApi {
   implicit val actionDiscResData: OFormat[ActionDiscountResponseData] = Json.format[ActionDiscountResponseData]
   implicit val actionDiscRes: OFormat[ActionDiscountResponse] = Json.format[ActionDiscountResponse]
   implicit val actionDiscResCollection: OFormat[ActionDiscountCollectionResponse] = Json.format[ActionDiscountCollectionResponse]
+
+  // Auth based classes
+  implicit val jwtPayload: OFormat[JwtPayload] = Json.format[JwtPayload]
+  implicit val userAuthReq: OFormat[UserAuthRequest] = Json.format[UserAuthRequest]
+  implicit val userAuthRes: OFormat[UserAuthResponse] = Json.format[UserAuthResponse]
 
 }

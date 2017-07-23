@@ -12,7 +12,7 @@ lazy val coreLibs = Seq(mysql, slick, slickEvolutions)
 
 lazy val testLibs = Seq(scalaTestPlus)
 
-lazy val utils = Seq(swaggerUI)
+lazy val utils = Seq(swaggerUI, scalaJWT)
 
 libraryDependencies += filters
 

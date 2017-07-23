@@ -4,15 +4,18 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import commons.{Error, ErrorResponse}
+import user_auth.{UserAuthRequest, UserAuthResponse}
+import org.joda.time.DateTime
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.UserRepository
 import users.{UserRequest, UserResponse}
+import util.{JwtPayload, JwtUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Users @Inject()(users: UserRepository)(implicit val ec: ExecutionContext) extends Controller {
+class Users @Inject()(users: UserRepository, jwt: JwtUtil)(implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
 
@@ -42,4 +45,35 @@ class Users @Inject()(users: UserRepository)(implicit val ec: ExecutionContext) 
     }
   }
 
+  def auth(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    request.body.validate[UserAuthRequest].fold(
+      failures =>
+        Future.successful(BadRequest(Json.toJson(
+          ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+        ))),
+
+      auth => {
+        users.findByUsernameAndPassword(auth.username, auth.password) map {
+          case Some(user) =>
+            val issuedAt = DateTime.now
+            // FIXME Repair JWT common claim set
+            val token = jwt.createToken(JwtPayload(
+              iss = "issuer-of-token",
+              iat = issuedAt.getMillis,
+              exp = issuedAt.plusMinutes(15).getMillis,
+              aud = "audience-of-token",
+              sub = "subject-of-token",
+              username = user.username,
+              role = user.role.toString
+            ))
+            Ok(Json.toJson(UserAuthResponse(token)))
+
+          case None =>
+            Unauthorized(Json.toJson(
+              ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Wrong credentials provided.")))
+            ))
+        }
+      }
+    )
+  }
 }
