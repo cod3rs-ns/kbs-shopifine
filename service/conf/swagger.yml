@@ -1007,3 +1007,26 @@ definitions:
         type: next
     required:
       - self
+  UserAuthRequest:
+    type: object
+    properties:
+      username:
+        type: string
+        description: Username used for auth
+        example: dmarjanovic
+      password:
+        type: string
+        description: Password used for auth
+        example: sergioramos
+    required:
+      - username
+      - password
+  UserAuthResponse:
+    type: object
+    properties:
+      token:
+        type: string
+        description: JSON Web Token used for further stateless auth
+        example: 'header.payload.signature'
+    required:
+      - token

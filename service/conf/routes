@@ -150,6 +150,40 @@ POST    /api/products           controllers.Products.add()
 POST    /api/users              controllers.Users.registerUser()
 
 ###
+#  summary: Authenticate user
+#  parameters:
+#    - name: userAuthSpec
+#      description: JSON document containing a UserAuth specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UserAuthRequest'
+#  tags:
+#    - Users
+#  responses:
+#    200:
+#      description: Successfully retrieved JSON Web Token.
+#      schema:
+#        $ref: '#/definitions/UserAuthResponse'
+#    400:
+#      description: Invalid token.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    401:
+#      description: Wrong credentials.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+POST    /api/users/auth         controllers.Users.auth()
+
+###
 #  summary: Retrieves an user
 #  parameters:
 #    - name: id
@@ -398,6 +432,10 @@ DELETE  /api/buyer-categories/:categoryId/thresholds/:thresholdId      controlle
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
@@ -434,6 +472,10 @@ POST    /api/users/:userId/bills                        controllers.Bills.create
 #      description: Bills for user retrieved.
 #      schema:
 #        $ref: '#/definitions/BillCollectionResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
@@ -464,6 +506,10 @@ GET     /api/users/:userId/bills                        controllers.Bills.retrie
 #      description: Bill retrieved.
 #      schema:
 #        $ref: '#/definitions/BillResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Bill doesn't exist.
 #      schema:
@@ -576,6 +622,10 @@ PUT     /api/bills/:id                                  controllers.Bills.change
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Bill doesn't exist.
 #      schema:
@@ -624,6 +674,10 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #        $ref: '#/definitions/BillItemCollectionResponse'
 #    400:
 #      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
