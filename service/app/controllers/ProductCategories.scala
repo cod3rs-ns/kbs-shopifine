@@ -12,12 +12,13 @@ import repositories.ProductCategoryRepository
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ProductCategories @Inject()(productCategories: ProductCategoryRepository)
+class ProductCategories @Inject()(productCategories: ProductCategoryRepository, secure: SecuredAuthenticator)
                                  (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles.SalesManager
 
-  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -44,7 +45,7 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository)
     })
   }
 
-  def update(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))

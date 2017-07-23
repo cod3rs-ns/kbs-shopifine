@@ -4,20 +4,22 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import commons.{Error, ErrorResponse}
-import user_auth.{UserAuthRequest, UserAuthResponse}
 import org.joda.time.DateTime
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.UserRepository
+import user_auth.{UserAuthRequest, UserAuthResponse}
 import users.{UserRequest, UserResponse}
 import util.{JwtPayload, JwtUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Users @Inject()(users: UserRepository, jwt: JwtUtil)(implicit val ec: ExecutionContext) extends Controller {
+class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthenticator)
+                     (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles.Customer
 
   def registerUser(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[UserRequest].fold(
@@ -33,7 +35,7 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil)(implicit val ec: Exec
     )
   }
 
-  def retrieveOne(id: Long): Action[AnyContent] = Action.async {
+  def retrieveOne(id: Long): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async {
     users.retrieve(id) map {
       case Some(user) =>
         Ok(Json.toJson(UserResponse.fromDomain(user)))

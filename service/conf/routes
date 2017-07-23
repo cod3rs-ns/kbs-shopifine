@@ -432,6 +432,10 @@ DELETE  /api/buyer-categories/:categoryId/thresholds/:thresholdId      controlle
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
@@ -468,6 +472,10 @@ POST    /api/users/:userId/bills                        controllers.Bills.create
 #      description: Bills for user retrieved.
 #      schema:
 #        $ref: '#/definitions/BillCollectionResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
@@ -498,6 +506,10 @@ GET     /api/users/:userId/bills                        controllers.Bills.retrie
 #      description: Bill retrieved.
 #      schema:
 #        $ref: '#/definitions/BillResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Bill doesn't exist.
 #      schema:
@@ -610,6 +622,10 @@ PUT     /api/bills/:id                                  controllers.Bills.change
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Bill doesn't exist.
 #      schema:
@@ -658,6 +674,10 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #        $ref: '#/definitions/BillItemCollectionResponse'
 #    400:
 #      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
