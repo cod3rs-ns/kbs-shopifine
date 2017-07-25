@@ -6,16 +6,27 @@
                     <div class="panel-heading"><h3>Log in</h3></div>
                     <div class="panel-body">
                         <form role="form">
+                            <div class="alert alert-danger fade in alert-dismissable" ng-show="loginVm.wrongAuth">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                {{loginVm.message}}
+                            </div>
                             <div class="form-group">
-                                <label for="username">Enter Username</label>
-                                <input type="text" class="form-control" id="username">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username"
+                                       ng-model="loginVm.credentials.username">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
-                                <input type="password" class="form-control" id="password">
+                                <input type="password" class="form-control" id="password"
+                                       ng-model="loginVm.credentials.password">
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
-                            <button type="button" ui-sref="register" class="btn btn-link btn-block"><span>You need an account?</span> Sign up</button>
+                            <button type="button" ng-click="loginVm.auth();" class="btn btn-primary btn-block">
+                                Submit
+                            </button>
+                            <button type="button" ui-sref="register" class="btn btn-link btn-block">
+                                <span>You need an account?</span>
+                                Sign up
+                            </button>
                         </form>
                     </div>
                 </div>

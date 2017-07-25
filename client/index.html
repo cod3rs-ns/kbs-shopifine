@@ -23,10 +23,17 @@
 
 		<script src="assets/libs/angular/angular.min.js"></script>
 		<script src="assets/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
+        <script src="assets/libs/ngstorage/ngStorage.min.js"></script>
+        <script src="assets/libs/angular-jwt/dist/angular-jwt.min.js"></script>
+        <script src="assets/libs/lodash/dist/lodash.min.js"></script>
 	</head>
 	<body class="body-wrapper">
 		<div class="main-wrapper">
-			<header id="header" ng-include="'app/navbar/navbar.html'"></header>
+			<header
+                    id="header"
+                    ng-include="'app/navbar/navbar.html'"
+                    ng-controller="NavbarController as navbarVm">
+            </header>
 			<section id="main" ui-view="content"></section>
 			<footer>
 				<p class="text-center">All rights reserved - Dragutin Marjanović, 2017.</p>
@@ -48,7 +55,10 @@
 		<script src="app/app.module.js"></script>
   		<script src="app/app.route.js"></script>
 
+        <script src="app/navbar/navbar.controller.js"></script>
+
   		<script src="app/components/login/login.controller.js"></script>
+  		<script src="app/components/login/users.service.js"></script>
   		<script src="app/components/register/register.controller.js"></script>
         <script src="app/components/home/home.controller.js"></script>
 	</body>

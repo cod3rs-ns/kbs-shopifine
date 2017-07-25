@@ -24,6 +24,8 @@
     "owl-carousel": "^1.3.2",
     "selectbox": "^1.0.2",
     "countdown": "^2.2.0",
-    "rs-plugin": "*"
+    "rs-plugin": "*",
+    "angular-jwt": "^0.1.9",
+    "ngstorage": "^0.3.11"
   }
 }

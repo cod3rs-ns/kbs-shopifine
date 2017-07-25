@@ -1,13 +1,16 @@
 angular
-    .module('shopifine-app', [
-        'ui.router'
-    ])
+    .module('shopifine-app')
     .factory('_', ['$window',
         function ($window) {
             // place Lodash include before Angular
             return $window._;
         }
     ])
+    .constant(
+        'CONFIG', {
+            'SERVICE_URL': 'http://localhost:9000/api'
+        }
+    )
     .config(function ($stateProvider, $urlRouterProvider) {
 
         // For any unmatched url, redirect to /home
