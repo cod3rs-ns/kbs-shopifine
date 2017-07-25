@@ -13,8 +13,8 @@
                 </div>
                 <div class="col-md-6 col-sm-7 col-xs-12">
                     <ul class="list-inline pull-right top-right">
-                        <li class="account-login"><span><a ui-sref="login">Log in</a><small>or</small><a ui-sref="register">Create an account</a></span></li>
-                        <li class="dropdown cart-dropdown">
+                        <li class="account-login" ng-if="navbarVm.isGuest();"><span><a ui-sref="login">Log in</a><small>or</small><a ui-sref="register">Create an account</a></span></li>
+                        <li class="dropdown cart-dropdown" ng-if="navbarVm.isCustomer();">
                             <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>$0</a>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>Item(s) in your cart</li>
@@ -62,7 +62,7 @@
                     <li class="active">
                         <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="home">Home</a>
                     </li>
-                    <li class="dropdown">
+                    <li class="dropdown" ng-if="navbarVm.isCustomer();">
                         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li><a>Dashboard</a></li>
