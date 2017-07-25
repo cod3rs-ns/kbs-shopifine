@@ -2,33 +2,6 @@
     border-radius: 0 !important;
 }
 
-.sidebar-wrapper {
-    padding: 8px 4px;
-}
-
-.sidebar {
-    border-radius: 4px;
-    background-color: #dfdfdf;
-}
-
-.products-wrapper {
-
-}
-
-.product-wrapper {
-    background-color: #efefef;
-    padding: 8px;
-}
-
-.product-wrapper > img {
-    max-width: 96% !important;
-}
-
-
-.product-wrapper > h6 {
-    /* Product Name on Home page */
-}
-
-.product-wrapper > h4 {
-    /* Product Price on Home page */
+.padding-top-10 {
+    padding-top: 10px;
 }

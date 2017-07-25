@@ -1,12 +1,77 @@
-<nav class="navbar navbar-inverse">
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Link</a></li>
-        </ul>
+<div class="header clearfix">
+
+    <!-- TOPBAR -->
+    <div class="topBar">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-5 hidden-xs">
+                    <ul class="list-inline padding-top-10">
+                        <li><a href="https://github.com/dmarjanovic94"><i class="fa fa-github"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/dragutin-marjanovi%C4%87-157631a5/"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="https://www.facebook.com/dmarjanovic94"><i class="fa fa-facebook"></i></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-6 col-sm-7 col-xs-12">
+                    <ul class="list-inline pull-right top-right">
+                        <li class="account-login"><span><a ui-sref="login">Log in</a><small>or</small><a ui-sref="register">Create an account</a></span></li>
+                        <li class="dropdown cart-dropdown">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>$0</a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li>Item(s) in your cart</li>
+                                <li>
+                                    <a>
+                                        <div class="media">
+                                            <img class="media-left media-object" src="../../assets/img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
+                                            <div class="media-body">
+                                                <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="btn-group" role="group" aria-label="...">
+                                        <button type="button" class="btn btn-default">Shopping Cart</button>
+                                        <button type="button" class="btn btn-default">Checkout</button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-</nav>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-main navbar-default" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" ui-sref="home"><img src="../../assets/img/logo.png" alt="logo"></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="active">
+                        <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="home">Home</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a>Dashboard</a></li>
+                            <li><a>Profile</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</div>

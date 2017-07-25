@@ -3,19 +3,46 @@
 		<title>Shopifine</title>
 
 		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
+		<link rel="stylesheet" href="assets/libs/jquery-ui/themes/base/jquery-ui.css"/>
 		<link rel="stylesheet" type="text/css" href="assets/libs/bootstrap/dist/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="assets/libs/font-awesome/css/font-awesome.min.css"/>
+		<link rel="stylesheet" href="assets/css/select_option1.css">
+		<link rel="stylesheet" type="text/css" href="assets/libs/rs-plugin/css/settings.css"/>
+		<link rel="stylesheet" href="assets/libs/owl-carousel/owl-carousel/owl.carousel.css"/>
+
+		<link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css"/>
+
+		<link rel="stylesheet" type="text/css" href="assets/css/style.css"/>
+		<link rel="stylesheet" type="text/css" href="assets/css/colors/default.css" id="option_color">
+
         <link rel="stylesheet" type="text/css" href="assets/css/custom-style.css"/>
 
 		<script src="assets/libs/angular/angular.min.js"></script>
 		<script src="assets/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
 	</head>
-	<body>
-        <header id="header" ng-include="'app/navbar/navbar.html'"></header>
-		<section id="main" ui-view="content"></section>
-        <footer>
-            <p class="text-center">All rights reserved - Dragutin Marjanović, 2017.</p>
-        </footer>
+	<body class="body-wrapper">
+		<div class="main-wrapper">
+			<header id="header" ng-include="'app/navbar/navbar.html'"></header>
+			<section id="main" ui-view="content"></section>
+			<footer>
+				<p class="text-center">All rights reserved - Dragutin Marjanović, 2017.</p>
+			</footer>
+		</div>
+
+		<script src="assets/libs/jquery/dist/jquery.min.js"></script>
+		<script src="assets/libs/jquery-ui/jquery-ui.min.js"></script>
+		<script src="assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script src="assets/libs/rs-plugin/js/jquery.themepunch.revolution.min.js"></script>
+		<script src="assets/libs/rs-plugin/js/jquery.themepunch.plugins.min.js"></script>
+		<script src="assets/libs/owl-carousel/owl-carousel/owl.carousel.min.js"></script>
+		<script src="assets/libs/selectbox/selectbox.js"></script>
+		<script src="assets/js/jquery.syotimer.js"></script>
+		<script src="assets/js/custom.js"></script>
+
 
 		<!-- TODO: Minimize all imports into one .js file -->
 		<script src="app/app.module.js"></script>
