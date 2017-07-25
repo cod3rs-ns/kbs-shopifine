@@ -10,10 +10,23 @@ angular
     ])
     .config(function ($stateProvider, $urlRouterProvider) {
 
-        // For any unmatched url, redirect to /login
-        $urlRouterProvider.otherwise("/login");
+        // For any unmatched url, redirect to /home
+        $urlRouterProvider.otherwise("/home");
 
         $stateProvider
+            .state('home', {
+                url: "/home",
+                data: {
+                    pageTitle: "Shopifine | Home"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/home/home.html",
+                        controller: "HomeController",
+                        controllerAs: "homeVm"
+                    }
+                }
+            })
             .state('login', {
                 url: "/login",
                 data: {
