@@ -12,64 +12,12 @@
                     <div class="panel-body">
                         <div class="collapse navbar-collapse navbar-ex1-collapse navbar-side-collapse">
                             <ul class="nav navbar-nav side-nav">
-                                <li>
-                                    <a href="javascript:;" data-toggle="collapse" data-target="#women">Women <i
-                                            class="fa fa-plus"></i></a>
-                                    <ul id="women" class="collapse collapseItem">
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Accessories
-                                            <span>(6)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bag <span>(6)</span></a>
-                                        </li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Cloths
-                                            <span>(25)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bed &amp;
-                                            Bath <span>(2)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Swimming
-                                            costume <span>(5)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Sport Tops
-                                            &amp; Shoes <span>(3)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="javascript:;" data-toggle="collapse" data-target="#men">Men <i
-                                            class="fa fa-plus"></i></a>
-                                    <ul id="men" class="collapse collapseItem">
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Accessories
-                                            <span>(6)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bag <span>(6)</span></a>
-                                        </li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Cloths
-                                            <span>(25)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bed &amp;
-                                            Bath <span>(2)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Swimming
-                                            costume <span>(5)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Sport Tops
-                                            &amp; Shoes <span>(3)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="javascript:;" data-toggle="collapse" data-target="#kids">Kids <i
-                                            class="fa fa-plus"></i></a>
-                                    <ul id="kids" class="collapse collapseItem">
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Accessories
-                                            <span>(6)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bag <span>(6)</span></a>
-                                        </li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Cloths
-                                            <span>(25)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bed &amp;
-                                            Bath <span>(2)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Swimming
-                                            costume <span>(5)</span></a></li>
-                                        <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Sport Tops
-                                            &amp; Shoes <span>(3)</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="javascript:;" data-toggle="collapse" data-target="#accessories">Accessories
+                                <li ng-repeat="category in homeVm.data.categories">
+                                    <a href="javascript:;" data-toggle="collapse"
+                                       data-target="{{'#category-' + category.id}}">
+                                        {{category.name}}
                                         <i class="fa fa-plus"></i></a>
-                                    <ul id="accessories" class="collapse collapseItem">
+                                    <ul id="{{'category-' + category.id}}" class="collapse collapseItem">
                                         <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Accessories
                                             <span>(6)</span></a></li>
                                         <li><a href="#"><i class="fa fa-caret-right" aria-hidden="true"></i>Bag <span>(6)</span></a>
