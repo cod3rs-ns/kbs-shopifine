@@ -40,6 +40,10 @@ definitions:
         type: string
         description: Name of the product
         example: MacBook Pro 15-inch
+      imageUrl:
+        type: string
+        description: URL to preview product image
+        example: https://store.storeimages.cdn-apple.com/4974/as-images.apple.com/is/image/AppleInc/aos/published/images/T/N7/TN740/TN740
       price:
         type: double
         description: Product price
@@ -63,6 +67,7 @@ definitions:
         example: 4
     required:
       - name
+      - imageUrl
       - price
       - quantity
       - minQuantity
@@ -123,6 +128,10 @@ definitions:
         type: string
         description: Name of the product
         example: MacBook Pro 15-inch
+      imageUrl:
+        type: string
+        description: URL to preview product image
+        example: https://store.storeimages.cdn-apple.com/4974/as-images.apple.com/is/image/AppleInc/aos/published/images/T/N7/TN740/TN740
       price:
         type: double
         description: Product price
@@ -151,6 +160,7 @@ definitions:
     required:
       - name
       - price
+      - imageUrl
       - quantity
       - createdAt
       - fillStock

@@ -16,6 +16,7 @@ class ProductRequestSpec extends WordSpecLike with MustMatchers with BeforeAndAf
     "be successfully created with provided request" in {
       val attributes = ProductRequestAttributes(
         name = "test-product",
+        imageUrl = "test-product-image-url",
         price = 21.10,
         quantity = 4,
         fillStock = None,
@@ -40,6 +41,7 @@ class ProductRequestSpec extends WordSpecLike with MustMatchers with BeforeAndAf
 
       ProductRequest(data).toDomain must have(
         'name (attributes.name),
+        'imageUrl (attributes.imageUrl),
         'price (attributes.price),
         'quantity (attributes.quantity),
         'minQuantity (attributes.minQuantity),
