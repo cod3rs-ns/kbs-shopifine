@@ -45,6 +45,23 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository, 
     })
   }
 
+  def retrieveAllSubcategories(id: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    productCategories.findOne(id).flatMap {
+      case Some(_) => productCategories.retrieveAllSubcategories(id, offset, limit).map(categories => {
+        val self = routes.ProductCategories.retrieveAllSubcategories(id, offset, limit).absoluteURL()
+        val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAllSubcategories(id, offset + limit, limit).absoluteURL()) else None
+
+        Ok(Json.toJson(
+          ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
+        ))
+      })
+
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product Category $id doesn't exist!")))
+      )))
+    }
+  }
+
   def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(

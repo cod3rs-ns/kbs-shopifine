@@ -833,12 +833,18 @@ definitions:
       - type
       - id
       - attributes
+      - relationships
   ProductCategoryResponseRelationships:
     type: object
     properties:
       superCategory:
         description: Relationship to super category
         $ref: '#/definitions/ResponseRelationship'
+      subcategories:
+        description: Relationship to list of subcategories
+        $ref: '#/definitions/ResponseRelationshipCollection'
+    required:
+      - subcategories
   ProductCategoryAttributes:
     type: object
     properties:

@@ -22,6 +22,10 @@ class MySqlProductCategoryRepository @Inject()(protected val dbConfigProvider: D
     db.run(productCategories.drop(offset).take(limit).result)
   }
 
+  override def retrieveAllSubcategories(id: Long, offset: Int, limit: Int): Future[Seq[ProductCategory]] = {
+    db.run(productCategories.filter(_.superCategoryId === id).drop(offset).take(limit).result)
+  }
+
   override def modify(id: Long, category: ProductCategory): Future[Int] = {
     val q = for {c <- productCategories if c.id === id} yield (c.name, c.superCategoryId, c.maxDiscount)
     db.run(q.update((category.name, category.superCategoryId, category.maxDiscount)))
