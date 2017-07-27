@@ -40,7 +40,7 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository, 
       val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self, next))
+        ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
       ))
     })
   }

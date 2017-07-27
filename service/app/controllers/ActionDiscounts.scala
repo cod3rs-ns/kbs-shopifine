@@ -40,7 +40,7 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
       val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self, next))
+        ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self = self, next = next))
       ))
     })
   }

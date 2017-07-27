@@ -40,7 +40,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
       val next = if (limit == categories.length) Some(routes.BuyerCategories.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        BuyerCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self, next))
+        BuyerCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
       ))
     })
   }
@@ -73,7 +73,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
       val next = if (limit == result.length) Some(routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self, next))
+        ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
       ))
     })
   }

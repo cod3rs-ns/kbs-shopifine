@@ -3,7 +3,8 @@
         <div class="row">
             <div class="col-md-3 col-sm-4 col-xs-12 sideBar">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search by Name" aria-describedby="basic-addon2">
+                    <input type="text" class="form-control" placeholder="Search by Name"
+                           aria-describedby="basic-addon2">
                     <a href="#" class="input-group-addon" id="basic-addon2"><i class="fa fa-search"></i></a>
                 </div>
                 <div class="panel panel-default">
@@ -105,7 +106,7 @@
             </div>
             <div class="col-md-9 col-sm-8 col-xs-12">
                 <div class="row">
-                    <div class="col-sm-4 col-xs-12" ng-repeat="product in homeVm.products">
+                    <div class="col-sm-4 col-xs-12" ng-repeat="product in homeVm.data.products">
                         <div class="productBox">
                             <div class="productImage clearfix">
                                 <img ng-src="{{product.preview}}" alt="{{product.name}}">
@@ -134,8 +135,12 @@
                 <div class="row text-center">
                     <div class="text-center margin-bottom">
                         <ul class="pagination">
-                            <li><a href="#" aria-label="Prev">«</a></li>
-                            <li><a href="#" aria-label="Next">»</a></li>
+                            <li ng-class="{ 'disabled': homeVm.data.prev == null }">
+                                <a href ng-click="homeVm.prev(homeVm.data.prev)" aria-label="Prev">«</a>
+                            </li>
+                            <li ng-class="{ 'disabled': homeVm.data.next == null }">
+                                <a href ng-click="homeVm.next(homeVm.data.next)" aria-label="Next">»</a>
+                            </li>
                         </ul>
                     </div>
                 </div>

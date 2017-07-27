@@ -1011,6 +1011,8 @@ definitions:
   CollectionLinks:
     type: object
     properties:
+      prev:
+        type: string
       self:
         type: string
       next:
