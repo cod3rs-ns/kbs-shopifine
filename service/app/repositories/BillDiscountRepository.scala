@@ -10,6 +10,6 @@ trait BillDiscountRepository {
 
   def retrieveOne(id: Long): Future[Option[BillDiscount]]
 
-  def retrieveAll(billId: Long): Future[Seq[BillDiscount]]
+  def retrieveAll(billId: Long, offset: Int, limit: Int): Future[Seq[BillDiscount]]
 
 }
