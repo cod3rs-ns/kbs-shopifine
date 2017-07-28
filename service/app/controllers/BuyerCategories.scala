@@ -12,12 +12,13 @@ import repositories.{BuyerCategoryRepository, ConsumptionThresholdRepository}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresholds: ConsumptionThresholdRepository)
+class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresholds: ConsumptionThresholdRepository, secure: SecuredAuthenticator)
                                (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles._
 
-  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[BuyerCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -25,7 +26,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
       spec => {
         buyerCategories.save(spec.toDomain).map(category =>
-          Accepted(Json.toJson(
+          Created(Json.toJson(
             BuyerCategoryResponse.fromDomain(category)
           ))
         )
@@ -33,29 +34,52 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
     )
   }
 
-  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager, Customer)).async { implicit request =>
     buyerCategories.retrieveAll(offset, limit).map(categories => {
       val self = routes.BuyerCategories.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == categories.length) Some(routes.BuyerCategories.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        BuyerCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self, next))
+        BuyerCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
       ))
     })
   }
 
-  def retrieveThresholds(buyerCategoryId: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+  def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
+    request.body.validate[BuyerCategoryRequest].fold(
+      failures => Future.successful(BadRequest(Json.toJson(
+        ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+      ))),
+
+      spec => {
+        buyerCategories.modify(id, spec.toDomain).map(updated =>
+          if (updated > 0) {
+            Ok(Json.toJson(BuyerCategoryResponse.fromDomain(spec.toDomain.copy(id = Some(id)))))
+          }
+          else {
+            NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $id doesn't exist!")))
+            ))
+          }
+        )
+      }
+    )
+  }
+
+  def retrieveThresholds(buyerCategoryId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager, Customer)).async { implicit request =>
+    // FIXME Buyer Category doesn't exist
     thresholds.retrieveByBuyerCategory(buyerCategoryId, offset, limit).map(result => {
       val self = routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset, limit).absoluteURL()
       val next = if (limit == result.length) Some(routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self, next))
+        ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
       ))
     })
   }
 
-  def addThreshold(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def addThreshold(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
+    // FIXME Buyer Category doesn't exist
     request.body.validate[ConsumptionThresholdRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -63,14 +87,14 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
 
       spec =>
         thresholds.save(spec.toDomain).map(threshold =>
-          Ok(Json.toJson(
+          Created(Json.toJson(
             ConsumptionThresholdResponse.fromDomain(threshold)
           ))
         )
     )
   }
 
-  def removeThreshold(categoryId: Long, thresholdId: Long): Action[AnyContent] = Action.async {
+  def removeThreshold(categoryId: Long, thresholdId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async {
     buyerCategories.retrieveOne(categoryId) flatMap {
       case Some(category) =>
         thresholds.delete(thresholdId).map(affected =>

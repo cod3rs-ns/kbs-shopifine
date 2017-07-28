@@ -12,4 +12,6 @@ trait BuyerCategoryRepository {
 
   def retrieveAll(offset: Int, limit: Int): Future[Seq[BuyerCategory]]
 
+  def modify(id: Long, category: BuyerCategory): Future[Int]
+
 }

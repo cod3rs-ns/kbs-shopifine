@@ -4,7 +4,7 @@ import sbt.Keys._
 lazy val buildSettings = Seq(
   name := "Shopifine service",
   organization := "com.dmarjanovic",
-  version := "1.0.0",
+  version := "1.1.0",
   scalaVersion := "2.11.11"
 )
 
@@ -12,11 +12,13 @@ lazy val coreLibs = Seq(mysql, slick, slickEvolutions)
 
 lazy val testLibs = Seq(scalaTestPlus)
 
+lazy val utils = Seq(swaggerUI, scalaJWT)
+
 libraryDependencies += filters
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, SwaggerPlugin)
   .settings(buildSettings: _*)
   .settings(
-    libraryDependencies ++= (coreLibs ++ testLibs)
+    libraryDependencies ++= (coreLibs ++ testLibs ++ utils)
   )

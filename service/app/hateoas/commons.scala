@@ -2,7 +2,7 @@ import org.joda.time.DateTime
 
 package object commons {
 
-  case class CollectionLinks(self: String, next: Option[String])
+  case class CollectionLinks(prev: Option[String] = None, self: String, next: Option[String] = None)
 
   case class Error(status: String, detail: String)
 

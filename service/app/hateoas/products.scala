@@ -8,6 +8,7 @@ package object products {
   import hateoas._
 
   case class ProductRequestAttributes(name: String,
+                                      imageUrl: String,
                                       price: Double,
                                       quantity: Long,
                                       fillStock: Option[Boolean],
@@ -29,6 +30,7 @@ package object products {
       // TODO Fix if `fillStock` and `status` is defined
       Product(
         name = attributes.name,
+        imageUrl = attributes.imageUrl,
         categoryId = categoryRel.id,
         price = attributes.price,
         quantity = attributes.quantity,
@@ -39,9 +41,10 @@ package object products {
   }
 
   case class ProductResponseAttributes(name: String,
+                                       imageUrl: String,
                                        price: Double,
                                        quantity: Long,
-                                       createdAt: DateTime,
+                                       createdAt: String,
                                        fillStock: Boolean,
                                        status: String,
                                        minQuantity: Long)
@@ -57,9 +60,10 @@ package object products {
     def fromDomain(product: Product): ProductResponseData = {
       val attributes = ProductResponseAttributes(
         name = product.name,
+        imageUrl = product.imageUrl,
         price = product.price,
         quantity = product.quantity,
-        createdAt = product.createdAt,
+        createdAt = product.createdAt.toString,
         fillStock = product.fillStock,
         status = product.status.name,
         minQuantity = product.minQuantity

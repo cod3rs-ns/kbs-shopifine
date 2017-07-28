@@ -1,4 +1,7 @@
 angular
     .module('shopifine-app', [
-        'ui.router'
+        'ui.router',
+        'ngStorage',
+        'ngToast',
+        'angular-jwt'
     ]);

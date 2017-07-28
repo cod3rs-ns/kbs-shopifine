@@ -12,11 +12,13 @@ import repositories.ProductRepository
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Products @Inject()(products: ProductRepository)(implicit val ec: ExecutionContext) extends Controller {
+class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticator)
+                        (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles.Salesman
 
-  def add(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def add(): Action[JsValue] = secure.AuthWith(Seq(Salesman)).async(parse.json) { implicit request =>
     request.body.validate[ProductRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -24,7 +26,7 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
 
       spec => {
         products.save(spec.toDomain).map({ product =>
-          Ok(Json.toJson(
+          Created(Json.toJson(
             ProductResponse.fromDomain(product)
           ))
         })
@@ -34,10 +36,11 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     products.retrieveAll(offset, limit).map(products => {
+      val prev = if (offset > 0) Some(routes.Products.retrieveAll(offset - limit, limit).absoluteURL()) else None
       val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == products.length) Some(routes.Products.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
-      Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(self, next))))
+      Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(prev, self, next))))
     })
   }
 
@@ -53,7 +56,7 @@ class Products @Inject()(products: ProductRepository)(implicit val ec: Execution
     }
   }
 
-  def fillStock(id: Long, quantity: Int): Action[AnyContent] = Action.async {
+  def fillStock(id: Long, quantity: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async {
     products.fillStock(id, quantity).flatMap(updated => {
       if (updated > 0) {
         products.retrieve(id) map {

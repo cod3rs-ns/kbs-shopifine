@@ -48,7 +48,7 @@ package object users {
 
   case class UserResponseRelationships(buyerCategory: ResponseRelationship)
 
-  case class UserResponseMeta(registeredAt: DateTime)
+  case class UserResponseMeta(registeredAt: String)
 
   case class UserResponseData(`type`: String,
                               id: Long,
@@ -82,7 +82,7 @@ package object users {
         `type` = UsersType,
         id = user.id.get,
         attributes = attributes,
-        meta = UserResponseMeta(registeredAt = user.registeredAt),
+        meta = UserResponseMeta(registeredAt = user.registeredAt.toString),
         relationships = relationships
       )
     }

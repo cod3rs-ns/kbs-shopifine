@@ -2,7 +2,7 @@ package hateoas
 
 import commons.CollectionLinks
 import domain.ProductCategory
-import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
+import relationships._
 
 package object product_categories {
 
@@ -24,27 +24,34 @@ package object product_categories {
     }
   }
 
-  case class ProductCategoryResponseRelationships(superCategory: ResponseRelationship)
+  case class ProductCategoryResponseRelationships(superCategory: Option[ResponseRelationship], subcategories: ResponseRelationshipCollection)
 
-  case class ProductCategoryResponseData(id: Long, `type`: String, attributes: ProductCategoryAttributes, relationships: Option[ProductCategoryResponseRelationships])
+  case class ProductCategoryResponseData(id: Long, `type`: String, attributes: ProductCategoryAttributes, relationships: ProductCategoryResponseRelationships)
 
   object ProductCategoryResponseData {
     def fromDomain(category: ProductCategory): ProductCategoryResponseData = {
-      val relationships =
+      val superCategoryRelationship =
         if (category.superCategoryId.isDefined)
-          Some(ProductCategoryResponseRelationships(
-            superCategory = ResponseRelationship(
-              data = RelationshipData(
-                `type` = ProductCategories,
-                id = category.superCategoryId.get
-              ),
-              links = RelationshipLinks(
-                related = s"api/product-categories/${category.superCategoryId.get}"
-              )
+          Some(ResponseRelationship(
+            data = RelationshipData(
+              `type` = ProductCategories,
+              id = category.superCategoryId.get
+            ),
+            links = RelationshipLinks(
+              related = s"api/product-categories/${category.superCategoryId.get}"
             )
           ))
-        else
-          None
+        else None
+
+      val relationships =
+        ProductCategoryResponseRelationships(
+          superCategory = superCategoryRelationship,
+          subcategories = ResponseRelationshipCollection(
+            links = RelationshipLinks(
+              related = s"api/product-categories/${category.id.get}/subcategories"
+            )
+          )
+        )
 
       ProductCategoryResponseData(
         id = category.id.get,

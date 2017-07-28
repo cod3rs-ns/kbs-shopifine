@@ -12,12 +12,13 @@ import repositories.ProductCategoryRepository
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ProductCategories @Inject()(productCategories: ProductCategoryRepository)
+class ProductCategories @Inject()(productCategories: ProductCategoryRepository, secure: SecuredAuthenticator)
                                  (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles.SalesManager
 
-  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -39,12 +40,29 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository)
       val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self, next))
+        ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
       ))
     })
   }
 
-  def update(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def retrieveAllSubcategories(id: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    productCategories.findOne(id).flatMap {
+      case Some(_) => productCategories.retrieveAllSubcategories(id, offset, limit).map(categories => {
+        val self = routes.ProductCategories.retrieveAllSubcategories(id, offset, limit).absoluteURL()
+        val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAllSubcategories(id, offset + limit, limit).absoluteURL()) else None
+
+        Ok(Json.toJson(
+          ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
+        ))
+      })
+
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product Category $id doesn't exist!")))
+      )))
+    }
+  }
+
+  def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))

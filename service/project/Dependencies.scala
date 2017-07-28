@@ -7,5 +7,8 @@ object Dependencies {
   val slick: ModuleID = "com.typesafe.play" %% "play-slick" % slickVersion
   val slickEvolutions: ModuleID = "com.typesafe.play" %% "play-slick-evolutions" % slickVersion
 
+  val scalaJWT: ModuleID = "com.jason-goodwin" %% "authentikat-jwt" % "0.4.5"
+  val swaggerUI: ModuleID = "org.webjars" % "swagger-ui" % "2.2.0"
+
   val scalaTestPlus: ModuleID = "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.0" % Test
 }

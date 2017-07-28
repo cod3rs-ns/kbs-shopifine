@@ -1,0 +1,92 @@
+<section class="mainContent clearfix productsContent">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-4 col-xs-12 sideBar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search by Name"
+                           aria-describedby="basic-addon2">
+                    <a href="#" class="input-group-addon" id="basic-addon2"><i class="fa fa-search"></i></a>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Product categories</div>
+                    <div class="panel-body">
+                        <div class="collapse navbar-collapse navbar-ex1-collapse navbar-side-collapse">
+                            <ul class="nav navbar-nav side-nav">
+                                <li ng-repeat="category in homeVm.data.categories">
+                                    <a href="javascript:;" data-toggle="collapse" ng-click="homeVm.retrieveSubcategoriesFor(category);"
+                                       data-target="{{'#category-' + category.id}}">
+                                        {{category.name}}
+                                        <i class="fa fa-plus"></i></a>
+                                    <ul id="{{'category-' + category.id}}" class="collapse collapseItem">
+                                        <li ng-repeat="subcategory in category.subcategories">
+                                            <a href="#">
+                                                <i class="fa fa-caret-right" aria-hidden="true"></i>
+                                                {{subcategory.name}}
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default priceRange">
+                    <div class="panel-heading">Filter by Price</div>
+                    <div class="panel-body clearfix">
+                        <div class="price-slider-inner">
+                    <span class="amount-wrapper">
+                      Price:
+                      <input type="text" id="price-amount-1" readonly>
+                      <strong>-</strong>
+                      <input type="text" id="price-amount-2" readonly>
+                    </span>
+                            <div id="price-range"></div>
+                        </div>
+                        <input class="btn btn-default" type="submit" value="Filter">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9 col-sm-8 col-xs-12">
+                <div class="row">
+                    <div class="col-sm-4 col-xs-12" ng-repeat="product in homeVm.data.products">
+                        <div class="productBox">
+                            <div class="productImage clearfix">
+                                <img ng-src="{{product.preview}}" alt="{{product.name}}">
+                                <div class="productMasking">
+                                    <ul class="list-inline btn-group" role="group">
+                                        <li><a data-toggle="modal" href=".login-modal" class="btn btn-default"><i
+                                                class="fa fa-heart"></i></a></li>
+                                        <li><a href="cart-page.html" class="btn btn-default"><i
+                                                class="fa fa-shopping-cart"></i></a></li>
+                                        <li><a class="btn btn-default" data-toggle="modal" href=".quick-view"><i
+                                                class="fa fa-eye"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="productCaption clearfix">
+                                <a>
+                                    <h5 class="product-name">{{product.name}}</h5>
+                                </a>
+                                <h3>{{product.price}} EUR</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination Links -->
+                <div class="row text-center">
+                    <div class="text-center margin-bottom">
+                        <ul class="pagination">
+                            <li ng-class="{ 'disabled': homeVm.data.prev == null }">
+                                <a href ng-click="homeVm.prev(homeVm.data.prev)" aria-label="Prev">«</a>
+                            </li>
+                            <li ng-class="{ 'disabled': homeVm.data.next == null }">
+                                <a href ng-click="homeVm.next(homeVm.data.next)" aria-label="Next">»</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

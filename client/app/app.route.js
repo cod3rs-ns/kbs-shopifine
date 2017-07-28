@@ -1,19 +1,35 @@
 angular
-    .module('shopifine-app', [
-        'ui.router'
-    ])
+    .module('shopifine-app')
     .factory('_', ['$window',
         function ($window) {
             // place Lodash include before Angular
             return $window._;
         }
     ])
+    .constant(
+        'CONFIG', {
+            'SERVICE_URL': 'http://localhost:9000/api'
+        }
+    )
     .config(function ($stateProvider, $urlRouterProvider) {
 
-        // For any unmatched url, redirect to /login
-        $urlRouterProvider.otherwise("/login");
+        // For any unmatched url, redirect to /home
+        $urlRouterProvider.otherwise("/home");
 
         $stateProvider
+            .state('home', {
+                url: "/home",
+                data: {
+                    pageTitle: "Shopifine | Home"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/home/home.html",
+                        controller: "HomeController",
+                        controllerAs: "homeVm"
+                    }
+                }
+            })
             .state('login', {
                 url: "/login",
                 data: {

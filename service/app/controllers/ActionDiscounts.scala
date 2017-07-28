@@ -12,12 +12,13 @@ import repositories.ActionDiscountRepository
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository)
-                               (implicit val ec: ExecutionContext)extends Controller {
+class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secure: SecuredAuthenticator)
+                               (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
+  import secure.Roles.SalesManager
 
-  def create: Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create: Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
@@ -33,19 +34,19 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository)
     )
   }
 
-  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
     actionDiscounts.retrieveAll(offset, limit).map(discounts => {
       val self = routes.ActionDiscounts.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self, next))
+        ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self = self, next = next))
       ))
     })
   }
 
 
-  def update(id: Long): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
