@@ -55,7 +55,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
         val next = if (result.size == limit) Some(routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()) else None
 
         Ok(Json.toJson(
-          BillCollectionResponse.fromDomain(result, CollectionLinks(self, next))
+          BillCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
         ))
       })
     }
@@ -84,7 +84,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
       val next = if (result.size == limit) Some(routes.Bills.retrieveAll(offset, limit).absoluteURL()) else None
 
       Ok(Json.toJson(
-        BillCollectionResponse.fromDomain(result, CollectionLinks(self, next))
+        BillCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
       ))
     })
   }
@@ -158,7 +158,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
             val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 
             Ok(Json.toJson(
-              BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self, next))
+              BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self = self, next = next))
             ))
           })
 

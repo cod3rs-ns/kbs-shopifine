@@ -10,6 +10,8 @@ trait ProductCategoryRepository {
 
   def retrieveAll(offset: Int, limit: Int): Future[Seq[ProductCategory]]
 
+  def retrieveAllSubcategories(id: Long, offset: Int, limit: Int): Future[Seq[ProductCategory]]
+
   def modify(id: Long, category: ProductCategory): Future[Int]
 
   def findOne(id: Long): Future[Option[ProductCategory]]

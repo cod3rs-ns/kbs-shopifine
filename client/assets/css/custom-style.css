@@ -5,3 +5,8 @@
 .padding-top-10 {
     padding-top: 10px;
 }
+
+.product-name {
+    height: 24px !important;
+    overflow: hidden;
+}

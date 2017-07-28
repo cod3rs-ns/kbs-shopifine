@@ -36,10 +36,11 @@ class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticat
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     products.retrieveAll(offset, limit).map(products => {
+      val prev = if (offset > 0) Some(routes.Products.retrieveAll(offset - limit, limit).absoluteURL()) else None
       val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == products.length) Some(routes.Products.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
-      Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(self, next))))
+      Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(prev, self, next))))
     })
   }
 

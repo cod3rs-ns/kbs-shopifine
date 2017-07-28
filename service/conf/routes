@@ -751,6 +751,49 @@ POST    /api/product-categories             controllers.ProductCategories.create
 GET     /api/product-categories             controllers.ProductCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
+#  summary: Retrieve all subcategories of specified product category
+#  parameters:
+#    - name: id
+#      description: Identifier of root product category.
+#      in: path
+#      type: long
+#      format: int64
+#      required: true
+#    - name: page[offset]
+#      description: Identifier of a position to start retrieving items from.
+#      in: query
+#      type: integer
+#      default: 0
+#      required: false
+#    - name: page[limit]
+#      description: Maximum number of items to retrieve.
+#      in: query
+#      type: integer
+#      default: 10
+#      required: false
+#  tags:
+#    - Product Categories
+#  responses:
+#    200:
+#      description: Product subcategories successfully retrieved.
+#      schema:
+#        $ref: '#/definitions/ProductCategoryCollectionResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Product category doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/product-categories/:id/subcategories           controllers.ProductCategories.retrieveAllSubcategories(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
 #  summary: Modifies product category
 #  parameters:
 #    - name: id

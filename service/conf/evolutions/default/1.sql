@@ -39,6 +39,7 @@ CREATE TABLE product_categories (
 CREATE TABLE products (
   id              INT NOT NULL AUTO_INCREMENT,
   name            VARCHAR(40) NOT NULL,
+  image_url       VARCHAR(255) NOT NULL DEFAULT "",
   category        INT NOT NULL,
   price           DOUBLE NOT NULL,
   quantity        INT NOT NULL,

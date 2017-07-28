@@ -1,46 +1,103 @@
-(function() {
+(function () {
     'use strict';
 
     angular
         .module('shopifine-app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = [];
+    HomeController.$inject = ['$log', 'CONFIG', '_', 'productService', 'productCategories'];
 
-    function HomeController() {
+    function HomeController($log, CONFIG, _, productService, productCategories) {
         var homeVm = this;
 
-        homeVm.products = [
-            {
-                "preview": "https://supersoccershop.com/image/cache/catalog/jersey-16-17/real-madrid/real-madrid-sergio-ramos-jersey-2016-17-soccer-shirt-kit-600x600.jpg",
-                "name": "Sergio Ramos Home Jersey 2016/17",
-                "price": 21.10
-            },
-            {
-                "preview": "http://www.footballjersey.store/images/real-madrid/sergio-ramos-real-madrid-16-17-white-long-sleeve-jersey.jpg",
-                "name": "Sergio Ramos Home Jersey Long Sleeve",
-                "price": 42.44
-            },
-            {
-                "preview": "http://www.footballjersey.store/images/real-madrid/sergio-ramos-2016-17-third-black.jpg",
-                "name": "Sergio Ramos Away Jersey 2016/17",
-                "price": 15.20
-            },
-            {
-                "preview": "http://www.spainsocceronline.com/images/products/soccer_jerseys/nation/spain/nation_spain_485.jpg",
-                "name": "Sergio Ramos National Jersey Woman",
-                "price": 33.12
-            },
-            {
-                "preview": "http://www.footballjersey.store/images/real-madrid/sergio-ramos-real-madrid-16-17-white-long-sleeve-jersey.jpg",
-                "name": "Sergio Ramos Home Jersey Long Sleeve",
-                "price": 42.44
-            },
-            {
-                "preview": "http://www.footballjersey.store/images/real-madrid/sergio-ramos-2016-17-third-black.jpg",
-                "name": "Sergio Ramos Away Jersey 2016/17",
-                "price": 15.20
-            }
-        ]
+        homeVm.data = {
+            products: [],
+            categories: [],
+            prev: null,
+            next: null
+        };
+
+        homeVm.next = retrieveProducts;
+        homeVm.prev = retrieveProducts;
+        homeVm.retrieveProducts = retrieveProducts;
+        homeVm.retrieveCategories = retrieveCategories;
+        homeVm.retrieveSubcategoriesFor = retrieveSubcategoriesFor;
+
+        init();
+
+        function init() {
+            homeVm.retrieveProducts(CONFIG.SERVICE_URL + '/products?page[limit]=6');
+            homeVm.retrieveCategories(CONFIG.SERVICE_URL + '/product-categories');
+        }
+
+        function retrieveProducts(url) {
+            productService.retrieveAllFrom(url)
+                .then(function (response) {
+                    homeVm.data.products = _.map(response.data, function (product) {
+                        return {
+                            'name': product.attributes.name,
+                            'price': product.attributes.price,
+                            'preview': product.attributes.imageUrl
+                        }
+                    });
+
+                    var prev = response.links.prev;
+                    var next = response.links.next;
+
+                    homeVm.data.prev = (!_.isEmpty(prev)) ? prev : null;
+                    homeVm.data.next = (!_.isEmpty(next)) ? next : null;
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function retrieveCategories(url) {
+            productCategories.retrieveAllFrom(url)
+                .then(function (response) {
+                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function(category) {
+                        return {
+                            'id': category.id,
+                            'name': category.attributes.name,
+                            'subcategoriesUrl': category.relationships.subcategories.links.related,
+                            'subcategories': []
+                        }
+                    }));
+
+                    var next = response.links.next;
+                    if (!_.isEmpty(next)) {
+                        homeVm.retrieveCategories(next);
+                    }
+                })
+                .catch(function (data) {
+                   $log.error(data);
+                });
+        }
+
+        function retrieveSubcategoriesFor(category) {
+            // FIXME Extract base URL
+            productCategories.retrieveAllFrom("http://localhost:9000/" + category.subcategoriesUrl)
+                .then(function (response) {
+                    if (_.isEmpty(category.subcategories)) {
+                        category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {
+                            return {
+                                'id': subcategory.id,
+                                'name': subcategory.attributes.name,
+                                'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
+                                'subcategories': []
+                            }
+                        }));
+                    }
+
+                    // FIXME
+                    // var next = response.links.next;
+                    // if (!_.isEmpty(next)) {
+                    //     homeVm.retrieveCategories(next);
+                    // }
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
     }
 })();
