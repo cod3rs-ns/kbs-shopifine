@@ -7,5 +7,6 @@ package object hateoas {
   val BillsType: String = "bills"
   val BillDiscountsType: String = "bill-discounts"
   val BillItemsType: String = "bill-items"
+  val BillItemDiscountsType: String = "bill-item-discounts"
   val ActionDiscountsType: String = "action-discounts"
 }

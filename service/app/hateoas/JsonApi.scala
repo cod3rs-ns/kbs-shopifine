@@ -1,16 +1,17 @@
 package hateoas
 
 import bills._
-import play.api.libs.json.{Json, OFormat}
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
-import user_auth.{UserAuthRequest, UserAuthResponse}
 import hateoas.action_discounts._
 import hateoas.bill_discounts._
+import hateoas.bill_item_discounts._
 import hateoas.bill_items._
 import hateoas.buyer_categories._
-import relationships._
-import products._
 import hateoas.product_categories._
+import play.api.libs.json.{Json, OFormat}
+import products._
+import relationships._
+import user_auth.{UserAuthRequest, UserAuthResponse}
 import users._
 import util.JwtPayload
 
@@ -81,6 +82,12 @@ object JsonApi {
   implicit val billItemResData: OFormat[BillItemResponseData] = Json.format[BillItemResponseData]
   implicit val billItemRes: OFormat[BillItemResponse] = Json.format[BillItemResponse]
   implicit val billItemResCollection: OFormat[BillItemCollectionResponse] = Json.format[BillItemCollectionResponse]
+
+  implicit val billItemDiscountAttrs: OFormat[BillItemDiscountAttributes] = Json.format[BillItemDiscountAttributes]
+  implicit val billItemDiscountRels: OFormat[BillItemDiscountRelationships] = Json.format[BillItemDiscountRelationships]
+  implicit val billItemDiscountData: OFormat[BillItemDiscountData] = Json.format[BillItemDiscountData]
+  implicit val billItemDiscountRes: OFormat[BillItemDiscountResponse] = Json.format[BillItemDiscountResponse]
+  implicit val billItemDiscountResCollection: OFormat[BillItemDiscountCollectionResponse] = Json.format[BillItemDiscountCollectionResponse]
 
   implicit val buyerCatReqAttrs: OFormat[BuyerCategoryRequestAttributes] = Json.format[BuyerCategoryRequestAttributes]
   implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]

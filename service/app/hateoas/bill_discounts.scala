@@ -38,10 +38,12 @@ package object bill_discounts {
 
   case class BillDiscountResponse(data: BillDiscountData)
 
-  def fromDomain(discount: BillDiscount, userId: Long): BillDiscountResponse = {
-    BillDiscountResponse(
-      data = BillDiscountData.fromDomain(discount, userId)
-    )
+  object BillDiscountResponse {
+    def fromDomain(discount: BillDiscount, userId: Long): BillDiscountResponse = {
+      BillDiscountResponse(
+        data = BillDiscountData.fromDomain(discount, userId)
+      )
+    }
   }
 
   case class BillDiscountCollectionResponse(data: Seq[BillDiscountData], links: CollectionLinks)
