@@ -39,7 +39,7 @@ package object bills {
                                     pointsGained: Long,
                                     pointsSpent: Long)
 
-  case class BillResponseRelationships(customer: ResponseRelationship, items: ResponseRelationshipCollection)
+  case class BillResponseRelationships(customer: ResponseRelationship, items: ResponseRelationshipCollection, discounts: ResponseRelationshipCollection)
 
   case class BillResponseData(`type`: String, id: Long,  attributes: BillResponseAttributes, relationships: BillResponseRelationships)
 
@@ -67,6 +67,11 @@ package object bills {
         items = ResponseRelationshipCollection(
           links = RelationshipLinks(
             related = s"api/users/${bill.customerId}/bills/${bill.id.get}/bill-items"
+          )
+        ),
+        discounts = ResponseRelationshipCollection(
+          links = RelationshipLinks(
+            related = s"api/users/${bill.customerId}/bills/${bill.id.get}/discounts"
           )
         )
       )

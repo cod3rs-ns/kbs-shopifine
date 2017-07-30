@@ -11,7 +11,9 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[BuyerCategoryRepository]).to(classOf[MySqlBuyerCategoryRepository])
     bind(classOf[ConsumptionThresholdRepository]).to(classOf[MySqlConsumptionThresholdRepository])
     bind(classOf[BillRepository]).to(classOf[MySqlBillRepository])
+    bind(classOf[BillDiscountRepository]).to(classOf[MySqlBillDiscountRepository])
     bind(classOf[BillItemRepository]).to(classOf[MySqlBillItemRepository])
+    bind(classOf[BillItemDiscountRepository]).to(classOf[MySqlBillItemDiscountRepository])
     bind(classOf[ActionDiscountRepository]).to(classOf[MySqlActionDiscountRepository])
   }
 }

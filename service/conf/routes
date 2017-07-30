@@ -522,6 +522,55 @@ GET     /api/users/:userId/bills                        controllers.Bills.retrie
 GET     /api/users/:userId/bills/:billId                controllers.Bills.retrieveOneByUser(userId: Long, billId: Long)
 
 ###
+#  summary: Retrieve bill discounts for user's bill
+#  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: billId
+#      description: Identifier of bill.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: page[offset]
+#      description: Identifier of a position to start retrieving items from.
+#      in: query
+#      type: integer
+#      default: 0
+#      required: false
+#    - name: page[limit]
+#      description: Maximum number of items to retrieve.
+#      in: query
+#      type: integer
+#      default: 10
+#      required: false
+#  tags:
+#    - Bills
+#  responses:
+#    200:
+#      description: Bill discounts retrieved.
+#      schema:
+#        $ref: '#/definitions/BillDiscountCollectionResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Bill doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.retrieveBillDiscounts(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
 #  summary: Retrieve all bills
 #  parameters:
 #    - name: page[offset]
@@ -613,6 +662,7 @@ PUT     /api/bills/:id                                  controllers.Bills.change
 #  tags:
 #    - Bills
 #    - Users
+#    - Bill Items
 #  responses:
 #    201:
 #      description: Bill item successfully created. Bill ready for adding bill items.
@@ -667,6 +717,7 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #  tags:
 #    - Bills
 #    - Users
+#    - Bill Items
 #  responses:
 #    200:
 #      description: Bill items successfully retrieved.
@@ -690,6 +741,69 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #        $ref: '#/definitions/ErrorResponse'
 ###
 GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrieveBillItems(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
+#  summary: Retrieve all bill item discounts
+#  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: long
+#      format: int64
+#      required: true
+#    - name: billId
+#      description: Identifier of bill.
+#      in: path
+#      type: long
+#      format: int64
+#      required: true
+#    - name: billItemId
+#      description: Identifier of bill item.
+#      in: path
+#      type: long
+#      format: int64
+#      required: true
+#    - name: page[offset]
+#      description: Identifier of a position to start retrieving items from.
+#      in: query
+#      type: integer
+#      default: 0
+#      required: false
+#    - name: page[limit]
+#      description: Maximum number of items to retrieve.
+#      in: query
+#      type: integer
+#      default: 10
+#      required: false
+#  tags:
+#    - Bill Items
+#  responses:
+#    200:
+#      description: Bill item discounts successfully retrieved.
+#      schema:
+#        $ref: '#/definitions/BillItemDiscountCollectionResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    403:
+#      description: No privileges.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Bill doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Bill item doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/users/:userId/bills/:billId/bill-items/:billItemId/discounts     controllers.Discounts.retrieveBillItemDiscounts(userId: Long, billId: Long, billItemId: Long,  `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
 #  summary: Create new product category

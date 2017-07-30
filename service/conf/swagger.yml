@@ -617,9 +617,59 @@ definitions:
       items:
         description: Relationship to bill items
         $ref: '#/definitions/ResponseRelationshipCollection'
+      discounts:
+        description: Relationship to bill discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - customer
       - items
+      - discounts
+  BillDiscountCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillDiscountData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillDiscountData:
+    type: object
+    properties:
+      attributes:
+        $ref: '#/definitions/BillDiscountAttributes'
+      relationships:
+        $ref: '#/definitions/BillDiscountRelationships'
+    required:
+      - attributes
+      - relationships
+  BillDiscountAttributes:
+    type: object
+    properties:
+      discount:
+        type: double
+        description: Value of bill discount
+        example: 6.8
+      type:
+        type: string
+        description: Type of discount
+        enum:
+          - BASIC
+          - PRO
+    required:
+      - discount
+      - type
+  BillDiscountRelationships:
+    type: object
+    properties:
+      bill:
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - bill
   BillItemRequest:
     type: object
     properties:
@@ -759,9 +809,58 @@ definitions:
       bill:
         description: Relationship to Bill
         $ref: '#/definitions/ResponseCollection'
+      discounts:
+        description: Relationship to bill item discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - product
       - bill
+  BillItemDiscountCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillItemDiscountData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillItemDiscountData:
+    type: object
+    properties:
+      attributes:
+        $ref: '#/definitions/BillItemDiscountAttributes'
+      relationships:
+        $ref: '#/definitions/BillItemDiscountRelationships'
+    required:
+      - attributes
+      - relationships
+  BillItemDiscountAttributes:
+    type: object
+    properties:
+      discount:
+        type: double
+        description: Value of bill item discount
+        example: 6.8
+      type:
+        type: string
+        description: Type of discount
+        enum:
+          - BASIC
+          - PRO
+    required:
+      - discount
+      - type
+  BillItemDiscountRelationships:
+    type: object
+    properties:
+      billItem:
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - billItem
   ProductCategoryRequest:
     type: object
     properties:
@@ -1022,7 +1121,7 @@ definitions:
       self:
         type: string
       next:
-        type: next
+        type: string
     required:
       - self
   UserAuthRequest:
