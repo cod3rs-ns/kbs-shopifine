@@ -81,7 +81,7 @@ trait DatabaseSchema {
 
   class ProductCategories(tag: Tag) extends Table[ProductCategory](tag, "product_categories") {
     def * : ProvenShape[ProductCategory] = {
-      val props = (id.?, name, superCategoryId, maxDiscount)
+      val props = (id.?, name, superCategoryId, maxDiscount, isConsumerGoods)
 
       props <> (ProductCategory.tupled, ProductCategory.unapply)
     }
@@ -93,6 +93,8 @@ trait DatabaseSchema {
     def superCategoryId: Rep[Option[Long]] = column[Option[Long]]("super_category")
 
     def maxDiscount: Rep[Double] = column[Double]("max_discount")
+
+    def isConsumerGoods: Rep[Boolean] = column[Boolean]("is_consumer_goods")
 
     def superCategory: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("super_category_fk", superCategoryId, productCategories)(_.id.?)
   }
