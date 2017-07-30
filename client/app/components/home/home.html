@@ -3,9 +3,9 @@
         <div class="row">
             <div class="col-md-3 col-sm-4 col-xs-12 sideBar">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search by Name"
+                    <input type="text" class="form-control" placeholder="Search by Name" ng-model="homeVm.filters['name']"
                            aria-describedby="basic-addon2">
-                    <a href="#" class="input-group-addon" id="basic-addon2"><i class="fa fa-search"></i></a>
+                    <a class="input-group-addon" href ng-click="homeVm.applyFilters();" id="basic-addon2"><i class="fa fa-search"></i></a>
                 </div>
                 <div class="panel panel-default">
                     <div class="panel-heading">Product categories</div>
@@ -13,13 +13,14 @@
                         <div class="collapse navbar-collapse navbar-ex1-collapse navbar-side-collapse">
                             <ul class="nav navbar-nav side-nav">
                                 <li ng-repeat="category in homeVm.data.categories">
-                                    <a href="javascript:;" data-toggle="collapse" ng-click="homeVm.retrieveSubcategoriesFor(category);"
+                                    <a href="javascript:;" data-toggle="collapse"
+                                       ng-click="homeVm.retrieveSubcategoriesFor(category);"
                                        data-target="{{'#category-' + category.id}}">
                                         {{category.name}}
                                         <i class="fa fa-plus"></i></a>
                                     <ul id="{{'category-' + category.id}}" class="collapse collapseItem">
                                         <li ng-repeat="subcategory in category.subcategories">
-                                            <a href="#">
+                                            <a href ng-click="homeVm.searchByCategory(subcategory.id);">
                                                 <i class="fa fa-caret-right" aria-hidden="true"></i>
                                                 {{subcategory.name}}
                                             </a>
@@ -30,25 +31,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-default priceRange">
+                <div class="panel panel-default">
                     <div class="panel-heading">Filter by Price</div>
-                    <div class="panel-body clearfix">
-                        <div class="price-slider-inner">
-                    <span class="amount-wrapper">
-                      Price:
-                      <input type="text" id="price-amount-1" readonly>
-                      <strong>-</strong>
-                      <input type="text" id="price-amount-2" readonly>
-                    </span>
-                            <div id="price-range"></div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Minimum price" ng-model="homeVm.filters['price-range-from']">
                         </div>
-                        <input class="btn btn-default" type="submit" value="Filter">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Maximum price" ng-model="homeVm.filters['price-range-to']">
+                        </div>
                     </div>
                 </div>
+                <button class="btn btn-default-filled col-xs-12" ng-click="homeVm.applyFilters();">Apply filters</button>
+                <button class="btn btn-xs btn-danger-filled col-xs-12 margin-top-8" ng-click="homeVm.resetFilters();">Reset filters</button>
             </div>
             <div class="col-md-9 col-sm-8 col-xs-12">
                 <div class="row">
-                    <div class="col-sm-4 col-xs-12" ng-repeat="product in homeVm.data.products">
+                    <div class="col-sm-4 col-xs-12" ng-if="homeVm.data.products.length > 0" ng-repeat="product in homeVm.data.products">
                         <div class="productBox">
                             <div class="productImage clearfix">
                                 <img ng-src="{{product.preview}}" alt="{{product.name}}">
@@ -71,10 +70,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12" ng-if="homeVm.data.products.length == 0">
+                        <h2 class="text-center">No products match your criteria.</h2>
+                    </div>
                 </div>
 
                 <!-- Pagination Links -->
-                <div class="row text-center">
+                <div class="row text-center" ng-if="homeVm.data.products.length > 0">
                     <div class="text-center margin-bottom">
                         <ul class="pagination">
                             <li ng-class="{ 'disabled': homeVm.data.prev == null }">
@@ -88,5 +90,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>

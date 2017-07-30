@@ -17,11 +17,23 @@
             next: null
         };
 
+        homeVm.filters = {
+            'name': undefined,
+            'category': undefined,
+            'price-range-from': undefined,
+            'price-range-to': undefined,
+            'active': 'ACTIVE'
+        };
+
         homeVm.next = retrieveProducts;
         homeVm.prev = retrieveProducts;
         homeVm.retrieveProducts = retrieveProducts;
         homeVm.retrieveCategories = retrieveCategories;
         homeVm.retrieveSubcategoriesFor = retrieveSubcategoriesFor;
+
+        homeVm.applyFilters = applyFilters;
+        homeVm.resetFilters = resetFilters;
+        homeVm.searchByCategory = searchByCategory;
 
         init();
 
@@ -75,8 +87,7 @@
         }
 
         function retrieveSubcategoriesFor(category) {
-            // FIXME Extract base URL
-            productCategories.retrieveAllFrom("http://localhost:9000/" + category.subcategoriesUrl)
+            productCategories.retrieveAllFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
                     if (_.isEmpty(category.subcategories)) {
                         category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {
@@ -89,6 +100,9 @@
                         }));
                     }
 
+                    homeVm.filters['category'] = category.id.toString();
+                    applyFilters();
+
                     // FIXME
                     // var next = response.links.next;
                     // if (!_.isEmpty(next)) {
@@ -98,6 +112,31 @@
                 .catch(function (data) {
                     $log.error(data);
                 });
+        }
+
+        function applyFilters() {
+            var filters = '';
+            _.forEach(homeVm.filters, function(value, name) {
+                if (!_.isUndefined(value) && !_.isEmpty(value)) {
+                    filters += '&filter[' + name + ']=' + value;
+                }
+            });
+
+            retrieveProducts(CONFIG.SERVICE_URL + '/products?page[limit]=6' + filters)
+        }
+
+        function resetFilters() {
+            _.forEach(homeVm.filters, function(value, name) {
+                if (name !== 'active') {
+                    homeVm.filters[name] = undefined;
+                }
+            });
+            applyFilters();
+        }
+
+        function searchByCategory(id) {
+            homeVm.filters['category'] = id;
+            applyFilters();
         }
     }
 })();

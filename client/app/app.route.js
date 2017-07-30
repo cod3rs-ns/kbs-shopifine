@@ -8,6 +8,7 @@ angular
     ])
     .constant(
         'CONFIG', {
+            'SERVICE_BASE_URL': 'http://localhost:9000/',
             'SERVICE_URL': 'http://localhost:9000/api'
         }
     )
