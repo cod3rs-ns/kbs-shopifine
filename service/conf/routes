@@ -1,6 +1,31 @@
 ###
 #  summary: Retrieve all products in the store
 #  parameters:
+#    - name: filter[name]
+#      description: Value for filtering products by name.
+#      in: query
+#      type: string
+#      required: false
+#    - name: filter[category]
+#      description: Value that represents category id for filtering products by category.
+#      in: query
+#      type: integer
+#      required: false
+#    - name: filter[price-range-from]
+#      description: Minimum bound of price for products range filtering.
+#      in: query
+#      type: number
+#      required: false
+#    - name: filter[price-range-to]
+#      description: Maximum bound of price for products range filtering.
+#      in: query
+#      type: number
+#      required: false
+#    - name: filter[active]
+#      description: Value for filtering products whether they active or not.
+#      in: query
+#      type: boolean
+#      required: false
 #    - name: page[offset]
 #      description: Identifier of a position to start retrieving items from.
 #      in: query
