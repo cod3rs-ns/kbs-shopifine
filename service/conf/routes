@@ -662,6 +662,7 @@ PUT     /api/bills/:id                                  controllers.Bills.change
 #  tags:
 #    - Bills
 #    - Users
+#    - Bill Items
 #  responses:
 #    201:
 #      description: Bill item successfully created. Bill ready for adding bill items.
@@ -716,6 +717,7 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #  tags:
 #    - Bills
 #    - Users
+#    - Bill Items
 #  responses:
 #    200:
 #      description: Bill items successfully retrieved.

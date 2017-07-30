@@ -617,9 +617,13 @@ definitions:
       items:
         description: Relationship to bill items
         $ref: '#/definitions/ResponseRelationshipCollection'
+      discounts:
+        description: Relationship to bill discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - customer
       - items
+      - discounts
   BillDiscountCollectionResponse:
     type: object
     properties:
@@ -805,6 +809,9 @@ definitions:
       bill:
         description: Relationship to Bill
         $ref: '#/definitions/ResponseCollection'
+      discounts:
+        description: Relationship to bill item discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - product
       - bill
