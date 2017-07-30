@@ -877,12 +877,30 @@ definitions:
           - product-categories
         description: Type of requested Product Category
       attributes:
-        $ref: '#/definitions/ProductCategoryAttributes'
+        $ref: '#/definitions/ProductCategoryRequestAttributes'
       relationships:
         $ref: '#/definitions/ProductCategoryRequestRelationships'
     required:
       - type
       - attributes
+  ProductCategoryRequestAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: General product category
+        example: Electronics
+      maxDiscount:
+        type: double
+        description: Maximum allowed discount for product in specified category
+        example: 20
+      isConsumerGoods:
+        type: boolean
+        description: Represents flag if product category is consumer goods
+        default: false
+    required:
+      - name
+      - maxDiscount
   ProductCategoryRequestRelationships:
     type: object
     properties:
@@ -925,7 +943,7 @@ definitions:
         description: Unique identifier of Product category
         example: 1
       attributes:
-        $ref: '#/definitions/ProductCategoryAttributes'
+        $ref: '#/definitions/ProductCategoryResponseAttributes'
       relationships:
         $ref: '#/definitions/ProductCategoryResponseRelationships'
     required:
@@ -933,6 +951,24 @@ definitions:
       - id
       - attributes
       - relationships
+  ProductCategoryResponseAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: General product category
+        example: Electronics
+      maxDiscount:
+        type: double
+        description: Maximum allowed discount for product in specified category
+        example: 20
+      isConsumerGoods:
+        type: boolean
+        description: Represents flag if product category is consumer goods
+    required:
+      - name
+      - maxDiscount
+      - isConsumerGoods
   ProductCategoryResponseRelationships:
     type: object
     properties:
@@ -944,20 +980,6 @@ definitions:
         $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - subcategories
-  ProductCategoryAttributes:
-    type: object
-    properties:
-      name:
-        type: string
-        description: General product category
-        example: Electronics
-      maxDiscount:
-        type: double
-        description: Maximum allowed discount for product in specified category
-        example: 20
-    required:
-      - name
-      - maxDiscount
   ActionDiscountRequest:
     type: object
     properties:

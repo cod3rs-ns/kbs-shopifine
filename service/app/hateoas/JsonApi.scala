@@ -38,10 +38,11 @@ object JsonApi {
   implicit val prodRes: OFormat[ProductResponse] = Json.format[ProductResponse]
   implicit val prodResCollection: OFormat[ProductCollectionResponse] = Json.format[ProductCollectionResponse]
 
-  implicit val prodCatAttrs: OFormat[ProductCategoryAttributes] = Json.format[ProductCategoryAttributes]
+  implicit val prodCatReqAttrs: OFormat[ProductCategoryRequestAttributes] = Json.format[ProductCategoryRequestAttributes]
   implicit val prodCatReqRels: OFormat[ProductCategoryRequestRelationships] = Json.format[ProductCategoryRequestRelationships]
   implicit val prodCatReqData: OFormat[ProductCategoryRequestData] = Json.format[ProductCategoryRequestData]
   implicit val prodCatReq: OFormat[ProductCategoryRequest] = Json.format[ProductCategoryRequest]
+  implicit val prodCatResAttrs: OFormat[ProductCategoryResponseAttributes] = Json.format[ProductCategoryResponseAttributes]
   implicit val prodCatResRels: OFormat[ProductCategoryResponseRelationships] = Json.format[ProductCategoryResponseRelationships]
   implicit val prodCatResData: OFormat[ProductCategoryResponseData] = Json.format[ProductCategoryResponseData]
   implicit val prodCatRes: OFormat[ProductCategoryResponse] = Json.format[ProductCategoryResponse]

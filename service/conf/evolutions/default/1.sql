@@ -27,10 +27,11 @@ CREATE TABLE users (
 );
 
 CREATE TABLE product_categories (
-  id              INT NOT NULL AUTO_INCREMENT,
-  name            VARCHAR(40) NOT NULL,
-  super_category  INT NULL,
-  max_discount    DOUBLE NOT NULL,
+  id                INT NOT NULL AUTO_INCREMENT,
+  name              VARCHAR(40) NOT NULL,
+  super_category    INT NULL,
+  max_discount      DOUBLE NOT NULL,
+  is_consumer_goods BOOLEAN NOT NULL DEFAULT FALSE,
 
   PRIMARY KEY (id)
   -- FOREIGN KEY (super_category) REFERENCES product_categories(super_category)
