@@ -1,0 +1,53 @@
+<section class="mainContent clearfix userProfile">
+    <div class="container">
+        <div class="row">
+            <span class="label label-pill label-primary-filled pull-right" ng-if="profileVm.user.role === 'CUSTOMER'">
+                You have {{profileVm.user.points}} prize points!
+            </span>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h4>Profile</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4 col-xs-12">
+                            <div class="thumbnail">
+                                <img src="../../../assets/img/products/profile/profile-image.jpg" alt="profile-image">
+                            </div>
+                        </div>
+                        <div class="col-sm-8 col-xs-12">
+                            <div class="row">
+                                <p class="col-sm-4">Username</p>
+                                <p class="col-sm-8">{{profileVm.user.username}}</p>
+                            </div>
+                            <div class="row">
+                                <p class="col-sm-4">First Name</p>
+                                <p class="col-sm-8">{{profileVm.user.firstName}}</p>
+                            </div>
+                            <div class="row">
+                                <p class="col-sm-4">Last Name</p>
+                                <p class="col-sm-8">{{profileVm.user.lastName}}</p>
+                            </div>
+                            <div class="row" ng-if="profileVm.user.role === 'CUSTOMER'">
+                                <p class="col-sm-4">Shipping Address</p>
+                                <p class="col-sm-8">{{profileVm.user.address}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h4>Bills</h4>
+                    </div>
+                    <div class="row">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
