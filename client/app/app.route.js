@@ -56,5 +56,18 @@ angular
                         controllerAs: "registerVm"
                     }
                 }
+            })
+            .state('profile', {
+                url: "/profile",
+                data: {
+                    pageTitle: "Shopifine | Profile"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/user/user-profile.html",
+                        controller: "UserProfileController",
+                        controllerAs: "profileVm"
+                    }
+                }
             });
     });
