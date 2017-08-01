@@ -20,7 +20,7 @@ class MySqlBillItemRepository @Inject()(protected val dbConfigProvider: Database
   }
 
   override def retrieveByBill(billId: Long, offset: Int, limit: Int): Future[Seq[BillItem]] = {
-    db.run(billItems.filter(_.billId === billId).drop(offset).take(limit).result)
+    db.run(billItems.filter(_.bill === billId).drop(offset).take(limit).result)
   }
 
 }

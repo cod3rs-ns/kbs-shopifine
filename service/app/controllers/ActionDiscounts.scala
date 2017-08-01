@@ -45,7 +45,6 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
     })
   }
 
-
   def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
