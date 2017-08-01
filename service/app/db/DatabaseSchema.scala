@@ -23,6 +23,7 @@ trait DatabaseSchema {
 
   val consumptionThresholds: TableQuery[ConsumptionThresholds] = TableQuery[ConsumptionThresholds]
   val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
+  val actionDiscountsProductCategories: TableQuery[ActionDiscountsProductCategories] = TableQuery[ActionDiscountsProductCategories]
 
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
