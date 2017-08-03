@@ -28,7 +28,7 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   }
 
   override def retrieveByUser(userId: Long, offset: Int, limit: Int): Future[Seq[Bill]] = {
-    db.run(bills.filter(_.customerId === userId).drop(offset).take(limit).result)
+    db.run(bills.filter(_.customer === userId).drop(offset).take(limit).result)
   }
 
   override def setState(id: Long, state: BillState): Future[Int] = {

@@ -7,12 +7,12 @@ import commons.{CollectionLinks, Error, ErrorResponse}
 import hateoas.action_discounts.{ActionDiscountCollectionResponse, ActionDiscountRequest, ActionDiscountResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import repositories.ActionDiscountRepository
+import repositories.{ActionDiscountRepository, ProductCategoryRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secure: SecuredAuthenticator)
+class ActionDiscounts @Inject()(discounts: ActionDiscountRepository, categories: ProductCategoryRepository, secure: SecuredAuthenticator)
                                (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -25,7 +25,7 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
       ))),
 
       spec => {
-        actionDiscounts.save(spec.toDomain).map(discount =>
+        discounts.save(spec.toDomain).map(discount =>
           Created(Json.toJson(
             ActionDiscountResponse.fromDomain(discount)
           ))
@@ -35,7 +35,7 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
-    actionDiscounts.retrieveAll(offset, limit).map(discounts => {
+    discounts.retrieveAll(offset, limit).map(discounts => {
       val self = routes.ActionDiscounts.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAll(offset + limit, limit).absoluteURL()) else None
 
@@ -45,7 +45,6 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
     })
   }
 
-
   def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
@@ -53,7 +52,7 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
       ))),
 
       spec => {
-        actionDiscounts.modify(id, spec.toDomain).map(updated =>
+        discounts.modify(id, spec.toDomain).map(updated =>
           if (updated > 0) {
             Ok(Json.toJson(ActionDiscountResponse.fromDomain(spec.toDomain.copy(id = Some(id)))))
           }
@@ -65,6 +64,28 @@ class ActionDiscounts @Inject()(actionDiscounts: ActionDiscountRepository, secur
         )
       }
     )
+  }
+
+  def retrieveAllByCategory(id: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    categories.findOne(id).flatMap {
+      case Some(_) => discounts.retrieveByProductCategory(id).map(result => {
+        val discounts = for ((discount, _) <- result) yield discount
+
+        val self = routes.ActionDiscounts.retrieveAllByCategory(id, offset, limit).absoluteURL()
+        val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAllByCategory(id, offset + limit, limit).absoluteURL()) else None
+
+        Ok(Json.toJson(
+          ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self = self, next = next))
+        ))
+      })
+
+      case None =>
+        Future.successful(
+          NotFound(Json.toJson(
+            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product category $id doesn't exist!")))
+          ))
+        )
+    }
   }
 
 }

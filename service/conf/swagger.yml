@@ -172,6 +172,9 @@ definitions:
       category:
         description: Relationship to Product Category
         $ref: '#/definitions/ResponseRelationship'
+      discounts:
+        description: Relationship to list of discounts by product category
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - category
   UserRequest:

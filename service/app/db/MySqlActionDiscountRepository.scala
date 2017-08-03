@@ -2,15 +2,15 @@ package db
 
 import javax.inject.Inject
 
-import domain.ActionDiscount
+import domain.{ActionDiscount, ActionDiscountProductCategory}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.ActionDiscountRepository
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class MySqlActionDiscountRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+class MySqlActionDiscountRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit val ec: ExecutionContext)
   extends ActionDiscountRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
 
   override def save(actionDiscount: ActionDiscount): Future[ActionDiscount] = {
@@ -27,4 +27,7 @@ class MySqlActionDiscountRepository @Inject()(protected val dbConfigProvider: Da
     db.run(q.update((actionDiscount.name, actionDiscount.from, actionDiscount.to, actionDiscount.discount)))
   }
 
+  override def retrieveByProductCategory(category: Long): Future[Seq[(ActionDiscount, ActionDiscountProductCategory)]] = {
+    db.run((actionDiscounts join actionDiscountsProductCategories.filter(_.category === category) on (_.id === _.discount)).result)
+  }
 }
