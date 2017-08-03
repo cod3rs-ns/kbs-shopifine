@@ -9,12 +9,13 @@ import domain.BillState
 import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import repositories.{BillItemRepository, BillRepository}
+import repositories.BillItemRepository
+import services.BillService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secure: SecuredAuthenticator)
+class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure: SecuredAuthenticator)
                      (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -79,7 +80,11 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async { implicit request =>
-    bills.retrieveAll(offset, limit).map(result => {
+    val filters = request.queryString.filterKeys(_.startsWith("filter[")).map { case (k, v) =>
+      k.substring(7, k.length - 1) -> v.mkString
+    }
+
+    bills.retrieveBillsWithFilters(filters, offset, limit).map(result => {
       val self = routes.Bills.retrieveAll(offset, limit).absoluteURL()
       val next = if (result.size == limit) Some(routes.Bills.retrieveAll(offset, limit).absoluteURL()) else None
 
