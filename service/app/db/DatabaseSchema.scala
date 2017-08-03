@@ -5,9 +5,9 @@ import java.sql.Timestamp
 import domain._
 import org.joda.time.DateTime
 import slick.ast.BaseTypedType
-import slick.lifted.{ForeignKeyQuery, ProvenShape, TableQuery}
 import slick.driver.MySQLDriver.api._
 import slick.jdbc.JdbcType
+import slick.lifted.{ForeignKeyQuery, ProvenShape, TableQuery}
 
 trait DatabaseSchema {
   val buyerCategories: TableQuery[BuyerCategories] = TableQuery[BuyerCategories]
@@ -72,6 +72,7 @@ trait DatabaseSchema {
     def address: Rep[Option[String]] = column[Option[String]]("address")
 
     def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
+
     def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_users_buyer_categories_id", buyerCategory, buyerCategories)(category =>
       category.id, onDelete = ForeignKeyAction.Cascade
     )
@@ -93,6 +94,7 @@ trait DatabaseSchema {
     def name: Rep[String] = column[String]("name")
 
     def superCategory: Rep[Option[Long]] = column[Option[Long]]("super_category_id")
+
     def superCategoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_product_categories_product_categories_id", superCategory, productCategories)(
       category => category.id, onDelete = ForeignKeyAction.Cascade
     )
@@ -146,6 +148,7 @@ trait DatabaseSchema {
     def createdAt: Rep[DateTime] = column[DateTime]("created_at")
 
     def customer: Rep[Long] = column[Long]("customer")
+
     def customerFK: ForeignKeyQuery[Users, User] = foreignKey("fk_bills_users_id", customer, users)(user =>
       user.id, onDelete = ForeignKeyAction.Cascade
     )
@@ -175,11 +178,13 @@ trait DatabaseSchema {
     def ordinal: Rep[Int] = column[Int]("ordinal")
 
     def product: Rep[Long] = column[Long]("product_id")
+
     def productFK: ForeignKeyQuery[Products, Product] = foreignKey("fk_bill_items_products_id", product, products)(product =>
       product.id, onDelete = ForeignKeyAction.Cascade
     )
 
     def bill: Rep[Long] = column[Long]("bill_id")
+
     def billFK: ForeignKeyQuery[Bills, Bill] = foreignKey("fk_bill_items_bills_id", bill, bills)(bill =>
       bill.id, onDelete = ForeignKeyAction.Cascade
     )
@@ -205,6 +210,7 @@ trait DatabaseSchema {
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def bill: Rep[Long] = column[Long]("bill_id")
+
     def billFK: ForeignKeyQuery[Bills, Bill] = foreignKey("fk_bill_discounts_bills_id", bill, bills)(bill =>
       bill.id, onDelete = ForeignKeyAction.Cascade
     )
@@ -224,6 +230,7 @@ trait DatabaseSchema {
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def item: Rep[Long] = column[Long]("item_id")
+
     def itemFK: ForeignKeyQuery[BillItems, BillItem] = foreignKey("fk_item_discounts_items_id", item, billItems)(item =>
       item.id, ForeignKeyAction.Cascade
     )
@@ -235,12 +242,18 @@ trait DatabaseSchema {
 
   class ConsumptionThresholds(tag: Tag) extends Table[ConsumptionThreshold](tag, "consumption_thresholds") {
     def * : ProvenShape[ConsumptionThreshold] = {
-      val props = (id.?, from, to, award)
+      val props = (id.?, buyerCategory, from, to, award)
 
       props <> (ConsumptionThreshold.tupled, ConsumptionThreshold.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def buyerCategory: Rep[Long] = column[Long]("buyer_category_id")
+
+    def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_consumption_thresholds_buyer_categories_id", buyerCategory, buyerCategories)(category =>
+      category.id, ForeignKeyAction.Cascade
+    )
 
     def from: Rep[Int] = column[Int]("from")
 
@@ -277,11 +290,13 @@ trait DatabaseSchema {
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
     def discount: Rep[Long] = column[Long]("discount_id")
+
     def discountFK: ForeignKeyQuery[ActionDiscounts, ActionDiscount] = foreignKey("fk_action_discounts_product_categories_action_discounts_id", discount, actionDiscounts)(discount =>
       discount.id, onDelete = ForeignKeyAction.Cascade
     )
 
     def category: Rep[Long] = column[Long]("category_id")
+
     def categoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_action_discounts_product_categories_product_categories_id", category, productCategories)(category =>
       category.id, onDelete = ForeignKeyAction.Cascade
     )

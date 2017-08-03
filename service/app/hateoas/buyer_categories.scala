@@ -2,7 +2,7 @@ package hateoas
 
 import commons.CollectionLinks
 import domain.{BuyerCategory, ConsumptionThreshold}
-import relationships.{RelationshipLinks, ResponseRelationshipCollection}
+import relationships._
 
 package object buyer_categories {
 
@@ -60,18 +60,23 @@ package object buyer_categories {
 
   case class ConsumptionThresholdAttributes(from: Int, to: Int, award: Double)
 
-  case class ConsumptionThresholdRequestData(`type`: String, attributes: ConsumptionThresholdAttributes)
+  case class ConsumptionThresholdRequestRelationships(category: RequestRelationship)
+
+  case class ConsumptionThresholdRequestData(`type`: String, attributes: ConsumptionThresholdAttributes, relationships: ConsumptionThresholdRequestRelationships)
 
   case class ConsumptionThresholdRequest(data: ConsumptionThresholdRequestData) {
     def toDomain: ConsumptionThreshold =
       ConsumptionThreshold(
+        buyerCategory = data.relationships.category.data.id,
         from = data.attributes.from,
         to = data.attributes.to,
         award = data.attributes.award
       )
   }
 
-  case class ConsumptionThresholdResponseData(`type`: String, id: Long, attributes: ConsumptionThresholdAttributes)
+  case class ConsumptionThresholdResponseRelationships(category: ResponseRelationship)
+
+  case class ConsumptionThresholdResponseData(`type`: String, id: Long, attributes: ConsumptionThresholdAttributes, relationships: ConsumptionThresholdResponseRelationships)
 
   object ConsumptionThresholdResponseData {
     def fromDomain(threshold: ConsumptionThreshold): ConsumptionThresholdResponseData = {
@@ -82,6 +87,17 @@ package object buyer_categories {
           from = threshold.from,
           to = threshold.to,
           award = threshold.award
+        ),
+        relationships = ConsumptionThresholdResponseRelationships(
+          category = ResponseRelationship(
+            links = RelationshipLinks(
+              related = s"/api/buyer-categories/${threshold.buyerCategory}"
+            ),
+            data = RelationshipData(
+              `type` = BuyerCategoriesType,
+              id = threshold.buyerCategory
+            )
+          )
         )
       )
     }

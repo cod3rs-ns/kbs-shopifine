@@ -421,13 +421,24 @@ definitions:
       type:
         type: string
         enum:
-          - onsumption-thresholds
+          - consumption-thresholds
         description: Type of requested Consumption Thresholds
       attributes:
         $ref: '#/definitions/ThresholdAttributes'
+      relationships:
+        $ref: '#/definitions/ThresholdRequestRelationships'
     required:
       - type
       - attributes
+      - relationships
+  ThresholdRequestRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to buyer category we need to add threshold for
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - category
   ThresholdResponse:
     type: object
     properties:
@@ -463,10 +474,21 @@ definitions:
           example: 1
       attributes:
         $ref: '#/definitions/ThresholdAttributes'
+      relationships:
+        $ref: '#/definitions/ThresholdResponseRelationships'
     required:
       - type
       - id
       - attributes
+      - relationships
+  ThresholdResponseRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to threshold's buyer category
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - category
   ThresholdAttributes:
     type: object
     properties:
