@@ -1,7 +1,7 @@
 import commons.CollectionLinks
 import domain.Product
 import org.joda.time.DateTime
-import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
+import relationships._
 
 package object products {
 
@@ -49,7 +49,7 @@ package object products {
                                        status: String,
                                        minQuantity: Long)
 
-  case class ProductResponseRelationships(category: ResponseRelationship)
+  case class ProductResponseRelationships(category: ResponseRelationship, discounts: ResponseRelationshipCollection)
 
   case class ProductResponseData(`type`: String,
                                  id: Long,
@@ -75,6 +75,11 @@ package object products {
             related = s"/api/products/${product.id.get}/product-categories/${product.categoryId}"
           ),
           data = RelationshipData(ProductCategories, product.categoryId)
+        ),
+        discounts = ResponseRelationshipCollection(
+          links = RelationshipLinks(
+            related = s"api/product-categories/${product.categoryId}/action-discounts"
+          )
         )
       )
 

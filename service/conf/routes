@@ -1132,7 +1132,7 @@ GET     /api/action-discounts               controllers.ActionDiscounts.retrieve
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/buyer-categories/:id/action-discounts    controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/product-categories/:id/action-discounts    controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ### NoDocs ###
 GET     /assets/*file       controllers.Assets.versioned(path = "/public", file: Asset)
