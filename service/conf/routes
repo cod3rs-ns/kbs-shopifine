@@ -598,6 +598,11 @@ GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.re
 ###
 #  summary: Retrieve all bills
 #  parameters:
+#    - name: filter[status]
+#      description: Value for filtering bills by status.
+#      in: query
+#      type: string
+#      required: false
 #    - name: page[offset]
 #      description: Identifier of a position to start retrieving items from.
 #      in: query
