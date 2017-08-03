@@ -145,13 +145,20 @@ ADD CONSTRAINT
 FOREIGN KEY (item_id) REFERENCES bill_items(id);
 
 CREATE TABLE consumption_thresholds (
-  id              INT NOT NULL AUTO_INCREMENT,
-  `from`          INT NOT NULL,
-  `to`            INT NOT NULL,
-  award           DOUBLE NOT NULL,
+  id                  INT NOT NULL AUTO_INCREMENT,
+  buyer_category_id   INT NOT NULL,
+  `from`              INT NOT NULL,
+  `to`                INT NOT NULL,
+  award               DOUBLE NOT NULL,
 
   PRIMARY KEY (id)
 );
+
+ALTER TABLE
+  consumption_thresholds
+ADD CONSTRAINT
+  fk_consumption_thresholds_buyer_categories_id
+FOREIGN KEY (buyer_category_id) REFERENCES buyer_categories(id);
 
 CREATE TABLE action_discounts (
   id              INT NOT NULL AUTO_INCREMENT,
