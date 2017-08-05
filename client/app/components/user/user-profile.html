@@ -75,6 +75,28 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALE_MANAGER'">
+                <div class="innerWrapper profile">
+                    <!-- Buyer Categories -->
+                    <div class="row" ng-repeat="category in profileVm.buyerCategories.data">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <label for="new-buyer-category-name">Buyer Category Name</label>
+                            <input id="new-buyer-category-name" type="text" ng-model="profileVm.buyerCategories.new.name"/>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary">Add New</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
         </div>
     </div>
 </section>
