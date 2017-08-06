@@ -6,8 +6,6 @@ import relationships._
 
 package object bill_items {
 
-  // FIXME Expand with discounts relationship
-
   case class BillItemRequestAttributes(price: Double, quantity: Int, discount: Double)
 
   case class BillItemRequestRelationships(product: RequestRelationship, bill: RequestRelationship)
