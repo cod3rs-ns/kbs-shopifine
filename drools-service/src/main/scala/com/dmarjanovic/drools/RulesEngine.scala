@@ -18,7 +18,7 @@ object RulesEngine {
 
     session.insert(item)
 
-    println(session.fireAllRules())
+    session.fireAllRules()
     session.dispose()
   }
 

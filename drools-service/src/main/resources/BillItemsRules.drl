@@ -8,38 +8,38 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Consu
     when
         $item: BillItem(quantity > 20 && product.category.consumerGoods == false)
     then
-//        final Bill bill = $bill;
-        new BillItemDiscount(null, Option.apply($item), 10, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 10, DiscountType.BASIC);
+        System.out.println(discount);
 end
 
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'TVs'"
     when
         $item: BillItem(quantity > 5 && "TVs".equalsIgnoreCase(product.category.name))
     then
-//        final Bill bill = $bill;
-        new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        System.out.println(discount);
 end
 
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Computers'"
     when
         $item: BillItem(quantity > 5 && "Computers".equalsIgnoreCase(product.category.name))
     then
-//        final Bill bill = $bill;
-        new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        System.out.println(discount);
 end
 
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Laptops'"
     when
         $item: BillItem(quantity > 5 && "Laptops".equalsIgnoreCase(product.category.name))
     then
-//        final Bill bill = $bill;
-        new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        System.out.println(discount);
 end
 
 rule "Determine if Bill Item achieves Basic Discount based on item price and Consumer Goods category"
     when
         $item: BillItem(product.price > 5000 && product.category.consumerGoods == true)
     then
-//        final Bill bill = $bill;
-        new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
+        System.out.println(discount);
 end

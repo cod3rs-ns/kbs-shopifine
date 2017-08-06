@@ -7,7 +7,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
 import com.dmarjanovic.drools.domain.Product
-import com.dmarjanovic.drools.hateoas.{CollectionLinks, ProductCollectionResponse, ProductCollectionResponseJson}
+import com.dmarjanovic.drools.hateoas.{BillItemRequest, CollectionLinks, ProductCollectionResponse, ProductCollectionResponseJson}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.slf4j.LoggerFactory
 
@@ -55,9 +55,20 @@ object DroolsService extends JsonSupport {
                   retrieveProductsFrom(ProductsUrl)
                 }
               }.map(_ => {
-                Engine.determineProductWeNeedToFillStock(products)
+                RulesEngine.determineProductWeNeedToFillStock(products)
                 ProductCollectionResponseJson.fromDomain(products, links = CollectionLinks(self = "self"))
               })
+            }
+          }
+        }
+
+        path("bill-item") {
+          put {
+            entity(as[BillItemRequest]) { spec =>
+              spec.toDomain.map(item => {
+                RulesEngine.calculateBillItemDiscounts(item)
+              })
+              complete("test")
             }
           }
         }

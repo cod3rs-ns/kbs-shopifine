@@ -1,7 +1,11 @@
 package com.dmarjanovic.drools.hateoas
 
 import com.dmarjanovic.drools.domain.{Product, ProductStatus}
+import com.dmarjanovic.drools.external.ProductCategoriesProxy
 import org.joda.time.DateTime
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class ProductResponseAttributes(name: String,
                                      imageUrl: String,
@@ -65,6 +69,27 @@ object ProductResponseDataJson {
       id = product.id.get,
       attributes = attributes,
       relationships = relationships
+    )
+  }
+}
+
+case class ProductResponse(data: ProductResponseData) {
+  def toDomain: Future[Product] = {
+    ProductCategoriesProxy.retrieveCategory(data.relationships.category.data.id).flatMap(category =>
+      Future.successful(
+        Product(
+          id = Some(data.id),
+          name = data.attributes.name,
+          imageUrl = data.attributes.imageUrl,
+          category = Some(category),
+          price = data.attributes.price,
+          quantity = data.attributes.quantity,
+          createdAt = DateTime.parse(data.attributes.createdAt),
+          fillStock = data.attributes.fillStock,
+          status = ProductStatus.valueOf(data.attributes.status.toUpperCase),
+          minQuantity = data.attributes.minQuantity
+        )
+      )
     )
   }
 }
