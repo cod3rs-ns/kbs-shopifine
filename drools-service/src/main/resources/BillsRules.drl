@@ -1,0 +1,31 @@
+import java.util.List
+import com.dmarjanovic.drools.domain.*
+import scala.collection.JavaConversions
+import org.joda.time.DateTime
+import scala.Option
+
+rule "Determine if Bill achieves Basic Discount based on Amount"
+    when
+        $bill: Bill(amount > 200000)
+    then
+        final Bill bill = $bill;
+        new BillDiscount(null, Option.apply(bill), 5, DiscountType.BASIC);
+end
+
+rule "Determine if Bill achieves Basic Discount based on Old Customer"
+    when
+        $bill: Bill(customer.registeredAt() < DateTime.now().minusYears(2))
+    then
+        final Bill bill = $bill;
+        new BillDiscount(null, Option.apply(bill), 1, DiscountType.BASIC);
+end
+
+rule "Determine if Bill achieves Basic Discount based on Customer Category"
+    when
+        $bill: Bill(customer.buyerCategory.name.equals("Gold Category") || customer.buyerCategory.name.equals("Silver Category"))
+    then
+        final Bill bill = $bill;
+        new BillDiscount(null, Option.apply(bill), 1, DiscountType.BASIC);
+end
+
+
