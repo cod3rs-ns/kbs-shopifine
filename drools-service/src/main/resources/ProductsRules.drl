@@ -1,0 +1,9 @@
+import java.util.List
+import com.dmarjanovic.drools.domain.*
+
+rule "Determine if Product needs to be filled in Stock"
+    when
+        $product: Product(quantity < minQuantity)
+    then
+        $product.fillStock_$eq(true);
+end
