@@ -1,4 +1,5 @@
 import Dependencies._
+import Resolvers._
 
 lazy val buildSettings = Seq(
   name := "Drools Service",
@@ -7,12 +8,15 @@ lazy val buildSettings = Seq(
   scalaVersion := "2.11.11"
 )
 
-lazy val coreLibs = Seq(akkaHttp)
+lazy val coreLibs = Seq(akkaHttp, xstream)
 
-lazy val utils = Seq(akkaLogger, logback, logbackColorizer)
+lazy val droolsLibs = Seq(droolsCore, droolsCompiler, droolsJsr, droolsDecisionTables, droolsKnowledgeApi)
+
+lazy val utils = Seq(akkaLogger, logback, logbackColorizer, jodaTime)
 
 lazy val root = (project in file("."))
   .settings(buildSettings: _*)
   .settings(
-    libraryDependencies ++= (coreLibs ++ utils)
+    resolvers ++= Seq(jBoss),
+    libraryDependencies ++= (coreLibs ++ droolsLibs ++ utils)
   )
