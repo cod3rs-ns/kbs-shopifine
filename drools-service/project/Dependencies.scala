@@ -19,4 +19,5 @@ object Dependencies {
   val logback: ModuleID = "ch.qos.logback" % "logback-classic" % "1.1.8"
   val logbackColorizer: ModuleID = "org.tuxdude.logback.extensions" % "logback-colorizer" % "1.0.1"
   val jodaTime: ModuleID = "joda-time" % "joda-time" % "2.3"
+  val sprayJson: ModuleID = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.8"
 }
