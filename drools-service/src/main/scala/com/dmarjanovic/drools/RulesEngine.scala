@@ -1,6 +1,6 @@
 package com.dmarjanovic.drools
 
-import com.dmarjanovic.drools.domain.{BillItem, Product}
+import com.dmarjanovic.drools.domain.{Bill, BillItem, Product}
 
 object RulesEngine {
 
@@ -17,6 +17,15 @@ object RulesEngine {
     val session = Kie.newSession
 
     session.insert(item)
+
+    session.fireAllRules()
+    session.dispose()
+  }
+
+  def calculateBillDiscounts(bill: Bill): Unit = {
+    val session = Kie.newSession
+
+    session.insert(bill)
 
     session.fireAllRules()
     session.dispose()
