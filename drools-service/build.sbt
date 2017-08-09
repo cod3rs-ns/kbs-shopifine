@@ -14,9 +14,11 @@ lazy val droolsLibs = Seq(droolsCore, droolsCompiler, droolsJsr, droolsDecisionT
 
 lazy val utils = Seq(akkaLogger, logback, logbackColorizer, jodaTime, sprayJson)
 
+lazy val tests = Seq(scalaTest)
+
 lazy val root = (project in file("."))
   .settings(buildSettings: _*)
   .settings(
     resolvers ++= Seq(jBoss),
-    libraryDependencies ++= (coreLibs ++ droolsLibs ++ utils)
+    libraryDependencies ++= (coreLibs ++ droolsLibs ++ utils ++ tests)
   )

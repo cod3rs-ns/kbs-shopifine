@@ -20,4 +20,6 @@ object Dependencies {
   val logbackColorizer: ModuleID = "org.tuxdude.logback.extensions" % "logback-colorizer" % "1.0.1"
   val jodaTime: ModuleID = "joda-time" % "joda-time" % "2.3"
   val sprayJson: ModuleID = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.8"
+
+  val scalaTest: ModuleID =  "org.scalatest" % "scalatest_2.11" % "3.0.3" % Test
 }
