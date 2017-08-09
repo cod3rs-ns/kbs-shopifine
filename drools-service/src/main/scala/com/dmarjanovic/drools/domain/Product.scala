@@ -7,14 +7,14 @@ import scala.beans.BeanInfo
 @BeanInfo
 case class Product(id: Option[Long] = None,
                    name: String,
-                   imageUrl: String,
+                   imageUrl: String = "",
                    category: Option[ProductCategory] = None,
-                   price: Double,
-                   quantity: Long,
+                   price: Double = 0,
+                   quantity: Long = 0,
                    createdAt: DateTime,
                    var fillStock: Boolean = false,
                    status: ProductStatus = ProductStatus.ACTIVE,
-                   minQuantity: Long) {
+                   minQuantity: Long = 0) {
 
   def getCategory: ProductCategory = category.get
 
