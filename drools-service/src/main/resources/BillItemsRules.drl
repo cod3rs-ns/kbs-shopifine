@@ -4,42 +4,78 @@ import scala.collection.JavaConversions
 import org.joda.time.DateTime
 import scala.Option
 
+// Basic Discounts
+salience -2
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Consumer Goods category"
     when
         $item: BillItem(quantity > 20 && product.category.consumerGoods == false)
     then
-        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 10, DiscountType.BASIC);
-        System.out.println(discount);
+        final BillItemDiscount discount = new BillItemDiscount(Option.empty(), 10, DiscountType.BASIC);
+        $item.addDiscount(discount);
 end
 
+salience -4
+rule "Determine if Bill Item achieves Basic Discount based on item price and Consumer Goods category"
+    when
+        $item: BillItem(quantity * product.price > 5000 && product.category.consumerGoods == true)
+    then
+        final BillItemDiscount discount = new BillItemDiscount(Option.empty(), 7, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
+end
+
+salience -8
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'TVs'"
     when
         $item: BillItem(quantity > 5 && "TVs".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
-        System.out.println(discount);
+        final BillItemDiscount discount = new BillItemDiscount(Option.empty(), 5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
 end
 
+salience -8
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Computers'"
     when
         $item: BillItem(quantity > 5 && "Computers".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
-        System.out.println(discount);
+        final BillItemDiscount discount = new BillItemDiscount(Option.empty(), 5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
 end
 
+salience -8
 rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Laptops'"
     when
-        $item: BillItem(quantity > 5 && "Laptops".equalsIgnoreCase(product.category.name))
+        $item: BillItem(quantity > 5 && "Monitors".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
-        System.out.println(discount);
+        final BillItemDiscount discount = new BillItemDiscount(Option.empty(), 5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
 end
 
-rule "Determine if Bill Item achieves Basic Discount based on item price and Consumer Goods category"
+// Pro Discounts
+
+
+salience -16
+rule "Determine Bill Item discount and price"
     when
-        $item: BillItem(product.price > 5000 && product.category.consumerGoods == true)
+        $item: BillItem()
+        $total: Double() from accumulate(BillItemDiscount($discount: discount) from JavaConversions.seqAsJavaList($item.discounts), sum($discount))
     then
-        final BillItemDiscount discount = new BillItemDiscount(null, Option.apply($item), 5, DiscountType.BASIC);
-        System.out.println(discount);
+        final double maxDiscount = $item.getProduct().getCategory().maxDiscount();
+        if ($total < maxDiscount) {
+            final double itemDiscount = $total;
+            $item.discount_$eq(itemDiscount);
+        }
+        else {
+            $item.discount_$eq(maxDiscount);
+        }
+
+        $item.discountAmount_$eq($item.quantity() * $item.price() * $item.discount() / 100.0);
+        $item.amount_$eq($item.quantity() * $item.price() * (100.0 - $item.discount()) / 100.0);
 end

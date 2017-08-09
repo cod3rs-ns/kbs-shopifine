@@ -2,7 +2,7 @@ import java.util.List
 import com.dmarjanovic.drools.domain.*
 import scala.collection.JavaConversions
 
-rule "Calculate Gained Points for Bill"
+rule "Calculate Gained Points for Bill" salience -32
     when
         $bill: Bill($thresholds: customer.buyerCategory.thresholds)
     then
