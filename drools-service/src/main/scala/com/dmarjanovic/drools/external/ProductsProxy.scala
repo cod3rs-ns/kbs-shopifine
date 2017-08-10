@@ -28,10 +28,9 @@ object ProductsProxy extends JsonSupport {
 
     Http().singleRequest(HttpRequest(uri = url))
       .flatMap(response => {
-        Unmarshal(response.entity).to[ProductCollectionResponse].map(json => {
-          println(json.links.next)
+        Unmarshal(response.entity).to[ProductCollectionResponse].map(json =>
           json.data.map(_.toDomain)
-        })
+        )
       })
   }
 

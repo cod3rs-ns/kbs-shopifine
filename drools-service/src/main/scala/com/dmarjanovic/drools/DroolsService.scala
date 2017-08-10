@@ -17,7 +17,7 @@ object DroolsService extends JsonSupport {
 
     implicit val executionContext = system.dispatcher
 
-    val route =
+    val routes =
       pathPrefix("api") {
         path("products") {
           put {
@@ -28,25 +28,33 @@ object DroolsService extends JsonSupport {
               })
             }
           }
-        }
-
-        path("bill-item") {
-          put {
-            entity(as[BillItemRequest]) { spec =>
-              spec.toDomain.map(item => {
-                RulesEngine.calculateBillItemDiscounts(item)
-              })
-              complete("test")
+        } ~
+          pathPrefix("bill-items") {
+            path("discounts") {
+              put {
+                entity(as[BillItemRequest]) { spec =>
+                  spec.toDomain.map(item => {
+                    RulesEngine.calculateBillItemDiscounts(item)
+                  })
+                  complete("Should handle Bill Item discounts and Price")
+                }
+              }
             }
-          }
-        }
+          } ~
+            pathPrefix("bills") {
+              path("discounts") {
+                put {
+                  complete("Should handle Bill discounts and Price")
+                  }
+                }
+              }
       }
 
     val config: Config = ConfigFactory.load()
     val host: String = config.getString("http.host")
     val port: Int = config.getInt("http.port")
 
-    Http().bindAndHandle(handler = route, interface = host, port = port)
+    Http().bindAndHandle(handler = routes, interface = host, port = port)
 
   }
 }
