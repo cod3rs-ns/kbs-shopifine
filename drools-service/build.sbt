@@ -8,7 +8,7 @@ lazy val buildSettings = Seq(
   scalaVersion := "2.11.11"
 )
 
-lazy val coreLibs = Seq(akkaHttp, xstream)
+lazy val coreLibs = Seq(akkaHttp)
 
 lazy val droolsLibs = Seq(droolsCore, droolsCompiler, droolsJsr, droolsDecisionTables, droolsKnowledgeApi)
 

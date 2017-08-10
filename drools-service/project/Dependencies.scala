@@ -8,8 +8,6 @@ object Dependencies {
   val akkaHttp: ModuleID = "com.typesafe.akka" % "akka-http_2.11" % AkkaHttpVersion
   val akkaLogger: ModuleID = "com.typesafe.akka" % "akka-slf4j_2.11" % AkkaVersion
 
-  val xstream: ModuleID = "com.thoughtworks.xstream" % "xstream" % "1.4.10"
-
   val droolsCore: ModuleID = "org.drools" % "drools-core" % DroolsVersion
   val droolsCompiler: ModuleID = "org.drools" % "drools-compiler" % DroolsVersion
   val droolsJsr: ModuleID = "org.drools" % "drools-jsr94" % DroolsVersion
