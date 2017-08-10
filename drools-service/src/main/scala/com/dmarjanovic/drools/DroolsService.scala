@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import com.dmarjanovic.drools.external.ProductsProxy
+import com.dmarjanovic.drools.external.{ProductsProxy, BillsProxy}
 import com.dmarjanovic.drools.hateoas.{BillItemRequest, CollectionLinks, ProductCollectionResponseJson}
 import com.typesafe.config.{Config, ConfigFactory}
 
@@ -33,21 +33,30 @@ object DroolsService extends JsonSupport {
             path("discounts") {
               put {
                 entity(as[BillItemRequest]) { spec =>
-                  spec.toDomain.map(item => {
-                    RulesEngine.calculateBillItemDiscounts(item)
-                  })
-                  complete("Should handle Bill Item discounts and Price")
+                  complete {
+                    spec.toDomain.map(item => {
+                      RulesEngine.calculateBillItemDiscounts(item)
+                      "Should handle Bill Item discounts and Price"
+                    })
+                  }
                 }
               }
             }
           } ~
-            pathPrefix("bills") {
-              path("discounts") {
+          pathPrefix("users") {
+            path(IntNumber / "bills" / IntNumber / "discounts") {
+              (userId, billId) => {
                 put {
-                  complete("Should handle Bill discounts and Price")
+                  complete {
+                    BillsProxy.retrieveBill(userId, billId).map(bill => {
+                      RulesEngine.calculateBillDiscounts(bill)
+                      "Should handle Bill discounts and Price"
+                    })
                   }
                 }
               }
+            }
+          }
       }
 
     val config: Config = ConfigFactory.load()
