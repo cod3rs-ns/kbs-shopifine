@@ -1,7 +1,11 @@
 package com.dmarjanovic.drools.hateoas
 
 import com.dmarjanovic.drools.domain.{Bill, BillState}
+import com.dmarjanovic.drools.external.CustomersProxy
 import org.joda.time.DateTime
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
 case class BillResponseAttributes(createdAt: String,
@@ -17,17 +21,19 @@ case class BillResponseRelationships(customer: ResponseRelationship, items: Resp
 case class BillResponseData(`type`: String, id: Long, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
 
 case class BillResponse(data: BillResponseData) {
-  def toDomain: Bill = {
-    Bill(
-      id = Some(data.id),
-      createdAt = DateTime.parse(data.attributes.createdAt),
-      customer = None,
-      state = BillState.valueOf(data.attributes.state.toUpperCase),
-      amount = data.attributes.amount,
-      discount = data.attributes.discount,
-      discountAmount = data.attributes.discountAmount,
-      pointsSpent = data.attributes.pointsSpent,
-      pointsGained = data.attributes.pointsGained
+  def toDomain: Future[Bill] = {
+    CustomersProxy.retrieveUser(data.relationships.customer.data.id).map(customer =>
+      Bill(
+        id = Some(data.id),
+        createdAt = DateTime.parse(data.attributes.createdAt),
+        customer = Some(customer),
+        state = BillState.valueOf(data.attributes.state.toUpperCase),
+        amount = data.attributes.amount,
+        discount = data.attributes.discount,
+        discountAmount = data.attributes.discountAmount,
+        pointsSpent = data.attributes.pointsSpent,
+        pointsGained = data.attributes.pointsGained
+      )
     )
   }
 }

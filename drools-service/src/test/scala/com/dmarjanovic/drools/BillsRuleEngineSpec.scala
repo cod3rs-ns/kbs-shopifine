@@ -103,7 +103,6 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
   def customer(registeredAt: DateTime = DateTime.now, categoryName: String = "test-buyer-category"): User =
     User(
       username = "test-username",
-      password = "test-password",
       firstName = "test-first-name",
       lastName = "test-last-name",
       role = UserRole.CUSTOMER,
@@ -117,7 +116,6 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
   def customerWithThresholds(category: BuyerCategory): User =
     User(
     username = "test-username",
-    password = "test-password",
     firstName = "test-first-name",
     lastName = "test-last-name",
     role = UserRole.CUSTOMER,

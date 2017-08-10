@@ -35,4 +35,10 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val billItemReqData: RootJsonFormat[BillItemRequestData] = jsonFormat3(BillItemRequestData)
   implicit val billItemReq: RootJsonFormat[BillItemRequest] = jsonFormat1(BillItemRequest)
 
+  implicit val customerResAttr: RootJsonFormat[CustomerResponseAttributes] = jsonFormat6(CustomerResponseAttributes)
+  implicit val customerResRels: RootJsonFormat[CustomerResponseRelationships] = jsonFormat1(CustomerResponseRelationships)
+  implicit val customerResMeta: RootJsonFormat[CustomerResponseMeta] = jsonFormat1(CustomerResponseMeta)
+  implicit val customerResData: RootJsonFormat[CustomerResponseData] = jsonFormat5(CustomerResponseData)
+  implicit val customerRes: RootJsonFormat[CustomerResponse] = jsonFormat1(CustomerResponse)
+
 }

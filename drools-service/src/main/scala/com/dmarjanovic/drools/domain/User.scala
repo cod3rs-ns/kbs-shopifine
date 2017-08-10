@@ -7,7 +7,6 @@ import scala.beans.BeanInfo
 @BeanInfo
 case class User(id: Option[Long] = None,
                 username: String,
-                password: String,
                 firstName: String,
                 lastName: String,
                 role: UserRole,

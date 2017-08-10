@@ -49,6 +49,7 @@ object DroolsService extends JsonSupport {
                 put {
                   complete {
                     BillsProxy.retrieveBill(userId, billId).map(bill => {
+                      println(bill)
                       RulesEngine.calculateBillDiscounts(bill)
                       "Should handle Bill discounts and Price"
                     })
