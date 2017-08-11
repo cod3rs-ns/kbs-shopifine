@@ -263,6 +263,33 @@ GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
 POST    /api/buyer-categories                           controllers.BuyerCategories.create()
 
 ###
+#  summary: Retrieves buyer category
+#  parameters:
+#    - name: id
+#      description: Buyer category id
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  tags:
+#    - Buyer Categories
+#  responses:
+#    200:
+#      description: Buyer category successfully retrieved.
+#      schema:
+#        $ref: '#/definitions/BuyerCategoryResponse'
+#    404:
+#      description: Buyer category doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/buyer-categories/:id                       controllers.BuyerCategories.retrieveOne(id: Long)
+
+###
 #  summary: Modifies buyer category
 #  parameters:
 #    - name: id

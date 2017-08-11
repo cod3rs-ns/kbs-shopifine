@@ -34,6 +34,20 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
     )
   }
 
+  def retrieveOne(id: Long): Action[AnyContent] = Action.async {
+    buyerCategories.retrieveOne(id) map {
+      case Some(category) =>
+        Ok(Json.toJson(
+          BuyerCategoryResponse.fromDomain(category)
+        ))
+
+      case None =>
+        NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $id doesn't exist!")))
+        ))
+    }
+  }
+
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager, Customer)).async { implicit request =>
     buyerCategories.retrieveAll(offset, limit).map(categories => {
       val self = routes.BuyerCategories.retrieveAll(offset, limit).absoluteURL()
