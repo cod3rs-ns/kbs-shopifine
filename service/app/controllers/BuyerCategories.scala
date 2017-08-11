@@ -81,36 +81,63 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository, thresh
   }
 
   def retrieveThresholds(buyerCategoryId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager, Customer)).async { implicit request =>
-    // FIXME Buyer Category doesn't exist
-    thresholds.retrieveByBuyerCategory(buyerCategoryId, offset, limit).map(result => {
-      val self = routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset, limit).absoluteURL()
-      val next = if (limit == result.length) Some(routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset + limit, limit).absoluteURL()) else None
+    buyerCategories.retrieveOne(buyerCategoryId) flatMap {
+      case Some(_) =>
+        thresholds.retrieveByBuyerCategory(buyerCategoryId, offset, limit).map(result => {
+          val self = routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset, limit).absoluteURL()
+          val next = if (limit == result.length) Some(routes.BuyerCategories.retrieveThresholds(buyerCategoryId, offset + limit, limit).absoluteURL()) else None
 
-      Ok(Json.toJson(
-        ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
-      ))
-    })
+          Ok(Json.toJson(
+            ConsumptionThresholdCollectionResponse.fromDomain(result, CollectionLinks(self = self, next = next))
+          ))
+        })
+
+      case None => Future.successful(
+        NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $buyerCategoryId doesn't exist!")))
+        ))
+      )
+    }
   }
 
   def addThreshold(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
-    // FIXME Buyer Category doesn't exist
     request.body.validate[ConsumptionThresholdRequest].fold(
       failures => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
       spec =>
-        thresholds.save(spec.toDomain).map(threshold =>
-          Created(Json.toJson(
-            ConsumptionThresholdResponse.fromDomain(threshold)
-          ))
-        )
+        buyerCategories.retrieveOne(id) flatMap {
+          case Some(category) =>
+            val threshold = spec.toDomain
+            thresholds.retrieveByBuyerCategory(category.id.get).flatMap(saved => {
+              if (saved.forall(t => !isValueBetween(threshold.from, t.from, t.to) && !isValueBetween(threshold.to, t.from, t.to) && !isValueBetween(t.from, threshold.to, t.to))) {
+                thresholds.save(threshold).map(threshold =>
+                  Created(Json.toJson(
+                    ConsumptionThresholdResponse.fromDomain(threshold)
+                  ))
+                )
+              } else {
+                Future.successful(Conflict(Json.toJson(
+                  ErrorResponse(errors = Seq(Error(CONFLICT.toString, "Overlap between thresholds.")))
+                )))
+              }
+            })
+
+          case None => Future.successful(
+            NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Buyer Category $id doesn't exist!")))
+            ))
+          )
+        }
     )
   }
 
+  private def isValueBetween(value: Long, from: Long, to: Long): Boolean = from <= value && value <= to
+
   def removeThreshold(categoryId: Long, thresholdId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async {
     buyerCategories.retrieveOne(categoryId) flatMap {
-      case Some(category) =>
+      case Some(_) =>
         thresholds.delete(thresholdId).map(affected =>
           if (affected > 0) {
             NoContent

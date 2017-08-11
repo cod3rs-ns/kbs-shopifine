@@ -430,6 +430,10 @@ GET     /api/buyer-categories/:id/thresholds            controllers.BuyerCategor
 #      description: Buyer Category doesn't exist.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    409:
+#      description: Overlap between thresholds.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
