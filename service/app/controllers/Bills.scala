@@ -22,7 +22,7 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
   import secure.Roles._
 
   def create(userId: Long): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -45,7 +45,7 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
   }
 
   def retrieveAllByUser(userId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -63,7 +63,7 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
   }
 
   def retrieveOneByUser(userId: Long, billId: Long): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -120,7 +120,7 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
   }
 
   def addBillItem(userId: Long, billId: Long): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -151,7 +151,7 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
   }
 
   def retrieveBillItems(userId: Long, billId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))

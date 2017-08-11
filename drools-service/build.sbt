@@ -8,15 +8,17 @@ lazy val buildSettings = Seq(
   scalaVersion := "2.11.11"
 )
 
-lazy val coreLibs = Seq(akkaHttp, xstream)
+lazy val coreLibs = Seq(akkaHttp)
 
 lazy val droolsLibs = Seq(droolsCore, droolsCompiler, droolsJsr, droolsDecisionTables, droolsKnowledgeApi)
 
-lazy val utils = Seq(akkaLogger, logback, logbackColorizer, jodaTime)
+lazy val utils = Seq(akkaLogger, logback, logbackColorizer, jodaTime, sprayJson)
+
+lazy val tests = Seq(scalaTest)
 
 lazy val root = (project in file("."))
   .settings(buildSettings: _*)
   .settings(
     resolvers ++= Seq(jBoss),
-    libraryDependencies ++= (coreLibs ++ droolsLibs ++ utils)
+    libraryDependencies ++= (coreLibs ++ droolsLibs ++ utils ++ tests)
   )
