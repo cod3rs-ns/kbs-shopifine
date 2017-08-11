@@ -134,10 +134,11 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
         spec => {
           bills.retrieveOne(billId) flatMap {
             case Some(bill) =>
-              billItems.save(spec.toDomain).map(billItem =>
+              billItems.save(spec.toDomain).map(billItem => {
                 Created(Json.toJson(
                   BillItemResponse.fromDomain(billItem, bill.id.get)
                 ))
+              }
               )
 
             case None => Future.successful(NotFound(Json.toJson(

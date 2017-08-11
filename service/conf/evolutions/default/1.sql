@@ -90,7 +90,7 @@ FOREIGN KEY (customer) REFERENCES users(id);
 
 CREATE TABLE bill_items (
   id              INT NOT NULL AUTO_INCREMENT,
-  ordinal         INT NOT NULL,
+  ordinal         INT DEFAULT 1 NOT NULL,
   product_id      INT NOT NULL,
   bill_id         INT NOT NULL,
   price           DOUBLE NOT NULL,
@@ -113,6 +113,12 @@ ALTER TABLE
 ADD CONSTRAINT
   fk_bill_items_bills_id
 FOREIGN KEY (bill_id) REFERENCES bills(id);
+
+CREATE TRIGGER trigger_update_bill_item_ordinal
+  BEFORE INSERT ON bill_items
+FOR EACH ROW BEGIN
+  SET NEW.ordinal = (SELECT COUNT(*) FROM bill_items WHERE bill_id = NEW.bill_id) + 1;;
+END;
 
 CREATE TABLE bill_discounts (
   id              INT NOT NULL AUTO_INCREMENT,
@@ -201,6 +207,7 @@ ALTER TABLE products DROP FOREIGN KEY fk_products_product_categories_id;
 DROP TABLE IF EXISTS bills;
 ALTER TABLE bills DROP FOREIGN KEY fk_bills_users_id;
 DROP TABLE IF EXISTS bill_items;
+DROP TRIGGER IF EXISTS trigger_update_bill_item_ordinal;
 ALTER TABLE bill_items DROP FOREIGN KEY fk_bill_items_products_id;
 ALTER TABLE bill_items DROP FOREIGN KEY fk_bill_items_bills_id;
 DROP TABLE IF EXISTS bill_discounts;
