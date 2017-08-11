@@ -9,6 +9,11 @@ object RulesEngine {
 
     products map session.insert
 
+    session
+      .getAgenda
+      .getAgendaGroup(ProductsAgenda)
+      .setFocus()
+
     session.fireAllRules()
     session.dispose()
   }
@@ -17,6 +22,11 @@ object RulesEngine {
     val session = Kie.newSession
 
     session.insert(item)
+
+    session
+      .getAgenda
+      .getAgendaGroup(BillItemsAgenda)
+      .setFocus()
 
     session.fireAllRules()
     session.dispose()
@@ -27,9 +37,18 @@ object RulesEngine {
 
     session.insert(bill)
 
+    session
+      .getAgenda
+      .getAgendaGroup(BillsAgenda)
+      .setFocus()
+
     session.fireAllRules()
     session.dispose()
   }
+
+  private val BillItemsAgenda = "bill-item-bonuses"
+  private val BillsAgenda = "bill-bonuses"
+  private val ProductsAgenda = "products-stock-fill"
 
 }
 

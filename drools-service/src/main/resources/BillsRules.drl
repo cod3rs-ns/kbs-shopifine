@@ -5,6 +5,7 @@ import org.joda.time.DateTime
 import scala.Option
 
 rule "Determine if Bill achieves Basic Discount based on Amount"
+    agenda-group "bill-bonuses"
     when
         $bill: Bill(amount > 200000)
     then
@@ -13,6 +14,7 @@ rule "Determine if Bill achieves Basic Discount based on Amount"
 end
 
 rule "Determine if Bill achieves Pro Discount based on Old Customer"
+    agenda-group "bill-bonuses"
     when
         $bill: Bill(customer.registeredAt() < DateTime.now().minusYears(2))
     then
@@ -21,6 +23,7 @@ rule "Determine if Bill achieves Pro Discount based on Old Customer"
 end
 
 rule "Determine if Bill achieves Pro Discount based on Customer Category"
+    agenda-group "bill-bonuses"
     when
         $bill: Bill(customer.buyerCategory.name.equals("Gold Category") || customer.buyerCategory.name.equals("Silver Category"))
     then
@@ -29,6 +32,7 @@ rule "Determine if Bill achieves Pro Discount based on Customer Category"
 end
 
 rule "Determine if Bill achieves Pro Discount based on Amount"
+    agenda-group "bill-bonuses"
     when
         $bill: Bill(amount > 50000)
     then
@@ -36,7 +40,9 @@ rule "Determine if Bill achieves Pro Discount based on Amount"
         bill.addDiscount(new BillDiscount(Option.empty(), 3, DiscountType.PRO));
 end
 
-rule "Determine Bill discount and price"
+rule "Determine final Bill discount and price"
+    salience -16
+    agenda-group "bill-bonuses"
     when
         $bill: Bill()
         $total: Double() from accumulate(BillDiscount($discount: discount) from JavaConversions.seqAsJavaList($bill.discounts), sum($discount))
