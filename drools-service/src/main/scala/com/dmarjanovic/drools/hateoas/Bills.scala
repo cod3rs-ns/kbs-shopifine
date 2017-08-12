@@ -1,6 +1,6 @@
 package com.dmarjanovic.drools.hateoas
 
-import com.dmarjanovic.drools.domain.{Bill, BillState}
+import com.dmarjanovic.drools.domain.Bill
 import com.dmarjanovic.drools.external.CustomersProxy
 import org.joda.time.DateTime
 
@@ -27,7 +27,6 @@ case class BillResponse(data: BillResponseData) {
         id = Some(data.id),
         createdAt = DateTime.parse(data.attributes.createdAt),
         customer = Some(customer),
-        state = BillState.valueOf(data.attributes.state.toUpperCase),
         amount = data.attributes.amount,
         discount = data.attributes.discount,
         discountAmount = data.attributes.discountAmount,

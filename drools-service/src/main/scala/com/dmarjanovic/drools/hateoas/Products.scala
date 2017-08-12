@@ -1,20 +1,12 @@
 package com.dmarjanovic.drools.hateoas
 
-import com.dmarjanovic.drools.domain.{Product, ProductStatus}
+import com.dmarjanovic.drools.domain.Product
 import com.dmarjanovic.drools.external.ProductCategoriesProxy
-import org.joda.time.DateTime
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-case class ProductResponseAttributes(name: String,
-                                     imageUrl: String,
-                                     price: Double,
-                                     quantity: Long,
-                                     createdAt: String,
-                                     fillStock: Boolean,
-                                     status: String,
-                                     minQuantity: Long)
+case class ProductResponseAttributes(quantity: Long, fillStock: Boolean, minQuantity: Long)
 
 case class ProductResponseRelationships(category: ResponseRelationship, discounts: ResponseRelationshipCollection)
 
@@ -25,13 +17,8 @@ case class ProductResponseData(`type`: String,
   def toDomain: Product = {
     Product(
       id = Some(id),
-      name = attributes.name,
-      imageUrl = attributes.imageUrl,
-      price = attributes.price,
       quantity = attributes.quantity,
-      createdAt = DateTime.parse(attributes.createdAt),
       fillStock = attributes.fillStock,
-      status = ProductStatus.valueOf(attributes.status),
       minQuantity = attributes.minQuantity
     )
   }
@@ -40,13 +27,8 @@ case class ProductResponseData(`type`: String,
 object ProductResponseDataJson {
   def fromDomain(product: Product): ProductResponseData = {
     val attributes = ProductResponseAttributes(
-      name = product.name,
-      imageUrl = product.imageUrl,
-      price = product.price,
       quantity = product.quantity,
-      createdAt = product.createdAt.toString,
       fillStock = product.fillStock,
-      status = product.status.name,
       minQuantity = product.minQuantity
     )
 
@@ -79,14 +61,9 @@ case class ProductResponse(data: ProductResponseData) {
       Future.successful(
         Product(
           id = Some(data.id),
-          name = data.attributes.name,
-          imageUrl = data.attributes.imageUrl,
           category = Some(category),
-          price = data.attributes.price,
           quantity = data.attributes.quantity,
-          createdAt = DateTime.parse(data.attributes.createdAt),
           fillStock = data.attributes.fillStock,
-          status = ProductStatus.valueOf(data.attributes.status.toUpperCase),
           minQuantity = data.attributes.minQuantity
         )
       )

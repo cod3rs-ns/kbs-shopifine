@@ -24,7 +24,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must be (Seq())
+        bill.discounts must be(Seq())
       }
     }
 
@@ -51,19 +51,19 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
         RulesEngine.calculateBillDiscounts(bill)
 
         bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
-        bill.discounts.length must be (2)
+        bill.discounts.length must be(2)
       }
 
       "create all 'PRO' discounts" in new BillsFixture {
-          val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Category")), 150000)
+        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Category")), 150000)
 
-          RulesEngine.calculateBillDiscounts(bill)
+        RulesEngine.calculateBillDiscounts(bill)
 
-          bill.discounts must contain allOf (
-            BillDiscount(discount = 3, `type` = DiscountType.PRO),
-            BillDiscount(discount = 1, `type` = DiscountType.PRO)
-          )
-          bill.discounts.length must be (3)
+        bill.discounts must contain allOf(
+          BillDiscount(discount = 3, `type` = DiscountType.PRO),
+          BillDiscount(discount = 1, `type` = DiscountType.PRO)
+        )
+        bill.discounts.length must be(3)
       }
     }
 
@@ -78,9 +78,9 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
         val discount: Double = bill.discounts.map(_.discount).sum
         val billItemsSum: Double = bill.items.map(_.amount).sum
 
-        bill.discount must be (discount)
-        bill.discountAmount must be (discount / 100.0 * billItemsSum)
-        bill.amount must be ((1 - discount / 100.0) * billItemsSum)
+        bill.discount must be(discount)
+        bill.discountAmount must be(discount / 100.0 * billItemsSum)
+        bill.amount must be((1 - discount / 100.0) * billItemsSum)
       }
     }
 
@@ -95,33 +95,20 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.pointsGained must be (28200.0 * 15.0 / 100)
+        bill.pointsGained must be(28200.0 * 15.0 / 100)
       }
     }
   }
 
   def customer(registeredAt: DateTime = DateTime.now, categoryName: String = "test-buyer-category"): User =
     User(
-      username = "test-username",
-      firstName = "test-first-name",
-      lastName = "test-last-name",
-      role = UserRole.CUSTOMER,
       buyerCategory = Some(BuyerCategory(
         name = categoryName
       )),
-      address = Some("test-shipping-address"),
       registeredAt = registeredAt
     )
 
   def customerWithThresholds(category: BuyerCategory): User =
-    User(
-    username = "test-username",
-    firstName = "test-first-name",
-    lastName = "test-last-name",
-    role = UserRole.CUSTOMER,
-    buyerCategory = Some(category),
-    address = Some("test-shipping-address"),
-    registeredAt = DateTime.now
-  )
+    User(buyerCategory = Some(category), registeredAt = DateTime.now)
 
 }

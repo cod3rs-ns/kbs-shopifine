@@ -12,9 +12,7 @@ case class ProductCategoryResponseData(id: Long, `type`: String, attributes: Pro
 case class ProductCategoryResponse(data: ProductCategoryResponseData) {
   def toDomain: ProductCategory = {
     ProductCategory(
-      id = Some(data.id),
       name = data.attributes.name,
-      superCategory = None,
       maxDiscount = data.attributes.maxDiscount,
       isConsumerGoods = data.attributes.isConsumerGoods
     )

@@ -16,7 +16,6 @@ case class BuyerCategoryResponse(data: BuyerCategoryResponseData) {
   def toDomain: Future[BuyerCategory] =
     BuyerCategoriesProxy.retrieveThresholdsForBuyerCategory(data.id).map(thresholds =>
       BuyerCategory(
-        id = Some(data.id),
         name = data.attributes.name,
         thresholds = thresholds
       )
