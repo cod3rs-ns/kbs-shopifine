@@ -29,28 +29,26 @@ class SecuredAuthenticator @Inject()(users: UserRepository, jwt: JwtUtil, config
           )))
         ) { payload =>
           Json.parse(payload).validate[JwtPayload].fold(
-            failures => {
+            _ => {
               Future.successful(BadRequest(Json.toJson(
                 ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Invalid token.")))
               )))
             },
 
-            validPayload => {
-              users.findByUsername(validPayload.username).flatMap {
-                case Some(user) =>
-                  val role = user.role.toString
-                  if (role == validPayload.role && roles.contains(role))
-                    block(AuthRequest(Some(user), request))
-                  else
-                    Future.successful(Forbidden(Json.toJson(
-                      ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
-                    )))
-
-                case None =>
-                  Future.successful(Unauthorized(Json.toJson(
-                    ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Invalid credentials.")))
+            validPayload => users.findByUsername(validPayload.username).flatMap {
+              case Some(user) =>
+                val role = user.role.toString
+                if (role == validPayload.role && roles.contains(role))
+                  block(AuthRequest(Some(user), request))
+                else
+                  Future.successful(Forbidden(Json.toJson(
+                    ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
                   )))
-              }
+
+              case None =>
+                Future.successful(Unauthorized(Json.toJson(
+                  ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Invalid credentials.")))
+                )))
             }
           )
         }

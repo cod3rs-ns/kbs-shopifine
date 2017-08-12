@@ -30,4 +30,5 @@ class MySqlActionDiscountRepository @Inject()(protected val dbConfigProvider: Da
   override def retrieveByProductCategory(category: Long): Future[Seq[(ActionDiscount, ActionDiscountProductCategory)]] = {
     db.run((actionDiscounts join actionDiscountsProductCategories.filter(_.category === category) on (_.id === _.discount)).result)
   }
+
 }

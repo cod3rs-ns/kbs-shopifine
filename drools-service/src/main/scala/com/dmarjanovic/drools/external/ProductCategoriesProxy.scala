@@ -17,8 +17,8 @@ object ProductCategoriesProxy extends JsonSupport {
     Http().singleRequest(HttpRequest(uri = uri)
       .withHeaders(Authorization))
       .flatMap(response => {
-        Unmarshal(response.entity).to[ProductCategoryResponse].flatMap(json =>
-          Future.successful(json.toDomain)
+        Unmarshal(response.entity).to[ProductCategoryResponse].map(json =>
+          json.toDomain
         )
       })
   }

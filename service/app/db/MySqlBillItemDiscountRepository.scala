@@ -26,4 +26,5 @@ class MySqlBillItemDiscountRepository @Inject()(protected val dbConfigProvider: 
   override def retrieveAll(itemId: Long, offset: Int, limit: Int): Future[Seq[BillItemDiscount]] = {
     db.run(itemDiscounts.filter(_.item === itemId).drop(offset).take(limit).result)
   }
+
 }

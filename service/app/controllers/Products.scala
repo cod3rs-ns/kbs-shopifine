@@ -13,7 +13,9 @@ import services.ProductService
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Products @Inject()(products: ProductService, drools: DroolsProxy, secure: SecuredAuthenticator)
+class Products @Inject()(products: ProductService,
+                         drools: DroolsProxy,
+                         secure: SecuredAuthenticator)
                         (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._

@@ -18,25 +18,19 @@ class DroolsProxy @Inject()(ws: WSClient, config: Configuration)(implicit val ec
 
   private val DroolsServiceBaseUrl = config.getString("service.drools.url").getOrElse("N/A")
 
-  def calculateBillPriceAndDiscounts(userId: Long, billId: Long): Future[BillWithDiscountsResponse] = {
-    val request = ws.url(s"$DroolsServiceBaseUrl/api/users/$userId/bills/$billId/discounts")
+  def calculateBillPriceAndDiscounts(userId: Long, billId: Long): Future[BillWithDiscountsResponse] =
+    ws.url(s"$DroolsServiceBaseUrl/api/users/$userId/bills/$billId/discounts")
       .get()
+      .map(_.json.as[BillWithDiscountsResponse])
 
-    request.map(_.json.as[BillWithDiscountsResponse])
-  }
-
-  def calculateBillItemPriceAndDiscounts(item: BillItemRequest): Future[BillItemWithDiscountsResponse] = {
-    val request = ws.url(s"$DroolsServiceBaseUrl/api/bill-items/discounts")
+  def calculateBillItemPriceAndDiscounts(item: BillItemRequest): Future[BillItemWithDiscountsResponse] =
+    ws.url(s"$DroolsServiceBaseUrl/api/bill-items/discounts")
       .put(Json.toJson(item))
+      .map(_.json.as[BillItemWithDiscountsResponse])
 
-    request.map(_.json.as[BillItemWithDiscountsResponse])
-  }
-
-  def productsOutOfStock: Future[DroolsProductResponseCollection] = {
-    val request = ws.url(s"$DroolsServiceBaseUrl/api/products")
+  def productsOutOfStock: Future[DroolsProductResponseCollection] =
+    ws.url(s"$DroolsServiceBaseUrl/api/products")
       .get()
-
-    request.map(_.json.as[DroolsProductResponseCollection])
-  }
+      .map(_.json.as[DroolsProductResponseCollection])
 
 }

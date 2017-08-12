@@ -23,7 +23,7 @@ package object users {
     def toDomain: User = {
       val attributes = data.attributes
       val relationships = data.relationships
-      val isCustomer = relationships.isDefined && attributes.role.toUpperCase == "CUSTOMER"
+      val isCustomer = relationships.isDefined && attributes.role.toUpperCase == UserRole.CUSTOMER.name.toUpperCase
 
       User(
         username = attributes.username,

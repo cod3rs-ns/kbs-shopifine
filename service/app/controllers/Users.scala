@@ -23,15 +23,14 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
 
   def registerUser(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[UserRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson(
+      _ => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
-      spec => {
+      spec =>
         users.save(spec.toDomain).map({ user =>
           Created(Json.toJson(UserResponse.fromDomain(user)))
         })
-      }
     )
   }
 
@@ -49,7 +48,7 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
 
   def auth(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[UserAuthRequest].fold(
-      failures =>
+      _ =>
         Future.successful(BadRequest(Json.toJson(
           ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
         ))),

@@ -15,7 +15,8 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class Discounts @Inject()(billDiscounts: BillDiscountRepository,
                           billItemDiscounts: BillItemDiscountRepository,
-                          secure: SecuredAuthenticator)(implicit val ec: ExecutionContext) extends Controller {
+                          secure: SecuredAuthenticator)
+                         (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
   import secure.Roles.Customer
