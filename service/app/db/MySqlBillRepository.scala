@@ -48,4 +48,9 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     db.run(query)
   }
 
+  override def modify(id: Long, bill: Bill): Future[Int] = {
+    val q = for {b <- bills if b.id === id} yield (b.amount, b.discount, b.discountAmount, b.pointsGained)
+    db.run(q.update((bill.amount, bill.discount, bill.discountAmount, bill.pointsGained)))
+  }
+
 }

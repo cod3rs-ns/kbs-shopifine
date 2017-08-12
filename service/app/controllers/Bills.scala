@@ -10,13 +10,14 @@ import external.DroolsProxy
 import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import repositories.{BillItemDiscountRepository, BillItemRepository}
+import repositories.{BillDiscountRepository, BillItemDiscountRepository, BillItemRepository}
 import services.{BillService, ProductService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class Bills @Inject()(bills: BillService,
+                      billDiscounts: BillDiscountRepository,
                       billItems: BillItemRepository,
                       billItemDiscounts: BillItemDiscountRepository,
                       products: ProductService,
@@ -149,11 +150,33 @@ class Bills @Inject()(bills: BillService,
                     discountAmount = bonuses.discountAmount
                   )
                 ).map(billItem => {
-                  bonuses.discounts.foreach(discount =>
-                    billItemDiscounts.save(discount.toBillItemDiscount(billItem))
-                  )
+                  // Store all retrieved Discounts for Bill Item
+                  bonuses.discounts.foreach(d => billItemDiscounts.save(d.toBillItemDiscount(billItem)))
+
+                  // Update total amount of Bill
                   bills.enlargeAmount(billId, bonuses.amount)
+
+                  // Update when Product is bought last time
                   products.boughtNow(billItem.productId)
+
+                  // If item is last on the Bill trigger Bill price and discounts calculating
+                  if (billItem.ordinal == bill.totalItems) {
+                    drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
+                      // Store all retrieved Discounts for Bill
+                      bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
+
+                      // Update stuffs related to Bill calculated price
+                      bills.updateBillCalculation(
+                        bill.copy(
+                          amount = bonuses.amount,
+                          discount = bonuses.discount,
+                          discountAmount = bonuses.discountAmount,
+                          pointsGained = bonuses.pointsGained
+                        )
+                      )
+                    })
+                  }
+
                   Created(Json.toJson(
                     BillItemResponse.fromDomain(billItem, bill.id.get)
                   ))

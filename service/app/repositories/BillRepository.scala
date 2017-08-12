@@ -18,4 +18,6 @@ trait BillRepository {
 
   def enlargeAmount(id: Long, amount: Double): Future[Int]
 
+  def modify(id: Long, bill: Bill): Future[Int]
+
 }
