@@ -37,3 +37,23 @@ case class BillResponse(data: BillResponseData) {
     )
   }
 }
+
+case class BillWithDiscountsResponse(amount: Double,
+                                     discount: Double,
+                                     discountAmount: Double,
+                                     pointsSpent: Long,
+                                     pointsGained: Long,
+                                     discounts: Seq[DiscountResponse])
+
+object BillWithDiscountsResponseJson {
+  def fromDomain(bill: Bill): BillWithDiscountsResponse = {
+    BillWithDiscountsResponse(
+      amount = bill.amount,
+      discount = bill.discount,
+      discountAmount = bill.discountAmount,
+      pointsSpent = bill.pointsSpent,
+      pointsGained = bill.pointsGained,
+      discounts = bill.discounts.map(DiscountResponseJson.fromDomain)
+    )
+  }
+}

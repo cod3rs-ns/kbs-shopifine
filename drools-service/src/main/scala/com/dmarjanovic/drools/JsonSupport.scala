@@ -6,6 +6,10 @@ import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
+  implicit val discountRes: RootJsonFormat[DiscountResponse] = jsonFormat2(DiscountResponse)
+  implicit val billWithDiscounts: RootJsonFormat[BillWithDiscountsResponse] = jsonFormat6(BillWithDiscountsResponse)
+  implicit val billItemWithDiscounts: RootJsonFormat[BillItemWithDiscountsResponse] = jsonFormat5(BillItemWithDiscountsResponse)
+
   implicit val relData: RootJsonFormat[RelationshipData] = jsonFormat2(RelationshipData)
   implicit val relLinks: RootJsonFormat[RelationshipLinks] = jsonFormat1(RelationshipLinks)
   implicit val reqRel: RootJsonFormat[RequestRelationship] = jsonFormat1(RequestRelationship)

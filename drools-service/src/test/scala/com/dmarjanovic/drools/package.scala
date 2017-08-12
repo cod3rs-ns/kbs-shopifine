@@ -29,7 +29,6 @@ package object drools {
   trait BillItemsFixture {
     def createBillItem(seed: Long, quantity: Int, product: Option[Product] = None): BillItem =
       BillItem(
-        ordinal = seed.toInt,
         price = 1000,
         quantity = quantity,
         discount = seed,
