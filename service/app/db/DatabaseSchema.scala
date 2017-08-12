@@ -106,7 +106,7 @@ trait DatabaseSchema {
 
   class Products(tag: Tag) extends Table[Product](tag, "products") {
     def * : ProvenShape[Product] = {
-      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, fillStock, status, minQuantity)
+      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, lastBoughtAt.?, fillStock, status, minQuantity)
 
       props <> (Product.tupled, Product.unapply)
     }
@@ -124,6 +124,8 @@ trait DatabaseSchema {
     def quantity: Rep[Long] = column[Long]("quantity")
 
     def createdAt: Rep[DateTime] = column[DateTime]("created_at")
+
+    def lastBoughtAt: Rep[DateTime] = column[DateTime]("last_bought_at")
 
     def fillStock: Rep[Boolean] = column[Boolean]("fill_stock")
 

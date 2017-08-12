@@ -144,6 +144,10 @@ definitions:
         type: string
         description: Time when Product is stored
         example: '2017-08-06T01:56:10.000+02:00'
+      lastBoughtAt:
+        type: string
+        description: Time when Product is last time bought
+        example: '2017-10-21T01:56:10.000+02:00'
       fillStock:
         type: boolean
         description: Indicate if Product available on stock
@@ -163,6 +167,7 @@ definitions:
       - imageUrl
       - quantity
       - createdAt
+      - lastBoughtAt
       - fillStock
       - status
       - minQuantity

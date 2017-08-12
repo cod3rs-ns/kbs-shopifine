@@ -45,6 +45,7 @@ package object products {
                                        price: Double,
                                        quantity: Long,
                                        createdAt: String,
+                                       lastBoughtAt: String,
                                        fillStock: Boolean,
                                        status: String,
                                        minQuantity: Long)
@@ -64,6 +65,7 @@ package object products {
         price = product.price,
         quantity = product.quantity,
         createdAt = product.createdAt.toString,
+        lastBoughtAt = if (product.lastBoughtAt.isDefined) product.lastBoughtAt.get.toString else "Never",
         fillStock = product.fillStock,
         status = product.status.name,
         minQuantity = product.minQuantity

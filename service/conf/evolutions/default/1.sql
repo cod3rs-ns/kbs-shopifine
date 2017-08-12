@@ -55,6 +55,7 @@ CREATE TABLE products (
   price                 DOUBLE NOT NULL,
   quantity              INT NOT NULL,
   created_at            DATETIME NOT NULL,
+  last_bought_at        DATETIME,
   fill_stock            BOOLEAN NOT NULL,
   status                VARCHAR(15) NOT NULL,
   min_quantity          INT NOT NULL,
