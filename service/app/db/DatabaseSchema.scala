@@ -106,7 +106,7 @@ trait DatabaseSchema {
 
   class Products(tag: Tag) extends Table[Product](tag, "products") {
     def * : ProvenShape[Product] = {
-      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, fillStock, status, minQuantity)
+      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, lastBoughtAt.?, fillStock, status, minQuantity)
 
       props <> (Product.tupled, Product.unapply)
     }
@@ -125,6 +125,8 @@ trait DatabaseSchema {
 
     def createdAt: Rep[DateTime] = column[DateTime]("created_at")
 
+    def lastBoughtAt: Rep[DateTime] = column[DateTime]("last_bought_at")
+
     def fillStock: Rep[Boolean] = column[Boolean]("fill_stock")
 
     def status: Rep[ProductStatus] = column[ProductStatus]("status")
@@ -138,7 +140,7 @@ trait DatabaseSchema {
 
   class Bills(tag: Tag) extends Table[Bill](tag, "bills") {
     def * : ProvenShape[Bill] = {
-      val props = (id.?, createdAt, customer, state, amount, discount, discountAmount, pointsSpent, pointsGained)
+      val props = (id.?, createdAt, customer, state, totalItems, amount, discount, discountAmount, pointsSpent, pointsGained)
 
       props <> (Bill.tupled, Bill.unapply)
     }
@@ -154,6 +156,8 @@ trait DatabaseSchema {
     )
 
     def state: Rep[BillState] = column[BillState]("state")
+
+    def totalItems: Rep[Long] = column[Long]("total_items")
 
     def amount: Rep[Double] = column[Double]("amount")
 

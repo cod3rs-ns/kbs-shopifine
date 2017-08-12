@@ -57,6 +57,39 @@
 GET     /api/products           controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
+#  summary: Retrieve all products needs to be filled in stock
+#  parameters:
+#    - name: page[offset]
+#      description: Identifier of a position to start retrieving items from.
+#      in: query
+#      type: integer
+#      default: 0
+#      required: false
+#    - name: page[limit]
+#      description: Maximum number of items to retrieve.
+#      in: query
+#      type: integer
+#      default: 10
+#      required: false
+#  tags:
+#    - Products
+#  responses:
+#    200:
+#      description: Products retrieved.
+#      schema:
+#        $ref: '#/definitions/ProductCollectionResponse'
+#    400:
+#      description: Malformed query parameter specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfStock(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+
+###
 #  summary: Retrieves a product
 #  parameters:
 #    - name: id

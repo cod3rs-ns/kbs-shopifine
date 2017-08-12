@@ -4,6 +4,7 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
+import external.DroolsProxy
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import products.{ProductCollectionResponse, ProductRequest, ProductResponse}
@@ -12,7 +13,7 @@ import services.ProductService
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Products @Inject()(products: ProductService, secure: SecuredAuthenticator)
+class Products @Inject()(products: ProductService, drools: DroolsProxy, secure: SecuredAuthenticator)
                         (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -46,6 +47,17 @@ class Products @Inject()(products: ProductService, secure: SecuredAuthenticator)
 
       Ok(Json.toJson(ProductCollectionResponse.fromDomain(products, CollectionLinks(prev, self, next))))
     })
+  }
+
+  def retrieveAllOutOfStock(offset: Int, limit: Int): Action[AnyContent] = Action.async {
+    drools.productsOutOfStock.flatMap(response =>
+      Future.sequence(response.data.map(data => products.retrieveOne(data.id).map(_.get))).map(outOfStockProducts => {
+        // Update Product's 'fill stock' field
+        outOfStockProducts.foreach(p => products.outOfStock(p.id.get))
+
+        Ok(Json.toJson(ProductCollectionResponse.fromDomain(outOfStockProducts, CollectionLinks(self = "self"))))
+      })
+    )
   }
 
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {
