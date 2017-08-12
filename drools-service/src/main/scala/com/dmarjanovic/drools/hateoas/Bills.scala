@@ -1,6 +1,6 @@
 package com.dmarjanovic.drools.hateoas
 
-import com.dmarjanovic.drools.domain.{Bill, BillState}
+import com.dmarjanovic.drools.domain.Bill
 import com.dmarjanovic.drools.external.CustomersProxy
 import org.joda.time.DateTime
 
@@ -27,13 +27,32 @@ case class BillResponse(data: BillResponseData) {
         id = Some(data.id),
         createdAt = DateTime.parse(data.attributes.createdAt),
         customer = Some(customer),
-        state = BillState.valueOf(data.attributes.state.toUpperCase),
         amount = data.attributes.amount,
         discount = data.attributes.discount,
         discountAmount = data.attributes.discountAmount,
         pointsSpent = data.attributes.pointsSpent,
         pointsGained = data.attributes.pointsGained
       )
+    )
+  }
+}
+
+case class BillWithDiscountsResponse(amount: Double,
+                                     discount: Double,
+                                     discountAmount: Double,
+                                     pointsSpent: Long,
+                                     pointsGained: Long,
+                                     discounts: Seq[DiscountResponse])
+
+object BillWithDiscountsResponseJson {
+  def fromDomain(bill: Bill): BillWithDiscountsResponse = {
+    BillWithDiscountsResponse(
+      amount = bill.amount,
+      discount = bill.discount,
+      discountAmount = bill.discountAmount,
+      pointsSpent = bill.pointsSpent,
+      pointsGained = bill.pointsGained,
+      discounts = bill.discounts.map(DiscountResponseJson.fromDomain)
     )
   }
 }

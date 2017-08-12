@@ -9,7 +9,6 @@ case class ConsumptionThresholdRelationships(category: ResponseRelationship)
 case class ConsumptionThresholdData(`type`: String, id: Long, attributes: ConsumptionThresholdAttributes, relationships: ConsumptionThresholdRelationships) {
   def toDomain: ConsumptionThreshold = {
     ConsumptionThreshold(
-      id = Some(id),
       from = attributes.from,
       to = attributes.to,
       award = attributes.award

@@ -51,4 +51,3 @@ object RulesEngine {
   private val ProductsAgenda = "products-stock-fill"
 
 }
-

@@ -4,9 +4,7 @@ import scala.beans.BeanInfo
 import scala.collection.mutable
 
 @BeanInfo
-case class BillItem(id: Option[Long] = None,
-                    ordinal: Int,
-                    product: Option[Product] = None,
+case class BillItem(product: Option[Product] = None,
                     bill: Option[Bill] = None,
                     var price: Double,
                     quantity: Int,

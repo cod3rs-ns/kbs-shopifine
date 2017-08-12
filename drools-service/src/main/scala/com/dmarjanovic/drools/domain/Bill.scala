@@ -8,12 +8,11 @@ import scala.beans.BeanInfo
 case class Bill(id: Option[Long] = None,
                 createdAt: DateTime,
                 customer: Option[User] = None,
-                state: BillState,
                 var amount: Double,
-                var discount: Double = 0,
-                var discountAmount: Double = 0,
-                pointsSpent: Long = 0,
-                var pointsGained: Long = 0,
+                var discount: Double,
+                var discountAmount: Double,
+                pointsSpent: Long,
+                var pointsGained: Long,
                 var items: Seq[BillItem] = Seq(),
                 var discounts: Seq[BillDiscount] = Seq()) {
 

@@ -8,28 +8,23 @@ package object drools {
   trait ProductsFixture {
     def createProduct(seed: Long, quantity: Long, minQuantity: Long, fillStock: Boolean = false, category: Option[ProductCategory] = None): Product =
       Product(
-        name = s"test-product-$seed",
-        price = 10.0,
         category = category,
         quantity = quantity,
-        createdAt = DateTime.now,
         minQuantity = minQuantity,
         fillStock = fillStock
       )
 
     def singleProductWithCategory(category: ProductCategory): Product =
       Product(
-        name = "test-single-product",
-        price = 1000,
-        createdAt = DateTime.now,
-        category = Some(category)
+        category = Some(category),
+        quantity = 0,
+        minQuantity = 0
       )
   }
 
   trait BillItemsFixture {
     def createBillItem(seed: Long, quantity: Int, product: Option[Product] = None): BillItem =
       BillItem(
-        ordinal = seed.toInt,
         price = 1000,
         quantity = quantity,
         discount = seed,
@@ -87,8 +82,11 @@ package object drools {
       Bill(
         createdAt = DateTime.now,
         customer = customer,
-        state = BillState.ORDERED,
-        amount = amount
+        amount = amount,
+        discount = 0,
+        discountAmount = 0,
+        pointsGained = 0,
+        pointsSpent = 0
       )
   }
 

@@ -5,18 +5,8 @@ import org.joda.time.DateTime
 import scala.beans.BeanInfo
 
 @BeanInfo
-case class User(id: Option[Long] = None,
-                username: String,
-                firstName: String,
-                lastName: String,
-                role: UserRole,
-                address: Option[String],
-                buyerCategory: Option[BuyerCategory] = None,
-                points: Option[Long] = None,
-                registeredAt: DateTime) {
+case class User(registeredAt: DateTime, buyerCategory: Option[BuyerCategory] = None) {
 
   def getBuyerCategory: BuyerCategory = buyerCategory.get
-
-  def getPoints: Long = points.get
 
 }

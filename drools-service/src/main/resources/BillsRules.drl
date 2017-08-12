@@ -10,7 +10,7 @@ rule "Determine if Bill achieves Basic Discount based on Amount"
         $bill: Bill(amount > 200000)
     then
         final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(Option.empty(), 5, DiscountType.BASIC));
+        bill.addDiscount(new BillDiscount(5, DiscountType.BASIC));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Old Customer"
@@ -19,7 +19,7 @@ rule "Determine if Bill achieves Pro Discount based on Old Customer"
         $bill: Bill(customer.registeredAt() < DateTime.now().minusYears(2))
     then
         final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(Option.empty(), 1, DiscountType.PRO));
+        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Customer Category"
@@ -28,7 +28,7 @@ rule "Determine if Bill achieves Pro Discount based on Customer Category"
         $bill: Bill(customer.buyerCategory.name.equals("Gold Category") || customer.buyerCategory.name.equals("Silver Category"))
     then
         final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(Option.empty(), 1, DiscountType.PRO));
+        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Amount"
@@ -37,7 +37,7 @@ rule "Determine if Bill achieves Pro Discount based on Amount"
         $bill: Bill(amount > 50000)
     then
         final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(Option.empty(), 3, DiscountType.PRO));
+        bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
 end
 
 rule "Determine final Bill discount and price"

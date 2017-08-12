@@ -4,8 +4,8 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
-import com.dmarjanovic.drools.external.{ProductsProxy, BillsProxy}
-import com.dmarjanovic.drools.hateoas.{BillItemRequest, CollectionLinks, ProductCollectionResponseJson}
+import com.dmarjanovic.drools.external.{BillsProxy, ProductsProxy}
+import com.dmarjanovic.drools.hateoas.{BillItemRequest, BillItemWithDiscountsResponseJson, BillWithDiscountsResponseJson, CollectionLinks, ProductCollectionResponseJson}
 import com.typesafe.config.{Config, ConfigFactory}
 
 object DroolsService extends JsonSupport {
@@ -36,7 +36,7 @@ object DroolsService extends JsonSupport {
                   complete {
                     spec.toDomain.map(item => {
                       RulesEngine.calculateBillItemDiscounts(item)
-                      "Should handle Bill Item discounts and Price"
+                      BillItemWithDiscountsResponseJson.fromDomain(item)
                     })
                   }
                 }
@@ -50,7 +50,7 @@ object DroolsService extends JsonSupport {
                   complete {
                     BillsProxy.retrieveBill(userId, billId).map(bill => {
                       RulesEngine.calculateBillDiscounts(bill)
-                      "Should handle Bill discounts and Price"
+                      BillWithDiscountsResponseJson.fromDomain(bill)
                     })
                   }
                 }
