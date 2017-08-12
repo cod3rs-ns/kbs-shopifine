@@ -3,7 +3,7 @@ import Resolvers._
 
 lazy val buildSettings = Seq(
   name := "Drools Service",
-  version := "1.0.0",
+  version := "1.2.0",
   organization := "com.dmarjanovic",
   scalaVersion := "2.11.11"
 )
