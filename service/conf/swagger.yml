@@ -537,8 +537,14 @@ definitions:
           - ORDERED
           - CANCELLED
           - SUCCESSFUL
+      totalItems:
+        type: long
+        format: int64
+        description: Number of items in Bill
+        example: 21
     required:
       - state
+      - totalItems
   BillRequestRelationships:
     type: object
     properties:
@@ -603,6 +609,11 @@ definitions:
           - ORDERED
           - CANCELLED
           - SUCCESSFUL
+      totalItems:
+        type: long
+        format: int64
+        description: Number of items in Bill
+        example: 21
       amount:
         type: double
         description: Bill amount
@@ -628,6 +639,7 @@ definitions:
     required:
       - createdAt
       - state
+      - totalItems
       - amount
       - discount
       - discountAmount

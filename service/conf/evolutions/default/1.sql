@@ -73,6 +73,7 @@ CREATE TABLE bills (
   created_at      DATETIME NOT NULL,
   customer        INT NOT NULL,
   state           VARCHAR(15) NOT NULL,
+  total_items     INT NOT NULL,
   amount          DOUBLE NOT NULL,
   discount        DOUBLE NOT NULL,
   discount_amount DOUBLE NOT NULL,

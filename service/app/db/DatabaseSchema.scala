@@ -138,7 +138,7 @@ trait DatabaseSchema {
 
   class Bills(tag: Tag) extends Table[Bill](tag, "bills") {
     def * : ProvenShape[Bill] = {
-      val props = (id.?, createdAt, customer, state, amount, discount, discountAmount, pointsSpent, pointsGained)
+      val props = (id.?, createdAt, customer, state, totalItems, amount, discount, discountAmount, pointsSpent, pointsGained)
 
       props <> (Bill.tupled, Bill.unapply)
     }
@@ -154,6 +154,8 @@ trait DatabaseSchema {
     )
 
     def state: Rep[BillState] = column[BillState]("state")
+
+    def totalItems: Rep[Long] = column[Long]("total_items")
 
     def amount: Rep[Double] = column[Double]("amount")
 
