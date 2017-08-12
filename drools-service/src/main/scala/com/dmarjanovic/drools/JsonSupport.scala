@@ -30,12 +30,22 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val billResData: RootJsonFormat[BillResponseData] = jsonFormat4(BillResponseData)
   implicit val billRes: RootJsonFormat[BillResponse] = jsonFormat1(BillResponse)
 
-  implicit val billItemReqAttr: RootJsonFormat[BillItemRequestAttributes] = jsonFormat3(BillItemRequestAttributes)
+  implicit val billItemReqAttrs: RootJsonFormat[BillItemRequestAttributes] = jsonFormat3(BillItemRequestAttributes)
   implicit val billItemReqRels: RootJsonFormat[BillItemRequestRelationships] = jsonFormat2(BillItemRequestRelationships)
   implicit val billItemReqData: RootJsonFormat[BillItemRequestData] = jsonFormat3(BillItemRequestData)
   implicit val billItemReq: RootJsonFormat[BillItemRequest] = jsonFormat1(BillItemRequest)
 
-  implicit val customerResAttr: RootJsonFormat[CustomerResponseAttributes] = jsonFormat6(CustomerResponseAttributes)
+  implicit val consumptionThresholdsAttrs: RootJsonFormat[ConsumptionThresholdAttributes] = jsonFormat3(ConsumptionThresholdAttributes)
+  implicit val consumptionThresholdsRels: RootJsonFormat[ConsumptionThresholdRelationships] = jsonFormat1(ConsumptionThresholdRelationships)
+  implicit val consumptionThresholdsData: RootJsonFormat[ConsumptionThresholdData] = jsonFormat4(ConsumptionThresholdData)
+  implicit val consumptionThresholdsCollRes: RootJsonFormat[ConsumptionThresholdCollectionResponse] = jsonFormat2(ConsumptionThresholdCollectionResponse)
+
+  implicit val buyerCategoryResAttrs: RootJsonFormat[BuyerCategoryResponseAttributes] = jsonFormat1(BuyerCategoryResponseAttributes)
+  implicit val buyerCategoryResRels: RootJsonFormat[BuyerCategoryResponseRelationships] = jsonFormat1(BuyerCategoryResponseRelationships)
+  implicit val buyerCategoryResData: RootJsonFormat[BuyerCategoryResponseData] = jsonFormat4(BuyerCategoryResponseData)
+  implicit val buyerCategoryRes: RootJsonFormat[BuyerCategoryResponse] = jsonFormat1(BuyerCategoryResponse)
+
+  implicit val customerResAttrs: RootJsonFormat[CustomerResponseAttributes] = jsonFormat6(CustomerResponseAttributes)
   implicit val customerResRels: RootJsonFormat[CustomerResponseRelationships] = jsonFormat1(CustomerResponseRelationships)
   implicit val customerResMeta: RootJsonFormat[CustomerResponseMeta] = jsonFormat1(CustomerResponseMeta)
   implicit val customerResData: RootJsonFormat[CustomerResponseData] = jsonFormat5(CustomerResponseData)
