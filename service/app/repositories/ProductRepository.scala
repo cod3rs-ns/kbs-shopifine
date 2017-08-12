@@ -16,4 +16,6 @@ trait ProductRepository {
 
   def updateLastBoughtDateTime(id: Long): Future[Int]
 
+  def updateFillStock(id: Long): Future[Int]
+
 }

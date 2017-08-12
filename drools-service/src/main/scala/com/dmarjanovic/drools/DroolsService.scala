@@ -20,11 +20,11 @@ object DroolsService extends JsonSupport {
     val routes =
       pathPrefix("api") {
         path("products") {
-          put {
+          get {
             complete {
               ProductsProxy.retrieveProducts.map(products => {
                 RulesEngine.determineProductWeNeedToFillStock(products.toList)
-                ProductCollectionResponseJson.fromDomain(products, links = CollectionLinks(self = "self"))
+                ProductCollectionResponseJson.fromDomain(products.filter(_.fillStock), links = CollectionLinks(self = "self"))
               })
             }
           }

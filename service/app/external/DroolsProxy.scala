@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import hateoas.bill_items.BillItemRequest
-import hateoas.drools_service.{BillItemWithDiscountsResponse, BillWithDiscountsResponse}
+import hateoas.drools_service.{BillItemWithDiscountsResponse, BillWithDiscountsResponse, DroolsProductResponseCollection}
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
@@ -32,6 +32,11 @@ class DroolsProxy @Inject()(ws: WSClient, config: Configuration)(implicit val ec
     request.map(_.json.as[BillItemWithDiscountsResponse])
   }
 
-//    def determine = ???
+  def productsOutOfStock: Future[DroolsProductResponseCollection] = {
+    val request = ws.url(s"$DroolsServiceBaseUrl/api/products")
+      .get()
+
+    request.map(_.json.as[DroolsProductResponseCollection])
+  }
 
 }

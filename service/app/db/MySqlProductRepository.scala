@@ -46,4 +46,9 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
     db.run(q.update(DateTime.now))
   }
 
+  override def updateFillStock(id: Long): Future[Int] = {
+    val q = for {product <- products if product.id === id} yield product.fillStock
+    db.run(q.update(true))
+  }
+
 }

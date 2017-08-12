@@ -1,6 +1,8 @@
 package hateoas
 
+import commons.CollectionLinks
 import domain._
+import relationships.{ResponseRelationship, ResponseRelationshipCollection}
 
 package object drools_service {
 
@@ -32,5 +34,16 @@ package object drools_service {
                                            discount: Double,
                                            discountAmount: Double,
                                            discounts: Seq[DiscountResponse])
+
+  case class DroolsProductResponseAttributes(quantity: Long, fillStock: Boolean, minQuantity: Long)
+
+  case class DroolsProductResponseRelationships(category: ResponseRelationship, discounts: ResponseRelationshipCollection)
+
+  case class DroolsProductResponseData(`type`: String,
+                                 id: Long,
+                                 attributes: DroolsProductResponseAttributes,
+                                 relationships: DroolsProductResponseRelationships)
+
+  case class DroolsProductResponseCollection(data: Seq[DroolsProductResponseData], links: CollectionLinks)
 
 }

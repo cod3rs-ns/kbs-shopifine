@@ -7,7 +7,7 @@ import hateoas.bill_discounts._
 import hateoas.bill_item_discounts._
 import hateoas.bill_items._
 import hateoas.buyer_categories._
-import hateoas.drools_service.{BillItemWithDiscountsResponse, BillWithDiscountsResponse, DiscountResponse}
+import hateoas.drools_service._
 import hateoas.product_categories._
 import play.api.libs.json.{Json, OFormat}
 import products._
@@ -124,5 +124,10 @@ object JsonApi {
   implicit val droolsDiscountRes: OFormat[DiscountResponse] = Json.format[DiscountResponse]
   implicit val droolsBillRes: OFormat[BillWithDiscountsResponse] = Json.format[BillWithDiscountsResponse]
   implicit val droolsBillItemRes: OFormat[BillItemWithDiscountsResponse] = Json.format[BillItemWithDiscountsResponse]
+
+  implicit val droolsProdResAttrs: OFormat[DroolsProductResponseAttributes] = Json.format[DroolsProductResponseAttributes]
+  implicit val droolsProdResRels: OFormat[DroolsProductResponseRelationships] = Json.format[DroolsProductResponseRelationships]
+  implicit val droolsProdResData: OFormat[DroolsProductResponseData] = Json.format[DroolsProductResponseData]
+  implicit val droolsProdResColl: OFormat[DroolsProductResponseCollection] = Json.format[DroolsProductResponseCollection]
 
 }
