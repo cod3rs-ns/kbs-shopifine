@@ -16,4 +16,6 @@ trait BillRepository {
 
   def setState(id: Long, state: BillState): Future[Int]
 
+  def enlargeAmount(id: Long, amount: Double): Future[Int]
+
 }

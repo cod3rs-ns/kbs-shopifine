@@ -37,6 +37,9 @@ class BillService @Inject()(repository: BillRepository)
   def setState(id: Long, state: BillState): Future[Int] =
     repository.setState(id, state)
 
+  def enlargeAmount(id: Long, amount: Double): Future[Int] =
+    repository.enlargeAmount(id, amount)
+
 }
 
 object BillService {

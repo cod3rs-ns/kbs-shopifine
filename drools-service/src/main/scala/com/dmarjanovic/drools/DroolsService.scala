@@ -46,7 +46,7 @@ object DroolsService extends JsonSupport {
           pathPrefix("users") {
             path(IntNumber / "bills" / IntNumber / "discounts") {
               (userId, billId) => {
-                put {
+                get {
                   complete {
                     BillsProxy.retrieveBill(userId, billId).map(bill => {
                       RulesEngine.calculateBillDiscounts(bill)

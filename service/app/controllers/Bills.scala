@@ -6,16 +6,21 @@ import bills.{BillCollectionResponse, BillRequest, BillResponse}
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import domain.BillState
+import external.DroolsProxy
 import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import repositories.BillItemRepository
+import repositories.{BillItemDiscountRepository, BillItemRepository}
 import services.BillService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure: SecuredAuthenticator)
+class Bills @Inject()(bills: BillService,
+                      billItems: BillItemRepository,
+                      billItemDiscounts: BillItemDiscountRepository,
+                      drools: DroolsProxy,
+                      secure: SecuredAuthenticator)
                      (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -134,11 +139,23 @@ class Bills @Inject()(bills: BillService, billItems: BillItemRepository, secure:
         spec => {
           bills.retrieveOne(billId) flatMap {
             case Some(bill) =>
-              billItems.save(spec.toDomain).map(billItem => {
-                Created(Json.toJson(
-                  BillItemResponse.fromDomain(billItem, bill.id.get)
-                ))
-              }
+              drools.calculateBillItemPriceAndDiscounts(spec).flatMap(bonuses =>
+                billItems.save(
+                  spec.toDomain.copy(
+                    price = bonuses.price,
+                    amount = bonuses.amount,
+                    discount = bonuses.discount,
+                    discountAmount = bonuses.discountAmount
+                  )
+                ).map(billItem => {
+                  bonuses.discounts.foreach(discount =>
+                    billItemDiscounts.save(discount.toBillItemDiscount(billItem))
+                  )
+                  bills.enlargeAmount(billId, bonuses.amount)
+                  Created(Json.toJson(
+                    BillItemResponse.fromDomain(billItem, bill.id.get)
+                  ))
+                })
               )
 
             case None => Future.successful(NotFound(Json.toJson(

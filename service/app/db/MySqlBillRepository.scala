@@ -36,4 +36,16 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     db.run(q.update(state))
   }
 
+  override def enlargeAmount(id: Long, amount: Double): Future[Int] = {
+    val query =
+      sql"""
+           UPDATE
+              bills
+           SET
+              amount = amount + $amount
+           WHERE id = $id;
+        """.as[Int].head
+    db.run(query)
+  }
+
 }
