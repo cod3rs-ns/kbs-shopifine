@@ -17,7 +17,7 @@ object CustomersProxy extends JsonSupport {
     Http().singleRequest(HttpRequest(uri = url)
       .withHeaders(Authorization))
       .flatMap(response => {
-        Unmarshal(response.entity).to[CustomerResponse].map(json =>
+        Unmarshal(response.entity).to[CustomerResponse].flatMap(json =>
           json.toDomain
         )
       })
