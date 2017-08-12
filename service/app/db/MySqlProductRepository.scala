@@ -3,6 +3,7 @@ package db
 import javax.inject.Inject
 
 import domain.Product
+import org.joda.time.DateTime
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.ProductRepository
 import slick.driver.JdbcProfile
@@ -38,6 +39,11 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
            WHERE id = $id;
         """.as[Int].head
     db.run(query)
+  }
+
+  override def updateLastBoughtDateTime(id: Long): Future[Int] = {
+    val q = for {product <- products if product.id === id} yield product.lastBoughtAt
+    db.run(q.update(DateTime.now))
   }
 
 }

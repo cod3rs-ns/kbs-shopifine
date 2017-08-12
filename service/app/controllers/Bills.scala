@@ -11,7 +11,7 @@ import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItem
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{BillItemDiscountRepository, BillItemRepository}
-import services.BillService
+import services.{BillService, ProductService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,6 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class Bills @Inject()(bills: BillService,
                       billItems: BillItemRepository,
                       billItemDiscounts: BillItemDiscountRepository,
+                      products: ProductService,
                       drools: DroolsProxy,
                       secure: SecuredAuthenticator)
                      (implicit val ec: ExecutionContext) extends Controller {
@@ -152,6 +153,7 @@ class Bills @Inject()(bills: BillService,
                     billItemDiscounts.save(discount.toBillItemDiscount(billItem))
                   )
                   bills.enlargeAmount(billId, bonuses.amount)
+                  products.boughtNow(billItem.productId)
                   Created(Json.toJson(
                     BillItemResponse.fromDomain(billItem, bill.id.get)
                   ))

@@ -39,6 +39,9 @@ class ProductService @Inject()(repository: ProductRepository)
 
   def fillStock(id: Long, quantity: Long): Future[Int] =
     repository.fillStock(id, quantity)
+
+  def boughtNow(id: Long): Future[Int] =
+    repository.updateLastBoughtDateTime(id)
 }
 
 object ProductService {
