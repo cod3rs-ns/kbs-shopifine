@@ -6,22 +6,30 @@ import bills.{BillCollectionResponse, BillRequest, BillResponse}
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import domain.BillState
+import external.DroolsProxy
 import hateoas.bill_items.{BillItemCollectionResponse, BillItemRequest, BillItemResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
-import repositories.{BillItemRepository, BillRepository}
+import repositories.{BillDiscountRepository, BillItemDiscountRepository, BillItemRepository}
+import services.{BillService, ProductService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secure: SecuredAuthenticator)
+class Bills @Inject()(bills: BillService,
+                      billDiscounts: BillDiscountRepository,
+                      billItems: BillItemRepository,
+                      billItemDiscounts: BillItemDiscountRepository,
+                      products: ProductService,
+                      drools: DroolsProxy,
+                      secure: SecuredAuthenticator)
                      (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
   import secure.Roles._
 
   def create(userId: Long): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -44,7 +52,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def retrieveAllByUser(userId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -62,7 +70,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def retrieveOneByUser(userId: Long, billId: Long): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -79,7 +87,11 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async { implicit request =>
-    bills.retrieveAll(offset, limit).map(result => {
+    val filters = request.queryString.filterKeys(_.startsWith("filter[")).map { case (k, v) =>
+      k.substring(7, k.length - 1) -> v.mkString
+    }
+
+    bills.retrieveBillsWithFilters(filters, offset, limit).map(result => {
       val self = routes.Bills.retrieveAll(offset, limit).absoluteURL()
       val next = if (result.size == limit) Some(routes.Bills.retrieveAll(offset, limit).absoluteURL()) else None
 
@@ -115,7 +127,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def addBillItem(userId: Long, billId: Long): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))
@@ -129,10 +141,46 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
         spec => {
           bills.retrieveOne(billId) flatMap {
             case Some(bill) =>
-              billItems.save(spec.toDomain).map(billItem =>
-                Created(Json.toJson(
-                  BillItemResponse.fromDomain(billItem, bill.id.get)
-                ))
+              drools.calculateBillItemPriceAndDiscounts(spec).flatMap(bonuses =>
+                billItems.save(
+                  spec.toDomain.copy(
+                    price = bonuses.price,
+                    amount = bonuses.amount,
+                    discount = bonuses.discount,
+                    discountAmount = bonuses.discountAmount
+                  )
+                ).map(billItem => {
+                  // Store all retrieved Discounts for Bill Item
+                  bonuses.discounts.foreach(d => billItemDiscounts.save(d.toBillItemDiscount(billItem)))
+
+                  // Update total amount of Bill
+                  bills.enlargeAmount(billId, bonuses.amount)
+
+                  // Update when Product is bought last time
+                  products.boughtNow(billItem.productId)
+
+                  // If item is last on the Bill trigger Bill price and discounts calculating
+                  if (billItem.ordinal == bill.totalItems) {
+                    drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
+                      // Store all retrieved Discounts for Bill
+                      bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
+
+                      // Update stuffs related to Bill calculated price
+                      bills.updateBillCalculation(
+                        bill.copy(
+                          amount = bonuses.amount,
+                          discount = bonuses.discount,
+                          discountAmount = bonuses.discountAmount,
+                          pointsGained = bonuses.pointsGained
+                        )
+                      )
+                    })
+                  }
+
+                  Created(Json.toJson(
+                    BillItemResponse.fromDomain(billItem, bill.id.get)
+                  ))
+                })
               )
 
             case None => Future.successful(NotFound(Json.toJson(
@@ -145,7 +193,7 @@ class Bills @Inject()(bills: BillRepository, billItems: BillItemRepository, secu
   }
 
   def retrieveBillItems(userId: Long, billId: Long, offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async { implicit request =>
-    if (request.user.id.get != userId) {
+    if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(
         ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
       )))

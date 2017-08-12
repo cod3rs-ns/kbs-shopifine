@@ -4,15 +4,16 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
+import external.DroolsProxy
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import products.{ProductCollectionResponse, ProductRequest, ProductResponse}
-import repositories.ProductRepository
+import services.ProductService
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticator)
+class Products @Inject()(products: ProductService, drools: DroolsProxy, secure: SecuredAuthenticator)
                         (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -35,7 +36,11 @@ class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticat
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
-    products.retrieveAll(offset, limit).map(products => {
+    val filters = request.queryString.filterKeys(_.startsWith("filter[")).map { case (k, v) =>
+      k.substring(7, k.length - 1) -> v.mkString
+    }
+
+    products.retrieveProductsWithFilters(filters, offset, limit).map(products => {
       val prev = if (offset > 0) Some(routes.Products.retrieveAll(offset - limit, limit).absoluteURL()) else None
       val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == products.length) Some(routes.Products.retrieveAll(offset + limit, limit).absoluteURL()) else None
@@ -44,8 +49,19 @@ class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticat
     })
   }
 
+  def retrieveAllOutOfStock(offset: Int, limit: Int): Action[AnyContent] = Action.async {
+    drools.productsOutOfStock.flatMap(response =>
+      Future.sequence(response.data.map(data => products.retrieveOne(data.id).map(_.get))).map(outOfStockProducts => {
+        // Update Product's 'fill stock' field
+        outOfStockProducts.foreach(p => products.outOfStock(p.id.get))
+
+        Ok(Json.toJson(ProductCollectionResponse.fromDomain(outOfStockProducts, CollectionLinks(self = "self"))))
+      })
+    )
+  }
+
   def retrieveOne(id: Long): Action[AnyContent] = Action.async {
-    products.retrieve(id) map {
+    products.retrieveOne(id) map {
       case Some(product) =>
         Ok(Json.toJson(ProductResponse.fromDomain(product)))
 
@@ -59,7 +75,7 @@ class Products @Inject()(products: ProductRepository, secure: SecuredAuthenticat
   def fillStock(id: Long, quantity: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async {
     products.fillStock(id, quantity).flatMap(updated => {
       if (updated > 0) {
-        products.retrieve(id) map {
+        products.retrieveOne(id) map {
           case Some(product) =>
             Ok(Json.toJson(ProductResponse.fromDomain(product)))
 

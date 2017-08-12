@@ -9,6 +9,7 @@ case class Product(id: Option[Long] = None,
                    price: Double,
                    quantity: Long,
                    createdAt: DateTime,
+                   lastBoughtAt: Option[DateTime] = None,
                    fillStock: Boolean = false,
                    status: ProductStatus = ProductStatus.ACTIVE,
                    minQuantity: Long)

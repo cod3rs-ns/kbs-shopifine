@@ -65,6 +65,7 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
               exp = issuedAt.plusMinutes(15).getMillis,
               aud = "audience-of-token",
               sub = "subject-of-token",
+              id = user.id.get,
               username = user.username,
               role = user.role.toString
             ))

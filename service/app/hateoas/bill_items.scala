@@ -2,7 +2,7 @@ package hateoas
 
 import commons.CollectionLinks
 import domain.BillItem
-import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
+import relationships._
 
 package object bill_items {
 
@@ -33,7 +33,7 @@ package object bill_items {
 
   case class BillItemResponseAttributes(ordinal: Int, price: Double, quantity: Int, amount: Double, discount: Double, discountAmount: Double)
 
-  case class BillItemResponseRelationships(product: ResponseRelationship, bill: ResponseRelationship)
+  case class BillItemResponseRelationships(product: ResponseRelationship, bill: ResponseRelationship, discounts: ResponseRelationshipCollection)
 
   case class BillItemResponseData(`type`: String, id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
 
@@ -65,6 +65,11 @@ package object bill_items {
           ),
           links = RelationshipLinks(
             related = s"api/users/$customer/bills/${billItem.billId}"
+          )
+        ),
+        discounts = ResponseRelationshipCollection(
+          links = RelationshipLinks(
+            related = s"api/users/$customer/bills/${billItem.billId}/bill-items/${billItem.id.get}/discounts"
           )
         )
       )

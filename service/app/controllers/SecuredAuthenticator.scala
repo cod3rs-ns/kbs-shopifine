@@ -3,6 +3,7 @@ package controllers
 import com.google.inject.Inject
 import commons.{Error, ErrorResponse}
 import domain.{User, UserRole}
+import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc._
 import repositories.UserRepository
@@ -10,9 +11,9 @@ import util.{JwtPayload, JwtUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class AuthRequest[A](user: User, request: Request[A]) extends WrappedRequest(request)
+case class AuthRequest[A](user: Option[User], request: Request[A]) extends WrappedRequest(request)
 
-class SecuredAuthenticator @Inject()(users: UserRepository, jwt: JwtUtil)
+class SecuredAuthenticator @Inject()(users: UserRepository, jwt: JwtUtil, config: Configuration)
                                     (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -39,7 +40,7 @@ class SecuredAuthenticator @Inject()(users: UserRepository, jwt: JwtUtil)
                 case Some(user) =>
                   val role = user.role.toString
                   if (role == validPayload.role && roles.contains(role))
-                    block(AuthRequest(user, request))
+                    block(AuthRequest(Some(user), request))
                   else
                     Future.successful(Forbidden(Json.toJson(
                       ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
@@ -55,9 +56,15 @@ class SecuredAuthenticator @Inject()(users: UserRepository, jwt: JwtUtil)
         }
       }
       else {
-        Future.successful(Unauthorized(Json.toJson(
-          ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Invalid credentials.")))
-        )))
+        val droolsToken = config.getString("service.drools.token")
+        if (droolsToken.isDefined && token == s"Bearer ${droolsToken.get}") {
+          block(AuthRequest(None, request))
+        }
+        else {
+          Future.successful(Unauthorized(Json.toJson(
+            ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Invalid credentials.")))
+          )))
+        }
       }
     }
   }

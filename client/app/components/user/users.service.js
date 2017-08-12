@@ -3,14 +3,15 @@
 
     angular
         .module('shopifine-app')
-        .service('usersService', usersService);
+        .service('users', users);
 
-    usersService.$inject = ['$http', 'CONFIG'];
+    users.$inject = ['$http', 'CONFIG'];
 
-    function usersService($http, CONFIG) {
+    function users($http, CONFIG) {
         var service = {
             auth: auth,
-            register: register
+            register: register,
+            findBy: findBy
         };
 
         return service;
@@ -27,6 +28,16 @@
 
         function register(user) {
             return $http.post(CONFIG.SERVICE_URL + '/users', user)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function findBy(id) {
+            return $http.get(CONFIG.SERVICE_URL + '/users/' + id)
                 .then(function success(response) {
                     return response.data;
                 })

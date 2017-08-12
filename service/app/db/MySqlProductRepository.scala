@@ -3,6 +3,7 @@ package db
 import javax.inject.Inject
 
 import domain.Product
+import org.joda.time.DateTime
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.ProductRepository
 import slick.driver.JdbcProfile
@@ -22,8 +23,8 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
     db.run(products.filter(_.id === id).result.headOption)
   }
 
-  override def retrieveAll(offset: Int, limit: Int): Future[Seq[Product]] = {
-    db.run(products.drop(offset).take(limit).result)
+  override def retrieveAll(): Future[Seq[Product]] = {
+    db.run(products.result)
   }
 
   override def fillStock(id: Long, quantity: Long): Future[Int] = {
@@ -38,6 +39,16 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
            WHERE id = $id;
         """.as[Int].head
     db.run(query)
+  }
+
+  override def updateLastBoughtDateTime(id: Long): Future[Int] = {
+    val q = for {product <- products if product.id === id} yield product.lastBoughtAt
+    db.run(q.update(DateTime.now))
+  }
+
+  override def updateFillStock(id: Long): Future[Int] = {
+    val q = for {product <- products if product.id === id} yield product.fillStock
+    db.run(q.update(true))
   }
 
 }

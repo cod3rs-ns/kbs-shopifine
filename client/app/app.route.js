@@ -8,6 +8,7 @@ angular
     ])
     .constant(
         'CONFIG', {
+            'SERVICE_BASE_URL': 'http://localhost:9000/',
             'SERVICE_URL': 'http://localhost:9000/api'
         }
     )
@@ -53,6 +54,19 @@ angular
                         templateUrl: "app/components/register/register.html",
                         controller: "RegisterController",
                         controllerAs: "registerVm"
+                    }
+                }
+            })
+            .state('profile', {
+                url: "/profile",
+                data: {
+                    pageTitle: "Shopifine | Profile"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/user/user-profile.html",
+                        controller: "UserProfileController",
+                        controllerAs: "profileVm"
                     }
                 }
             });

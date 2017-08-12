@@ -5,7 +5,7 @@ import com.google.inject.Inject
 import play.api.Configuration
 import play.api.libs.json.Json
 
-case class JwtPayload(iss: String, iat: Long, exp: Long, aud: String, sub: String, username: String, role: String)
+case class JwtPayload(iss: String, iat: Long, exp: Long, aud: String, sub: String, id: Long, username: String, role: String)
 
 class JwtUtil @Inject()(config: Configuration) {
 

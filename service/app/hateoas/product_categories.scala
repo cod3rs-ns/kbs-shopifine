@@ -6,11 +6,11 @@ import relationships._
 
 package object product_categories {
 
-  case class ProductCategoryAttributes(name: String, maxDiscount: Double)
+  case class ProductCategoryRequestAttributes(name: String, maxDiscount: Double, isConsumerGoods: Option[Boolean])
 
   case class ProductCategoryRequestRelationships(superCategory: RequestRelationship)
 
-  case class ProductCategoryRequestData(`type`: String, attributes: ProductCategoryAttributes, relationships: Option[ProductCategoryRequestRelationships])
+  case class ProductCategoryRequestData(`type`: String, attributes: ProductCategoryRequestAttributes, relationships: Option[ProductCategoryRequestRelationships])
 
   case class ProductCategoryRequest(data: ProductCategoryRequestData) {
     def toDomain: ProductCategory = {
@@ -19,14 +19,17 @@ package object product_categories {
       ProductCategory(
         name = attributes.name,
         maxDiscount = attributes.maxDiscount,
+        isConsumerGoods = if (attributes.isConsumerGoods.isDefined) attributes.isConsumerGoods.get else false,
         superCategoryId = if (data.relationships.isDefined) Some(data.relationships.get.superCategory.data.id) else None
       )
     }
   }
 
+  case class ProductCategoryResponseAttributes(name: String, maxDiscount: Double, isConsumerGoods: Boolean)
+
   case class ProductCategoryResponseRelationships(superCategory: Option[ResponseRelationship], subcategories: ResponseRelationshipCollection)
 
-  case class ProductCategoryResponseData(id: Long, `type`: String, attributes: ProductCategoryAttributes, relationships: ProductCategoryResponseRelationships)
+  case class ProductCategoryResponseData(id: Long, `type`: String, attributes: ProductCategoryResponseAttributes, relationships: ProductCategoryResponseRelationships)
 
   object ProductCategoryResponseData {
     def fromDomain(category: ProductCategory): ProductCategoryResponseData = {
@@ -56,9 +59,10 @@ package object product_categories {
       ProductCategoryResponseData(
         id = category.id.get,
         `type` = ProductCategories,
-        attributes = ProductCategoryAttributes(
+        attributes = ProductCategoryResponseAttributes(
           name = category.name,
-          maxDiscount = category.maxDiscount
+          maxDiscount = category.maxDiscount,
+          isConsumerGoods = category.isConsumerGoods
         ),
         relationships = relationships
       )

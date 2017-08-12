@@ -19,7 +19,7 @@ class MySqlConsumptionThresholdRepository @Inject()(protected val dbConfigProvid
   }
 
   override def retrieveByBuyerCategory(id: Long, offset: Int, limit: Int): Future[Seq[ConsumptionThreshold]] = {
-    db.run(consumptionThresholds.drop(offset).take(limit).result)
+    db.run(consumptionThresholds.filter(_.buyerCategory === id).drop(offset).take(limit).result)
   }
 
   override def delete(id: Long): Future[Int] = {

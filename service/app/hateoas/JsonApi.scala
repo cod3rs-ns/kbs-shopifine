@@ -1,15 +1,18 @@
 package hateoas
 
 import bills._
-import play.api.libs.json.{Json, OFormat}
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
-import user_auth.{UserAuthRequest, UserAuthResponse}
 import hateoas.action_discounts._
+import hateoas.bill_discounts._
+import hateoas.bill_item_discounts._
 import hateoas.bill_items._
 import hateoas.buyer_categories._
-import relationships._
-import products._
+import hateoas.drools_service._
 import hateoas.product_categories._
+import play.api.libs.json.{Json, OFormat}
+import products._
+import relationships._
+import user_auth.{UserAuthRequest, UserAuthResponse}
 import users._
 import util.JwtPayload
 
@@ -36,10 +39,11 @@ object JsonApi {
   implicit val prodRes: OFormat[ProductResponse] = Json.format[ProductResponse]
   implicit val prodResCollection: OFormat[ProductCollectionResponse] = Json.format[ProductCollectionResponse]
 
-  implicit val prodCatAttrs: OFormat[ProductCategoryAttributes] = Json.format[ProductCategoryAttributes]
+  implicit val prodCatReqAttrs: OFormat[ProductCategoryRequestAttributes] = Json.format[ProductCategoryRequestAttributes]
   implicit val prodCatReqRels: OFormat[ProductCategoryRequestRelationships] = Json.format[ProductCategoryRequestRelationships]
   implicit val prodCatReqData: OFormat[ProductCategoryRequestData] = Json.format[ProductCategoryRequestData]
   implicit val prodCatReq: OFormat[ProductCategoryRequest] = Json.format[ProductCategoryRequest]
+  implicit val prodCatResAttrs: OFormat[ProductCategoryResponseAttributes] = Json.format[ProductCategoryResponseAttributes]
   implicit val prodCatResRels: OFormat[ProductCategoryResponseRelationships] = Json.format[ProductCategoryResponseRelationships]
   implicit val prodCatResData: OFormat[ProductCategoryResponseData] = Json.format[ProductCategoryResponseData]
   implicit val prodCatRes: OFormat[ProductCategoryResponse] = Json.format[ProductCategoryResponse]
@@ -65,6 +69,12 @@ object JsonApi {
   implicit val billRes: OFormat[BillResponse] = Json.format[BillResponse]
   implicit val billResCollection: OFormat[BillCollectionResponse] = Json.format[BillCollectionResponse]
 
+  implicit val billDiscountAttrs: OFormat[BillDiscountAttributes] = Json.format[BillDiscountAttributes]
+  implicit val billDiscountRels: OFormat[BillDiscountRelationships] = Json.format[BillDiscountRelationships]
+  implicit val billDiscountData: OFormat[BillDiscountData] = Json.format[BillDiscountData]
+  implicit val billDiscountRes: OFormat[BillDiscountResponse] = Json.format[BillDiscountResponse]
+  implicit val billDiscountResCollection: OFormat[BillDiscountCollectionResponse] = Json.format[BillDiscountCollectionResponse]
+
   implicit val billItemReqAttrs: OFormat[BillItemRequestAttributes] = Json.format[BillItemRequestAttributes]
   implicit val billItemReqRels: OFormat[BillItemRequestRelationships] = Json.format[BillItemRequestRelationships]
   implicit val billItemReqData: OFormat[BillItemRequestData] = Json.format[BillItemRequestData]
@@ -75,6 +85,12 @@ object JsonApi {
   implicit val billItemRes: OFormat[BillItemResponse] = Json.format[BillItemResponse]
   implicit val billItemResCollection: OFormat[BillItemCollectionResponse] = Json.format[BillItemCollectionResponse]
 
+  implicit val billItemDiscountAttrs: OFormat[BillItemDiscountAttributes] = Json.format[BillItemDiscountAttributes]
+  implicit val billItemDiscountRels: OFormat[BillItemDiscountRelationships] = Json.format[BillItemDiscountRelationships]
+  implicit val billItemDiscountData: OFormat[BillItemDiscountData] = Json.format[BillItemDiscountData]
+  implicit val billItemDiscountRes: OFormat[BillItemDiscountResponse] = Json.format[BillItemDiscountResponse]
+  implicit val billItemDiscountResCollection: OFormat[BillItemDiscountCollectionResponse] = Json.format[BillItemDiscountCollectionResponse]
+
   implicit val buyerCatReqAttrs: OFormat[BuyerCategoryRequestAttributes] = Json.format[BuyerCategoryRequestAttributes]
   implicit val buyerCatReqData: OFormat[BuyerCategoryRequestData] = Json.format[BuyerCategoryRequestData]
   implicit val buyerCatReq: OFormat[BuyerCategoryRequest] = Json.format[BuyerCategoryRequest]
@@ -84,8 +100,10 @@ object JsonApi {
   implicit val buyerCatRes: OFormat[BuyerCategoryResponse] = Json.format[BuyerCategoryResponse]
   implicit val buyerCatCollection: OFormat[BuyerCategoryCollectionResponse] = Json.format[BuyerCategoryCollectionResponse]
   implicit val thresholdsAttrs: OFormat[ConsumptionThresholdAttributes] = Json.format[ConsumptionThresholdAttributes]
+  implicit val thresholdReqRels: OFormat[ConsumptionThresholdRequestRelationships] = Json.format[ConsumptionThresholdRequestRelationships]
   implicit val thresholdsReqData: OFormat[ConsumptionThresholdRequestData] = Json.format[ConsumptionThresholdRequestData]
   implicit val thresholdsReq: OFormat[ConsumptionThresholdRequest] = Json.format[ConsumptionThresholdRequest]
+  implicit val thresholdResRels: OFormat[ConsumptionThresholdResponseRelationships] = Json.format[ConsumptionThresholdResponseRelationships]
   implicit val thresholdsResData: OFormat[ConsumptionThresholdResponseData] = Json.format[ConsumptionThresholdResponseData]
   implicit val thresholdsRes: OFormat[ConsumptionThresholdResponse] = Json.format[ConsumptionThresholdResponse]
   implicit val thresholdsResCollection: OFormat[ConsumptionThresholdCollectionResponse] = Json.format[ConsumptionThresholdCollectionResponse]
@@ -101,5 +119,15 @@ object JsonApi {
   implicit val jwtPayload: OFormat[JwtPayload] = Json.format[JwtPayload]
   implicit val userAuthReq: OFormat[UserAuthRequest] = Json.format[UserAuthRequest]
   implicit val userAuthRes: OFormat[UserAuthResponse] = Json.format[UserAuthResponse]
+
+  // Drools Service responses
+  implicit val droolsDiscountRes: OFormat[DiscountResponse] = Json.format[DiscountResponse]
+  implicit val droolsBillRes: OFormat[BillWithDiscountsResponse] = Json.format[BillWithDiscountsResponse]
+  implicit val droolsBillItemRes: OFormat[BillItemWithDiscountsResponse] = Json.format[BillItemWithDiscountsResponse]
+
+  implicit val droolsProdResAttrs: OFormat[DroolsProductResponseAttributes] = Json.format[DroolsProductResponseAttributes]
+  implicit val droolsProdResRels: OFormat[DroolsProductResponseRelationships] = Json.format[DroolsProductResponseRelationships]
+  implicit val droolsProdResData: OFormat[DroolsProductResponseData] = Json.format[DroolsProductResponseData]
+  implicit val droolsProdResColl: OFormat[DroolsProductResponseCollection] = Json.format[DroolsProductResponseCollection]
 
 }

@@ -1,6 +1,7 @@
 package repositories
 
 import domain.Product
+
 import scala.concurrent.Future
 
 trait ProductRepository {
@@ -9,8 +10,12 @@ trait ProductRepository {
 
   def retrieve(id: Long): Future[Option[Product]]
 
-  def retrieveAll(offset: Int, limit: Int): Future[Seq[Product]]
+  def retrieveAll(): Future[Seq[Product]]
 
   def fillStock(id: Long, quantity: Long): Future[Int]
+
+  def updateLastBoughtDateTime(id: Long): Future[Int]
+
+  def updateFillStock(id: Long): Future[Int]
 
 }

@@ -1,0 +1,17 @@
+import java.util.List
+import com.dmarjanovic.drools.domain.*
+import scala.collection.JavaConversions
+
+rule "Calculate Gained Points for Bill"
+    salience -32
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill($thresholds: customer.buyerCategory.thresholds)
+    then
+        final List<ConsumptionThreshold> thresholds = JavaConversions.seqAsJavaList($thresholds);
+        for (ConsumptionThreshold threshold: thresholds) {
+            if (threshold.from() < $bill.amount() && $bill.amount() <  threshold.to()) {
+                $bill.pointsGained_$eq((long) ($bill.amount() * threshold.award() / 100.0));
+            }
+        }
+end

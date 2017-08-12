@@ -144,6 +144,10 @@ definitions:
         type: string
         description: Time when Product is stored
         example: '2017-08-06T01:56:10.000+02:00'
+      lastBoughtAt:
+        type: string
+        description: Time when Product is last time bought
+        example: '2017-10-21T01:56:10.000+02:00'
       fillStock:
         type: boolean
         description: Indicate if Product available on stock
@@ -163,6 +167,7 @@ definitions:
       - imageUrl
       - quantity
       - createdAt
+      - lastBoughtAt
       - fillStock
       - status
       - minQuantity
@@ -172,6 +177,9 @@ definitions:
       category:
         description: Relationship to Product Category
         $ref: '#/definitions/ResponseRelationship'
+      discounts:
+        description: Relationship to list of discounts by product category
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - category
   UserRequest:
@@ -418,13 +426,24 @@ definitions:
       type:
         type: string
         enum:
-          - onsumption-thresholds
+          - consumption-thresholds
         description: Type of requested Consumption Thresholds
       attributes:
         $ref: '#/definitions/ThresholdAttributes'
+      relationships:
+        $ref: '#/definitions/ThresholdRequestRelationships'
     required:
       - type
       - attributes
+      - relationships
+  ThresholdRequestRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to buyer category we need to add threshold for
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - category
   ThresholdResponse:
     type: object
     properties:
@@ -460,10 +479,21 @@ definitions:
           example: 1
       attributes:
         $ref: '#/definitions/ThresholdAttributes'
+      relationships:
+        $ref: '#/definitions/ThresholdResponseRelationships'
     required:
       - type
       - id
       - attributes
+      - relationships
+  ThresholdResponseRelationships:
+    type: object
+    properties:
+      category:
+        description: Relationship to threshold's buyer category
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - category
   ThresholdAttributes:
     type: object
     properties:
@@ -512,8 +542,14 @@ definitions:
           - ORDERED
           - CANCELLED
           - SUCCESSFUL
+      totalItems:
+        type: long
+        format: int64
+        description: Number of items in Bill
+        example: 21
     required:
       - state
+      - totalItems
   BillRequestRelationships:
     type: object
     properties:
@@ -578,6 +614,11 @@ definitions:
           - ORDERED
           - CANCELLED
           - SUCCESSFUL
+      totalItems:
+        type: long
+        format: int64
+        description: Number of items in Bill
+        example: 21
       amount:
         type: double
         description: Bill amount
@@ -603,6 +644,7 @@ definitions:
     required:
       - createdAt
       - state
+      - totalItems
       - amount
       - discount
       - discountAmount
@@ -617,9 +659,59 @@ definitions:
       items:
         description: Relationship to bill items
         $ref: '#/definitions/ResponseRelationshipCollection'
+      discounts:
+        description: Relationship to bill discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - customer
       - items
+      - discounts
+  BillDiscountCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillDiscountData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillDiscountData:
+    type: object
+    properties:
+      attributes:
+        $ref: '#/definitions/BillDiscountAttributes'
+      relationships:
+        $ref: '#/definitions/BillDiscountRelationships'
+    required:
+      - attributes
+      - relationships
+  BillDiscountAttributes:
+    type: object
+    properties:
+      discount:
+        type: double
+        description: Value of bill discount
+        example: 6.8
+      type:
+        type: string
+        description: Type of discount
+        enum:
+          - BASIC
+          - PRO
+    required:
+      - discount
+      - type
+  BillDiscountRelationships:
+    type: object
+    properties:
+      bill:
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - bill
   BillItemRequest:
     type: object
     properties:
@@ -759,9 +851,58 @@ definitions:
       bill:
         description: Relationship to Bill
         $ref: '#/definitions/ResponseCollection'
+      discounts:
+        description: Relationship to bill item discounts
+        $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - product
       - bill
+  BillItemDiscountCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/BillItemDiscountData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  BillItemDiscountData:
+    type: object
+    properties:
+      attributes:
+        $ref: '#/definitions/BillItemDiscountAttributes'
+      relationships:
+        $ref: '#/definitions/BillItemDiscountRelationships'
+    required:
+      - attributes
+      - relationships
+  BillItemDiscountAttributes:
+    type: object
+    properties:
+      discount:
+        type: double
+        description: Value of bill item discount
+        example: 6.8
+      type:
+        type: string
+        description: Type of discount
+        enum:
+          - BASIC
+          - PRO
+    required:
+      - discount
+      - type
+  BillItemDiscountRelationships:
+    type: object
+    properties:
+      billItem:
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - billItem
   ProductCategoryRequest:
     type: object
     properties:
@@ -778,12 +919,30 @@ definitions:
           - product-categories
         description: Type of requested Product Category
       attributes:
-        $ref: '#/definitions/ProductCategoryAttributes'
+        $ref: '#/definitions/ProductCategoryRequestAttributes'
       relationships:
         $ref: '#/definitions/ProductCategoryRequestRelationships'
     required:
       - type
       - attributes
+  ProductCategoryRequestAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: General product category
+        example: Electronics
+      maxDiscount:
+        type: double
+        description: Maximum allowed discount for product in specified category
+        example: 20
+      isConsumerGoods:
+        type: boolean
+        description: Represents flag if product category is consumer goods
+        default: false
+    required:
+      - name
+      - maxDiscount
   ProductCategoryRequestRelationships:
     type: object
     properties:
@@ -826,7 +985,7 @@ definitions:
         description: Unique identifier of Product category
         example: 1
       attributes:
-        $ref: '#/definitions/ProductCategoryAttributes'
+        $ref: '#/definitions/ProductCategoryResponseAttributes'
       relationships:
         $ref: '#/definitions/ProductCategoryResponseRelationships'
     required:
@@ -834,6 +993,24 @@ definitions:
       - id
       - attributes
       - relationships
+  ProductCategoryResponseAttributes:
+    type: object
+    properties:
+      name:
+        type: string
+        description: General product category
+        example: Electronics
+      maxDiscount:
+        type: double
+        description: Maximum allowed discount for product in specified category
+        example: 20
+      isConsumerGoods:
+        type: boolean
+        description: Represents flag if product category is consumer goods
+    required:
+      - name
+      - maxDiscount
+      - isConsumerGoods
   ProductCategoryResponseRelationships:
     type: object
     properties:
@@ -845,20 +1022,6 @@ definitions:
         $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - subcategories
-  ProductCategoryAttributes:
-    type: object
-    properties:
-      name:
-        type: string
-        description: General product category
-        example: Electronics
-      maxDiscount:
-        type: double
-        description: Maximum allowed discount for product in specified category
-        example: 20
-    required:
-      - name
-      - maxDiscount
   ActionDiscountRequest:
     type: object
     properties:
@@ -1022,7 +1185,7 @@ definitions:
       self:
         type: string
       next:
-        type: next
+        type: string
     required:
       - self
   UserAuthRequest:

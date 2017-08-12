@@ -28,12 +28,29 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   }
 
   override def retrieveByUser(userId: Long, offset: Int, limit: Int): Future[Seq[Bill]] = {
-    db.run(bills.filter(_.customerId === userId).drop(offset).take(limit).result)
+    db.run(bills.filter(_.customer === userId).drop(offset).take(limit).result)
   }
 
   override def setState(id: Long, state: BillState): Future[Int] = {
     val q = for {bill <- bills if bill.id === id} yield bill.state
     db.run(q.update(state))
+  }
+
+  override def enlargeAmount(id: Long, amount: Double): Future[Int] = {
+    val query =
+      sql"""
+           UPDATE
+              bills
+           SET
+              amount = amount + $amount
+           WHERE id = $id;
+        """.as[Int].head
+    db.run(query)
+  }
+
+  override def modify(id: Long, bill: Bill): Future[Int] = {
+    val q = for {b <- bills if b.id === id} yield (b.amount, b.discount, b.discountAmount, b.pointsGained)
+    db.run(q.update((bill.amount, bill.discount, bill.discountAmount, bill.pointsGained)))
   }
 
 }

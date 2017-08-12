@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('RegisterController', RegisterController);
 
-    RegisterController.$inject = ['ngToast', '_', 'usersService'];
+    RegisterController.$inject = ['ngToast', '_', 'users'];
 
-    function RegisterController(ngToast, _, usersService) {
+    function RegisterController(ngToast, _, users) {
         var registerVm = this;
 
         // FIXME Extract toDto function
@@ -52,7 +52,7 @@
                 registerVm.user.data.attributes.address = null;
             }
 
-            usersService.register(registerVm.user)
+            users.register(registerVm.user)
                 .then(function (response) {
                     registerVm.error = false;
 

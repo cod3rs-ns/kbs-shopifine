@@ -1,0 +1,87 @@
+import java.util.List
+import com.dmarjanovic.drools.domain.*
+import scala.collection.JavaConversions
+import org.joda.time.DateTime
+import scala.Option
+
+// Basic Discounts
+rule "Determine if Bill Item achieves Basic Discount based on Quantity and Consumer Goods category"
+    salience -2
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(quantity > 20 && product.category.consumerGoods == false)
+    then
+        final BillItemDiscount discount = new BillItemDiscount(10, DiscountType.BASIC);
+        $item.addDiscount(discount);
+end
+
+rule "Determine if Bill Item achieves Basic Discount based on item price and Consumer Goods category"
+    salience -4
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(quantity * price > 5000 && product.category.consumerGoods == true)
+    then
+        final BillItemDiscount discount = new BillItemDiscount(7, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
+end
+
+rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'TVs'"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(quantity > 5 && "TVs".equalsIgnoreCase(product.category.name))
+    then
+        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
+end
+
+rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Computers'"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(quantity > 5 && "Computers".equalsIgnoreCase(product.category.name))
+    then
+        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
+end
+
+rule "Determine if Bill Item achieves Basic Discount based on Quantity and Category is 'Laptops'"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(quantity > 5 && "Monitors".equalsIgnoreCase(product.category.name))
+    then
+        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        if (0 == $item.discounts().size()) {
+            $item.addDiscount(discount);
+        }
+end
+
+// Pro Discounts
+
+
+rule "Determine Bill Item discount and price"
+    salience -16
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem()
+        $total: Double() from accumulate(BillItemDiscount($discount: discount) from JavaConversions.seqAsJavaList($item.discounts), sum($discount))
+    then
+        final double maxDiscount = $item.getProduct().getCategory().maxDiscount();
+        if ($total < maxDiscount) {
+            final double itemDiscount = $total;
+            $item.discount_$eq(itemDiscount);
+        }
+        else {
+            $item.discount_$eq(maxDiscount);
+        }
+
+        $item.discountAmount_$eq($item.quantity() * $item.price() * $item.discount() / 100.0);
+        $item.amount_$eq($item.quantity() * $item.price() * (100.0 - $item.discount()) / 100.0);
+end

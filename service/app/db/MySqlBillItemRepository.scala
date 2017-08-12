@@ -8,19 +8,29 @@ import repositories.BillItemRepository
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
 
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-class MySqlBillItemRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends BillItemRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+class MySqlBillItemRepository @Inject()(
+    protected val dbConfigProvider: DatabaseConfigProvider)
+    extends BillItemRepository
+    with HasDatabaseConfigProvider[JdbcProfile]
+    with DatabaseSchema {
 
   override def save(billItem: BillItem): Future[BillItem] = {
-    val items = billItems returning billItems.map(_.id) into ((item, id) => item.copy(id = Some(id)))
+    val items = billItems returning billItems.map(_.id) into (
+        (item,
+         id) => item.copy(id = Some(id)))
     db.run(items += billItem)
+      .flatMap(result =>
+        db.run(billItems.filter(_.id === result.id).result.head))
   }
 
-  override def retrieveByBill(billId: Long, offset: Int, limit: Int): Future[Seq[BillItem]] = {
-    db.run(billItems.filter(_.billId === billId).drop(offset).take(limit).result)
+  override def retrieveByBill(billId: Long,
+                              offset: Int,
+                              limit: Int): Future[Seq[BillItem]] = {
+    db.run(billItems.filter(_.bill === billId).drop(offset).take(limit).result)
   }
 
 }

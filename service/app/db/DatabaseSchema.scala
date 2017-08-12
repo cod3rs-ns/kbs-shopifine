@@ -5,9 +5,9 @@ import java.sql.Timestamp
 import domain._
 import org.joda.time.DateTime
 import slick.ast.BaseTypedType
-import slick.lifted.{ForeignKeyQuery, ProvenShape, TableQuery}
 import slick.driver.MySQLDriver.api._
 import slick.jdbc.JdbcType
+import slick.lifted.{ForeignKeyQuery, ProvenShape, TableQuery}
 
 trait DatabaseSchema {
   val buyerCategories: TableQuery[BuyerCategories] = TableQuery[BuyerCategories]
@@ -23,6 +23,7 @@ trait DatabaseSchema {
 
   val consumptionThresholds: TableQuery[ConsumptionThresholds] = TableQuery[ConsumptionThresholds]
   val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
+  val actionDiscountsProductCategories: TableQuery[ActionDiscountsProductCategories] = TableQuery[ActionDiscountsProductCategories]
 
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
@@ -51,7 +52,7 @@ trait DatabaseSchema {
 
   class Users(tag: Tag) extends Table[User](tag, "users") {
     def * : ProvenShape[User] = {
-      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategoryId, points, registeredAt)
+      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategory, points, registeredAt)
 
       props <> (User.tupled, User.unapply)
     }
@@ -70,18 +71,20 @@ trait DatabaseSchema {
 
     def address: Rep[Option[String]] = column[Option[String]]("address")
 
-    def buyerCategoryId: Rep[Option[Long]] = column[Option[Long]]("buyer_category")
+    def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
+
+    def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_users_buyer_categories_id", buyerCategory, buyerCategories)(category =>
+      category.id, onDelete = ForeignKeyAction.Cascade
+    )
 
     def points: Rep[Option[Long]] = column[Option[Long]]("points")
 
     def registeredAt: Rep[DateTime] = column[DateTime]("registered_at")
-
-    def buyerCategory: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("buyer_category_fk", buyerCategoryId, buyerCategories)(_.id.?)
   }
 
   class ProductCategories(tag: Tag) extends Table[ProductCategory](tag, "product_categories") {
     def * : ProvenShape[ProductCategory] = {
-      val props = (id.?, name, superCategoryId, maxDiscount)
+      val props = (id.?, name, superCategory, maxDiscount, isConsumerGoods)
 
       props <> (ProductCategory.tupled, ProductCategory.unapply)
     }
@@ -90,16 +93,20 @@ trait DatabaseSchema {
 
     def name: Rep[String] = column[String]("name")
 
-    def superCategoryId: Rep[Option[Long]] = column[Option[Long]]("super_category")
+    def superCategory: Rep[Option[Long]] = column[Option[Long]]("super_category_id")
+
+    def superCategoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_product_categories_product_categories_id", superCategory, productCategories)(
+      category => category.id, onDelete = ForeignKeyAction.Cascade
+    )
 
     def maxDiscount: Rep[Double] = column[Double]("max_discount")
 
-    def superCategory: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("super_category_fk", superCategoryId, productCategories)(_.id.?)
+    def isConsumerGoods: Rep[Boolean] = column[Boolean]("is_consumer_goods")
   }
 
   class Products(tag: Tag) extends Table[Product](tag, "products") {
     def * : ProvenShape[Product] = {
-      val props = (id.?, name, imageUrl, categoryId, price, quantity, createdAt, fillStock, status, minQuantity)
+      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, lastBoughtAt.?, fillStock, status, minQuantity)
 
       props <> (Product.tupled, Product.unapply)
     }
@@ -110,7 +117,7 @@ trait DatabaseSchema {
 
     def imageUrl: Rep[String] = column[String]("image_url")
 
-    def categoryId: Rep[Long] = column[Long]("category")
+    def productCategory: Rep[Long] = column[Long]("product_category_id")
 
     def price: Rep[Double] = column[Double]("price")
 
@@ -118,18 +125,22 @@ trait DatabaseSchema {
 
     def createdAt: Rep[DateTime] = column[DateTime]("created_at")
 
+    def lastBoughtAt: Rep[DateTime] = column[DateTime]("last_bought_at")
+
     def fillStock: Rep[Boolean] = column[Boolean]("fill_stock")
 
     def status: Rep[ProductStatus] = column[ProductStatus]("status")
 
     def minQuantity: Rep[Long] = column[Long]("min_quantity")
 
-    def category: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("category_fk", categoryId, productCategories)(_.id)
+    def productCategoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_products_product_categories_id", productCategory, productCategories)(category =>
+      category.id, onDelete = ForeignKeyAction.Cascade
+    )
   }
 
   class Bills(tag: Tag) extends Table[Bill](tag, "bills") {
     def * : ProvenShape[Bill] = {
-      val props = (id.?, createdAt, customerId, state, amount, discount, discountAmount, pointsSpent, pointsGained)
+      val props = (id.?, createdAt, customer, state, totalItems, amount, discount, discountAmount, pointsSpent, pointsGained)
 
       props <> (Bill.tupled, Bill.unapply)
     }
@@ -138,9 +149,15 @@ trait DatabaseSchema {
 
     def createdAt: Rep[DateTime] = column[DateTime]("created_at")
 
-    def customerId: Rep[Long] = column[Long]("customer")
+    def customer: Rep[Long] = column[Long]("customer")
+
+    def customerFK: ForeignKeyQuery[Users, User] = foreignKey("fk_bills_users_id", customer, users)(user =>
+      user.id, onDelete = ForeignKeyAction.Cascade
+    )
 
     def state: Rep[BillState] = column[BillState]("state")
+
+    def totalItems: Rep[Long] = column[Long]("total_items")
 
     def amount: Rep[Double] = column[Double]("amount")
 
@@ -151,13 +168,11 @@ trait DatabaseSchema {
     def pointsSpent: Rep[Long] = column[Long]("points_spent")
 
     def pointsGained: Rep[Long] = column[Long]("points_gained")
-
-    def customer: ForeignKeyQuery[Users, User] = foreignKey("customer_fk", customerId, users)(_.id)
   }
 
   class BillItems(tag: Tag) extends Table[BillItem](tag, "bill_items") {
     def * : ProvenShape[BillItem] = {
-      val props = (id.?, ordinal, productId, billId, price, quantity, amount, discount, discountAmount)
+      val props = (id.?, ordinal, product, bill, price, quantity, amount, discount, discountAmount)
 
       props <> (BillItem.tupled, BillItem.unapply)
     }
@@ -166,9 +181,17 @@ trait DatabaseSchema {
 
     def ordinal: Rep[Int] = column[Int]("ordinal")
 
-    def productId: Rep[Long] = column[Long]("product")
+    def product: Rep[Long] = column[Long]("product_id")
 
-    def billId: Rep[Long] = column[Long]("bill")
+    def productFK: ForeignKeyQuery[Products, Product] = foreignKey("fk_bill_items_products_id", product, products)(product =>
+      product.id, onDelete = ForeignKeyAction.Cascade
+    )
+
+    def bill: Rep[Long] = column[Long]("bill_id")
+
+    def billFK: ForeignKeyQuery[Bills, Bill] = foreignKey("fk_bill_items_bills_id", bill, bills)(bill =>
+      bill.id, onDelete = ForeignKeyAction.Cascade
+    )
 
     def price: Rep[Double] = column[Double]("price")
 
@@ -179,56 +202,62 @@ trait DatabaseSchema {
     def discount: Rep[Double] = column[Double]("discount")
 
     def discountAmount: Rep[Double] = column[Double]("discount_amount")
-
-    def product: ForeignKeyQuery[Products, Product] = foreignKey("product_fk", productId, products)(_.id)
-
-    def bill: ForeignKeyQuery[Bills, Bill] = foreignKey("bill_i_id", billId, bills)(_.id)
   }
 
   class BillDiscounts(tag: Tag) extends Table[BillDiscount](tag, "bill_discounts") {
     def * : ProvenShape[BillDiscount] = {
-      val props = (id.?, billId, discount, `type`)
+      val props = (id.?, bill, discount, `type`)
 
       props <> (BillDiscount.tupled, BillDiscount.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
-    def billId: Rep[Long] = column[Long]("bill")
+    def bill: Rep[Long] = column[Long]("bill_id")
+
+    def billFK: ForeignKeyQuery[Bills, Bill] = foreignKey("fk_bill_discounts_bills_id", bill, bills)(bill =>
+      bill.id, onDelete = ForeignKeyAction.Cascade
+    )
 
     def discount: Rep[Double] = column[Double]("discount")
 
     def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
-
-    def bill: ForeignKeyQuery[Bills, Bill] = foreignKey("bill_d_fk", billId, bills)(_.id)
   }
 
   class ItemDiscounts(tag: Tag) extends Table[BillItemDiscount](tag, "item_discounts") {
     def * : ProvenShape[BillItemDiscount] = {
-      val props = (id.?, itemId, discount, `type`)
+      val props = (id.?, item, discount, `type`)
 
       props <> (BillItemDiscount.tupled, BillItemDiscount.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
 
-    def itemId: Rep[Long] = column[Long]("item")
+    def item: Rep[Long] = column[Long]("item_id")
+
+    def itemFK: ForeignKeyQuery[BillItems, BillItem] = foreignKey("fk_item_discounts_items_id", item, billItems)(item =>
+      item.id, ForeignKeyAction.Cascade
+    )
 
     def discount: Rep[Double] = column[Double]("discount")
 
     def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
-
-    def item: ForeignKeyQuery[BillItems, BillItem] = foreignKey("item_fk", itemId, billItems)(_.id)
   }
 
   class ConsumptionThresholds(tag: Tag) extends Table[ConsumptionThreshold](tag, "consumption_thresholds") {
     def * : ProvenShape[ConsumptionThreshold] = {
-      val props = (id.?, from, to, award)
+      val props = (id.?, buyerCategory, from, to, award)
 
       props <> (ConsumptionThreshold.tupled, ConsumptionThreshold.unapply)
     }
 
     def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def buyerCategory: Rep[Long] = column[Long]("buyer_category_id")
+
+    def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_consumption_thresholds_buyer_categories_id", buyerCategory, buyerCategories)(category =>
+      category.id, ForeignKeyAction.Cascade
+    )
 
     def from: Rep[Int] = column[Int]("from")
 
@@ -254,4 +283,27 @@ trait DatabaseSchema {
 
     def discount: Rep[Double] = column[Double]("discount")
   }
+
+  class ActionDiscountsProductCategories(tag: Tag) extends Table[ActionDiscountProductCategory](tag, "action_discounts_product_categories") {
+    def * : ProvenShape[ActionDiscountProductCategory] = {
+      val props = (id.?, discount, category)
+
+      props <> (ActionDiscountProductCategory.tupled, ActionDiscountProductCategory.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def discount: Rep[Long] = column[Long]("discount_id")
+
+    def discountFK: ForeignKeyQuery[ActionDiscounts, ActionDiscount] = foreignKey("fk_action_discounts_product_categories_action_discounts_id", discount, actionDiscounts)(discount =>
+      discount.id, onDelete = ForeignKeyAction.Cascade
+    )
+
+    def category: Rep[Long] = column[Long]("category_id")
+
+    def categoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_action_discounts_product_categories_product_categories_id", category, productCategories)(category =>
+      category.id, onDelete = ForeignKeyAction.Cascade
+    )
+  }
+
 }

@@ -1,0 +1,55 @@
+import java.util.List
+import com.dmarjanovic.drools.domain.*
+import scala.collection.JavaConversions
+import org.joda.time.DateTime
+import scala.Option
+
+rule "Determine if Bill achieves Basic Discount based on Amount"
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill(amount > 200000)
+    then
+        final Bill bill = $bill;
+        bill.addDiscount(new BillDiscount(5, DiscountType.BASIC));
+end
+
+rule "Determine if Bill achieves Pro Discount based on Old Customer"
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill(customer.registeredAt() < DateTime.now().minusYears(2))
+    then
+        final Bill bill = $bill;
+        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
+end
+
+rule "Determine if Bill achieves Pro Discount based on Customer Category"
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill(customer.buyerCategory.name.equals("Gold Category") || customer.buyerCategory.name.equals("Silver Category"))
+    then
+        final Bill bill = $bill;
+        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
+end
+
+rule "Determine if Bill achieves Pro Discount based on Amount"
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill(amount > 50000)
+    then
+        final Bill bill = $bill;
+        bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
+end
+
+rule "Determine final Bill discount and price"
+    salience -16
+    agenda-group "bill-bonuses"
+    when
+        $bill: Bill()
+        $total: Double() from accumulate(BillDiscount($discount: discount) from JavaConversions.seqAsJavaList($bill.discounts), sum($discount))
+        $price: Double() from accumulate(BillItem($amount: amount) from JavaConversions.seqAsJavaList($bill.items), sum($amount))
+    then
+        $bill.discount_$eq($total);
+        final double discountAmount = $total * $price / 100.0;
+        $bill.amount_$eq($price - discountAmount);
+        $bill.discountAmount_$eq(discountAmount);
+end
