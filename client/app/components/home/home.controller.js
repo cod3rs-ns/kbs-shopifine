@@ -54,7 +54,8 @@
                             'id': product.id,
                             'name': product.attributes.name,
                             'price': product.attributes.price,
-                            'preview': product.attributes.imageUrl
+                            // 'preview': product.attributes.imageUrl
+                            'preview': 'https://s-media-cache-ak0.pinimg.com/736x/83/37/4e/83374e1f3aa84e3ff3a04a63eda7e4f7--cheap-ray-ban-sunglasses-cheap-ray-bans.jpg'
                         }
                     });
 
