@@ -5,18 +5,20 @@
         .module('shopifine-app')
         .controller('NavbarController', NavbarController);
 
-    NavbarController.$inject = ['$localStorage', '_'];
+    NavbarController.$inject = ['$localStorage', '$location', '_'];
 
-    function NavbarController($localStorage, _) {
+    function NavbarController($localStorage, $location, _) {
         var navbarVm = this;
 
         navbarVm.$storage = $localStorage;
+
+        navbarVm.total = shoppingCartSum;
+        navbarVm.logout = logout;
 
         navbarVm.isGuest = isGuest;
         navbarVm.isCustomer = isCustomer;
         navbarVm.isManager = isManager;
         navbarVm.isSalesman = isSalesman;
-        navbarVm.total = shoppingCartSum;
 
         function isGuest() {
             return _.isEmpty(navbarVm.$storage.user);
@@ -42,6 +44,11 @@
             return _.sumBy(navbarVm.$storage.items, function(item) {
                 return item.quantity * item.product.price;
             });
+        }
+
+        function logout() {
+            $localStorage.$reset();
+            $location.path('/login');
         }
     }
 
