@@ -26,6 +26,7 @@
         };
 
         $localStorage.items = [];
+        homeVm.productDiscounts = [];
 
         homeVm.next = retrieveProducts;
         homeVm.prev = retrieveProducts;
@@ -38,6 +39,7 @@
         homeVm.searchByCategory = searchByCategory;
 
         homeVm.addToCart = addToCart;
+        homeVm.discountsFor = setDialogDiscounts;
 
         init();
 
@@ -55,8 +57,9 @@
                             'name': product.attributes.name,
                             'price': product.attributes.price,
                             'preview': product.attributes.imageUrl,
-                            category: '',
-                            discounts: []
+                            'discount': 0,
+                            'category': '',
+                            'discounts': []
                         };
 
                         productCategories.retrieveFrom(CONFIG.SERVICE_URL + "/product-categories/" + product.relationships.category.data.id)
@@ -70,6 +73,7 @@
                         discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
                             .then(function (response) {
                                 p.discounts = _.forEach(response.data, function(discount) {
+                                    p.discount += discount.attributes.discount;
                                     return {
                                         'name': discount.attributes.name,
                                         'from': discount.attributes.from,
@@ -176,6 +180,11 @@
                 'quantity': product.quantity,
                 'product': product
             });
+        }
+
+        function setDialogDiscounts(product) {
+            $log.info(product.discounts);
+            homeVm.productDiscounts = product.discounts;
         }
     }
 })();
