@@ -69,5 +69,18 @@ angular
                         controllerAs: "profileVm"
                     }
                 }
+            })
+            .state('shopping-cart', {
+                url: "/cart",
+                data: {
+                    pageTitle: "Shopifine | Shopping Cart"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/shopping/shopping-cart.html",
+                        controller: "ShoppingCartController",
+                        controllerAs: "cartVm"
+                    }
+                }
             });
     });

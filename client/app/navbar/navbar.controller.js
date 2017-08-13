@@ -16,6 +16,7 @@
         navbarVm.isCustomer = isCustomer;
         navbarVm.isManager = isManager;
         navbarVm.isSalesman = isSalesman;
+        navbarVm.total = shoppingCartSum;
 
         function isGuest() {
             return _.isEmpty(navbarVm.$storage.user);
@@ -35,6 +36,12 @@
 
         function isUser(role) {
             return !isGuest() && navbarVm.$storage.user.role === role;
+        }
+
+        function shoppingCartSum() {
+            return _.sumBy(navbarVm.$storage.items, function(item) {
+                return item.quantity * item.product.price;
+            });
         }
     }
 
