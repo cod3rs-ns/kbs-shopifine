@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', '_', 'productService', 'productCategories'];
+    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', '_', 'productService', 'productCategories', 'discounts'];
 
-    function HomeController($log, $localStorage, CONFIG, _, productService, productCategories) {
+    function HomeController($log, $localStorage, CONFIG, _, productService, productCategories, discounts) {
         var homeVm = this;
 
         homeVm.data = {
@@ -50,13 +50,39 @@
             productService.retrieveAllFrom(url)
                 .then(function (response) {
                     homeVm.data.products = _.map(response.data, function (product) {
-                        return {
+                        var p = {
                             'id': product.id,
                             'name': product.attributes.name,
                             'price': product.attributes.price,
-                            // 'preview': product.attributes.imageUrl
-                            'preview': 'https://s-media-cache-ak0.pinimg.com/736x/83/37/4e/83374e1f3aa84e3ff3a04a63eda7e4f7--cheap-ray-ban-sunglasses-cheap-ray-bans.jpg'
-                        }
+                            'preview': product.attributes.imageUrl,
+                            category: '',
+                            discounts: []
+                        };
+
+                        productCategories.retrieveFrom(CONFIG.SERVICE_URL + "/product-categories/" + product.relationships.category.data.id)
+                            .then(function (response) {
+                                p.category = response.data.attributes.name;
+                            })
+                            .catch(function (data) {
+                               $log.error(data);
+                            });
+
+                        discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
+                            .then(function (response) {
+                                p.discounts = _.forEach(response.data, function(discount) {
+                                    return {
+                                        'name': discount.attributes.name,
+                                        'from': discount.attributes.from,
+                                        'to': discount.attributes.to,
+                                        'discount': discount.attributes.discount
+                                    }
+                                });
+                            })
+                            .catch(function (data) {
+                                $log.error(data);
+                            });
+
+                        return p;
                     });
 
                     var prev = response.links.prev;
@@ -71,7 +97,7 @@
         }
 
         function retrieveCategories(url) {
-            productCategories.retrieveAllFrom(url)
+            productCategories.retrieveFrom(url)
                 .then(function (response) {
                     homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function(category) {
                         return {
@@ -93,7 +119,7 @@
         }
 
         function retrieveSubcategoriesFor(category) {
-            productCategories.retrieveAllFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
+            productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
                     if (_.isEmpty(category.subcategories)) {
                         category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {

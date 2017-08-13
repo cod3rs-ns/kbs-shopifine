@@ -3,11 +3,11 @@
 
     angular
         .module('shopifine-app')
-        .service('productCategories', productCategories);
+        .service('discounts', discounts);
 
-    productCategories.$inject = ['$http'];
+    discounts.$inject = ['$http'];
 
-    function productCategories($http) {
+    function discounts($http) {
         var service = {
             retrieveFrom: retrieveFrom
         };
