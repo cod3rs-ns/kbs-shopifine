@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$log', 'CONFIG', '_', 'productService', 'productCategories'];
+    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', '_', 'productService', 'productCategories'];
 
-    function HomeController($log, CONFIG, _, productService, productCategories) {
+    function HomeController($log, $localStorage, CONFIG, _, productService, productCategories) {
         var homeVm = this;
 
         homeVm.data = {
@@ -25,6 +25,8 @@
             'active': 'ACTIVE'
         };
 
+        $localStorage.items = [];
+
         homeVm.next = retrieveProducts;
         homeVm.prev = retrieveProducts;
         homeVm.retrieveProducts = retrieveProducts;
@@ -34,6 +36,8 @@
         homeVm.applyFilters = applyFilters;
         homeVm.resetFilters = resetFilters;
         homeVm.searchByCategory = searchByCategory;
+
+        homeVm.addToCart = addToCart;
 
         init();
 
@@ -47,6 +51,7 @@
                 .then(function (response) {
                     homeVm.data.products = _.map(response.data, function (product) {
                         return {
+                            'id': product.id,
                             'name': product.attributes.name,
                             'price': product.attributes.price,
                             'preview': product.attributes.imageUrl
@@ -137,6 +142,13 @@
         function searchByCategory(id) {
             homeVm.filters['category'] = id;
             applyFilters();
+        }
+
+        function addToCart(product) {
+            $localStorage.items.push({
+                'quantity': product.quantity,
+                'product': product
+            });
         }
     }
 })();
