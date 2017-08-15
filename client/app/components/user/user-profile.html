@@ -76,8 +76,8 @@
                 </div>
             </div>
             <div class="col-xs-12" ng-if="profileVm.user.role === 'SALES_MANAGER'">
+                <!-- Buyer Categories -->
                 <div class="innerWrapper profile">
-                    <!-- Buyer Categories -->
                     <div class="row" ng-repeat="category in profileVm.buyerCategories.data">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
@@ -118,8 +118,39 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-
+                <!-- Product Categories -->
+                <div class="innerWrapper profile">
+                    <div class="row" ng-repeat="category in profileVm.user.productCategories">
+                        <div class="col-md-8">
+                            {{category.name}}
+                            {{category.maxDiscount}}
+                            {{category.isConsumerGoods}}
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.modifyProductCategory(category.id);">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input id="product-category-name" type="text" ng-model="profileVm.productCategory.new.name"/>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="product-category-max-discount" type="text" ng-model="profileVm.productCategory.new.maxDiscount"/>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="product-category-consumer-goods" type="checkbox" ng-model="profileVm.productCategory.new.isConsumerGoods"/>
+                        </div>
+                        <div class="col-md-2">
+                            <select ng-model="profileVm.productCategory.new.superCategory">
+                                <option ng-repeat="category in profileVm.user.productCategories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.addProductCategory();">Add New</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

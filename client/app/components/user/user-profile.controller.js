@@ -5,21 +5,26 @@
         .module('shopifine-app')
         .controller('UserProfileController', UserProfileController);
 
-    UserProfileController.$inject = ['$log', '$localStorage', 'users', 'bills', 'buyerCategories'];
+    UserProfileController.$inject = ['$log', '$localStorage', 'users', 'bills', 'buyerCategories', 'productCategories'];
 
-    function UserProfileController($log, $localStorage, users, bills, buyerCategories) {
+    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories) {
         var profileVm = this;
 
         profileVm.user = undefined;
 
         profileVm.me = me;
         profileVm.retrieveBills = retrieveBills;
-        profileVm.retrieveBuyerCategories = retrieveBuyerCategories;
 
         // Thresholds and Buyer Categories
+        profileVm.retrieveBuyerCategories = retrieveBuyerCategories;
         profileVm.addBuyerCategory = addBuyerCategory;
         profileVm.addThresholdFor = addThresholdFor;
         profileVm.removeThreshold = removeThreshold;
+
+        // Product Categories
+        profileVm.retrieveProductCategories = retrieveProductCategories;
+        profileVm.addProductCategory = addProductCategory;
+        profileVm.modifyProductCategory = modifyProductCategory;
 
         init();
 
@@ -39,7 +44,9 @@
                     }
                     else if (response.data.attributes.role === 'SALES_MANAGER') {
                         profileVm.user.buyerCategories = [];
+                        profileVm.user.productCategories = [];
                         retrieveBuyerCategories();
+                        retrieveProductCategories();
                     }
                 })
                 .catch(function (data) {
@@ -157,6 +164,57 @@
                 .catch(function (data) {
                     $log.error(data);
                 })
+        }
+
+        function retrieveProductCategories() {
+            productCategories.getAll()
+                .then(function (response) {
+                    _.forEach(response.data, function(category) {
+                        var c = {
+                            'id': category.id,
+                            'name': category.attributes.name,
+                            'maxDiscount': category.attributes.maxDiscount
+                        };
+
+                        profileVm.user.productCategories.push(c);
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function addProductCategory() {
+            var request = {
+                'data': {
+                    'type': "product-categories",
+                    'attributes': {
+                        'name': profileVm.productCategory.new.name,
+                        'maxDiscount': parseFloat(profileVm.productCategory.new.maxDiscount),
+                        'isConsumerGoods': profileVm.productCategory.new.isConsumerGoods
+                    },
+                    'relationships': {
+                        'superCategory': {
+                            'data': {
+                                'type': 'product-categories',
+                                'id': _.parseInt(profileVm.productCategory.new.superCategory)
+                            }
+                        }
+                    }
+                }
+            };
+
+            productCategories.create(request)
+                .then(function (response) {
+                   $log.info(response);
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function modifyProductCategory(id) {
+            $log.info(id);
         }
 
     }
