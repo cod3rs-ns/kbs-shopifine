@@ -19,7 +19,7 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
                      (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
-  import secure.Roles.Customer
+  import secure.Roles.PermitAll
 
   def registerUser(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[UserRequest].fold(
@@ -34,7 +34,7 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
     )
   }
 
-  def retrieveOne(id: Long): Action[AnyContent] = secure.AuthWith(Seq(Customer)).async {
+  def retrieveOne(id: Long): Action[AnyContent] = secure.AuthWith(PermitAll).async {
     users.retrieve(id) map {
       case Some(user) =>
         Ok(Json.toJson(UserResponse.fromDomain(user)))

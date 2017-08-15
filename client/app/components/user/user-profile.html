@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALE_MANAGER'">
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALES_MANAGER'">
                 <div class="innerWrapper profile">
                     <!-- Buyer Categories -->
                     <div class="row" ng-repeat="category in profileVm.buyerCategories.data">
@@ -85,12 +85,37 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-8">
-                            <label for="new-buyer-category-name">Buyer Category Name</label>
-                            <input id="new-buyer-category-name" type="text" ng-model="profileVm.buyerCategories.new.name"/>
+                        <div class="col-md-12" ng-repeat="category in profileVm.user.buyerCategories">
+                            {{category.name}}
+                            <p ng-repeat="threshold in category.thresholds">
+                                {{threshold.from}}
+                                {{threshold.to}}
+                                {{threshold.award}}
+                                <button ng-click="profileVm.removeThreshold(category.id, threshold.id);"></button>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input id="threshold-from" type="text" ng-model="profileVm.thresholds.new.from"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="threshold-to" type="text" ng-model="profileVm.thresholds.new.to"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="threshold-award" type="text" ng-model="profileVm.thresholds.new.award"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary" ng-click="profileVm.addThresholdFor(category.id);">Add New</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-primary">Add New</button>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="new-buyer-category-name">Buyer Category Name</label>
+                                <input id="new-buyer-category-name" type="text" ng-model="profileVm.buyerCategories.new.name"/>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary" ng-click="profileVm.addBuyerCategory();">Add New</button>
+                            </div>
                         </div>
                     </div>
 
