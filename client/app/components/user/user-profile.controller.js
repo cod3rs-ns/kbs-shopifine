@@ -12,10 +12,11 @@
         'bills',
         'buyerCategories',
         'productCategories',
-        'discounts'
+        'discounts',
+        'productService'
     ];
 
-    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts) {
+    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts, productService) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -38,6 +39,13 @@
         profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
+
+        // Salesman Products and Bills
+        profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
+        profileVm.orderProduct = orderProduct;
+
+        profileVm.retrieveAllBills = retrieveAllBills;
+        profileVm.confirmBill = confirmBill;
 
         init();
 
@@ -62,6 +70,12 @@
                         retrieveBuyerCategories();
                         retrieveProductCategories();
                         retrieveActionDiscounts();
+                    }
+                    else if (response.data.attributes.role === 'SALESMAN') {
+                        profileVm.user.outOfStockProducts = [];
+                        profileVm.user.bills = [];
+                        retrieveOutOfStockProducts();
+                        retrieveAllBills();
                     }
                 })
                 .catch(function (data) {
@@ -276,6 +290,64 @@
 
         function modifyActionDiscount(id) {
             $log.info(id);
+        }
+
+        function retrieveOutOfStockProducts() {
+            productService.retrieveOutOfStock()
+                .then(function (response) {
+                    profileVm.user.outOfStockProducts = _.map(response.data, function (product) {
+                        return {
+                            'id': product.id,
+                            'name': product.attributes.name,
+                            'quantity': product.attributes.quantity,
+                            'minQuantity': product.attributes.minQuantity
+                        }
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function orderProduct(productId) {
+            productService.orderProduct(productId, _.parseInt(profileVm.user.products.test))
+                .then(function (response) {
+                    $log.info(response);
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function retrieveAllBills() {
+            bills.getAll()
+                .then(function (response) {
+                    _.forEach(response.data, function(bill) {
+                        profileVm.user.bills.push({
+                            'id': bill.id,
+                            'createdAt': bill.attributes.createdAt,
+                            'amount': bill.attributes.amount,
+                            'discount': bill.attributes.discount,
+                            'discountAmount': bill.attributes.discountAmount,
+                            'pointsGained': bill.attributes.pointsGained,
+                            'pointsSpent': bill.attributes.pointsSpent,
+                            'status': bill.attributes.state
+                        });
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function confirmBill(id) {
+            bills.confirm(id)
+                .then(function (response) {
+                    $log.info(response);
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
         }
 
     }
