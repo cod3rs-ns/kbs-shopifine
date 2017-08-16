@@ -5,9 +5,17 @@
         .module('shopifine-app')
         .controller('UserProfileController', UserProfileController);
 
-    UserProfileController.$inject = ['$log', '$localStorage', 'users', 'bills', 'buyerCategories', 'productCategories'];
+    UserProfileController.$inject = [
+        '$log',
+        '$localStorage',
+        'users',
+        'bills',
+        'buyerCategories',
+        'productCategories',
+        'discounts'
+    ];
 
-    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories) {
+    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -25,6 +33,11 @@
         profileVm.retrieveProductCategories = retrieveProductCategories;
         profileVm.addProductCategory = addProductCategory;
         profileVm.modifyProductCategory = modifyProductCategory;
+
+        // Action Discounts
+        profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
+        profileVm.addActionDiscount = addActionDiscount;
+        profileVm.modifyActionDiscount = modifyActionDiscount;
 
         init();
 
@@ -45,8 +58,10 @@
                     else if (response.data.attributes.role === 'SALES_MANAGER') {
                         profileVm.user.buyerCategories = [];
                         profileVm.user.productCategories = [];
+                        profileVm.user.actionDiscounts = [];
                         retrieveBuyerCategories();
                         retrieveProductCategories();
+                        retrieveActionDiscounts();
                     }
                 })
                 .catch(function (data) {
@@ -214,6 +229,52 @@
         }
 
         function modifyProductCategory(id) {
+            $log.info(id);
+        }
+
+        function retrieveActionDiscounts() {
+            discounts.getAll()
+                .then(function (response) {
+                    $log.info(response);
+                    _.forEach(response.data, function(discount) {
+                        profileVm.user.actionDiscounts.push({
+                            'id': discount.id,
+                            'name': discount.attributes.name,
+                            'from': discount.attributes.from,
+                            'to': discount.attributes.to,
+                            'discount': discount.attributes.discount
+                        });
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function addActionDiscount() {
+            $log.info(profileVm.actionDiscount.new);
+            var request = {
+                'data': {
+                    'type': "action-discounts",
+                    'attributes': {
+                        'name': profileVm.actionDiscount.new.name,
+                        'from': profileVm.actionDiscount.new.from,
+                        'to': profileVm.actionDiscount.new.to,
+                        'discount': parseFloat(profileVm.actionDiscount.new.discount)
+                    }
+                }
+            };
+
+            discounts.create(request)
+                .then(function (response) {
+                    $log.info(response.data);
+                })
+                .catch(function (data) {
+                   $log.error(data);
+                });
+        }
+
+        function modifyActionDiscount(id) {
             $log.info(id);
         }
 

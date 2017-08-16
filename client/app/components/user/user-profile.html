@@ -152,6 +152,38 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Action Discounts -->
+                <div class="innerWrapper profile">
+                    <div class="row" ng-repeat="actionDiscount in profileVm.user.actionDiscounts">
+                        <div class="col-md-8">
+                            {{actionDiscount.name}}
+                            {{actionDiscount.from | date:'dd. MM. yyyy.'}}
+                            {{actionDiscount.to | date:'dd. MM. yyyy.'}}
+                            {{actionDiscount.discount}}
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.modifyActionDiscount(actionDiscount.id);">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input id="action-discount-name" type="text" ng-model="profileVm.actionDiscount.new.name"/>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="action-discount-from" ng-model="profileVm.actionDiscount.new.from">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="action-discount-to" ng-model="profileVm.actionDiscount.new.to">
+                        </div>
+                        <div class="col-md-2">
+                            <input id="action-discount-discount" type="text" ng-model="profileVm.actionDiscount.new.discount"/>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary" ng-click="profileVm.addActionDiscount();">Add New</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
