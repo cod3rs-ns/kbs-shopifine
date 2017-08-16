@@ -185,6 +185,36 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALESMAN'">
+                <!-- Products -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Out of Stock Products</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Minimum Quantity</th>
+                                <th>Quantity</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="product in profileVm.user.outOfStockProducts">
+                                <td>{{product.name}}</td>
+                                <td>{{product.minQuantity}}</td>
+                                <td>{{product.quantity}}</td>
+                                <td><input type="text" ng-model="profileVm.user.products.test"/></td>
+                                <td><button ng-click="profileVm.orderProduct(product.id);" class="btn btn-default">Order</button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

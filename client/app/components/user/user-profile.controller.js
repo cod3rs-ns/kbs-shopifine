@@ -12,10 +12,11 @@
         'bills',
         'buyerCategories',
         'productCategories',
-        'discounts'
+        'discounts',
+        'productService'
     ];
 
-    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts) {
+    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts, productService) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -38,6 +39,10 @@
         profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
+
+        // Salesman Products and Bills
+        profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
+        profileVm.orderProduct = orderProduct;
 
         init();
 
@@ -62,6 +67,10 @@
                         retrieveBuyerCategories();
                         retrieveProductCategories();
                         retrieveActionDiscounts();
+                    }
+                    else if (response.data.attributes.role === 'SALESMAN') {
+                        profileVm.user.outOfStockProducts = [];
+                        retrieveOutOfStockProducts();
                     }
                 })
                 .catch(function (data) {
@@ -276,6 +285,33 @@
 
         function modifyActionDiscount(id) {
             $log.info(id);
+        }
+
+        function retrieveOutOfStockProducts() {
+            productService.retrieveOutOfStock()
+                .then(function (response) {
+                    profileVm.user.outOfStockProducts = _.map(response.data, function (product) {
+                        return {
+                            'id': product.id,
+                            'name': product.attributes.name,
+                            'quantity': product.attributes.quantity,
+                            'minQuantity': product.attributes.minQuantity
+                        }
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function orderProduct(productId) {
+            productService.orderProduct(productId, _.parseInt(profileVm.user.products.test))
+                .then(function (response) {
+                    $log.info(response);
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
         }
 
     }
