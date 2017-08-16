@@ -4,6 +4,7 @@ import javax.inject.Singleton
 
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
+import domain.ProductCategory
 import hateoas.product_categories.{ProductCategoryCollectionResponse, ProductCategoryRequest, ProductCategoryResponse}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
@@ -50,6 +51,25 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository, 
       case Some(_) => productCategories.retrieveAllSubcategories(id, offset, limit).map(categories => {
         val self = routes.ProductCategories.retrieveAllSubcategories(id, offset, limit).absoluteURL()
         val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAllSubcategories(id, offset + limit, limit).absoluteURL()) else None
+
+        Ok(Json.toJson(
+          ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
+        ))
+      })
+
+      case None => Future.successful(NotFound(Json.toJson(
+        ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product Category $id doesn't exist!")))
+      )))
+    }
+  }
+
+  def retrieveAllByActionDiscount(id: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    productCategories.findOne(id).flatMap {
+      case Some(_) => productCategories.retrieveAllByActionDiscount(id, offset, limit).map(result => {
+        val categories = for ((category, _) <- result) yield category
+
+        val self = routes.ProductCategories.retrieveAllByActionDiscount(id, offset, limit).absoluteURL()
+        val next = if (limit == categories.length) Some(routes.ProductCategories.retrieveAllByActionDiscount(id, offset + limit, limit).absoluteURL()) else None
 
         Ok(Json.toJson(
           ProductCategoryCollectionResponse.fromDomain(categories, CollectionLinks(self = self, next = next))
