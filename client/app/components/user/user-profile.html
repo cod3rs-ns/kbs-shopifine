@@ -214,6 +214,40 @@
                         </table>
                     </div>
                 </div>
+                <!-- Bills -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Bills</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Price</th>
+                                <th>Discount</th>
+                                <th>Discount Amount</th>
+                                <th>Gained Points</th>
+                                <th>Spent Points</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="bill in profileVm.user.bills">
+                                <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
+                                <td>{{bill.amount}}</td>
+                                <td>{{bill.discount}}</td>
+                                <td>{{bill.discountAmount}}</td>
+                                <td>{{bill.pointsGained}}</td>
+                                <td>{{bill.pointsSpent}}</td>
+                                <td>{{bill.status}}</td>
+                                <td><button ng-click="profileVm.confirmBill(bill.id);" class="btn btn-default">Accept</button></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

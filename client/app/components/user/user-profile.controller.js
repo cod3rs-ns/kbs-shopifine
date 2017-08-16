@@ -44,6 +44,9 @@
         profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
         profileVm.orderProduct = orderProduct;
 
+        profileVm.retrieveAllBills = retrieveAllBills;
+        profileVm.confirmBill = confirmBill;
+
         init();
 
         function init() {
@@ -70,7 +73,9 @@
                     }
                     else if (response.data.attributes.role === 'SALESMAN') {
                         profileVm.user.outOfStockProducts = [];
+                        profileVm.user.bills = [];
                         retrieveOutOfStockProducts();
+                        retrieveAllBills();
                     }
                 })
                 .catch(function (data) {
@@ -306,6 +311,37 @@
 
         function orderProduct(productId) {
             productService.orderProduct(productId, _.parseInt(profileVm.user.products.test))
+                .then(function (response) {
+                    $log.info(response);
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function retrieveAllBills() {
+            bills.getAll()
+                .then(function (response) {
+                    _.forEach(response.data, function(bill) {
+                        profileVm.user.bills.push({
+                            'id': bill.id,
+                            'createdAt': bill.attributes.createdAt,
+                            'amount': bill.attributes.amount,
+                            'discount': bill.attributes.discount,
+                            'discountAmount': bill.attributes.discountAmount,
+                            'pointsGained': bill.attributes.pointsGained,
+                            'pointsSpent': bill.attributes.pointsSpent,
+                            'status': bill.attributes.state
+                        });
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function confirmBill(id) {
+            bills.confirm(id)
                 .then(function (response) {
                     $log.info(response);
                 })

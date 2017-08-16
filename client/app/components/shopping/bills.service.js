@@ -10,7 +10,9 @@
     function bills($http, CONFIG) {
         var service = {
             getBillsByUser: getBillsByUser,
-            create: create
+            getAll: getAll,
+            create: create,
+            confirm: confirm
         };
 
         return service;
@@ -25,8 +27,28 @@
                 });
         }
 
+        function getAll() {
+            return $http.get(CONFIG.SERVICE_URL + '/bills')
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
         function create(id, bill) {
             return $http.post(CONFIG.SERVICE_URL + '/users/' + id + '/bills', bill)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function confirm(id) {
+            return $http.put(CONFIG.SERVICE_URL + '/bills/' + id + '?state=SUCCESSFUL')
                 .then(function success(response) {
                     return response.data;
                 })
