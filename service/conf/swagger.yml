@@ -1077,10 +1077,13 @@ definitions:
         example: 1
       attributes:
         $ref: '#/definitions/ActionDiscountAttributes'
+      relationships:
+        $ref: '#/definitions/ActionDiscountRelationships'
     required:
       - type
       - id
       - attributes
+      - relationships
   ActionDiscountAttributes:
     type: object
     properties:
@@ -1105,6 +1108,14 @@ definitions:
       - from
       - to
       - discount
+  ActionDiscountRelationships:
+    type: object
+    properties:
+      categories:
+        description: Relationship to list of Product categories
+        $ref: '#/definitions/ResponseRelationshipCollection'
+    required:
+      - categories
   ErrorResponse:
     type: object
     properties:

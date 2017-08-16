@@ -75,6 +75,116 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALES_MANAGER'">
+                <!-- Buyer Categories -->
+                <div class="innerWrapper profile">
+                    <div class="row" ng-repeat="category in profileVm.buyerCategories.data">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" ng-repeat="category in profileVm.user.buyerCategories">
+                            {{category.name}}
+                            <p ng-repeat="threshold in category.thresholds">
+                                {{threshold.from}}
+                                {{threshold.to}}
+                                {{threshold.award}}
+                                <button ng-click="profileVm.removeThreshold(category.id, threshold.id);"></button>
+                            </p>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input id="threshold-from" type="text" ng-model="profileVm.thresholds.new.from"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="threshold-to" type="text" ng-model="profileVm.thresholds.new.to"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <input id="threshold-award" type="text" ng-model="profileVm.thresholds.new.award"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary" ng-click="profileVm.addThresholdFor(category.id);">Add New</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="new-buyer-category-name">Buyer Category Name</label>
+                                <input id="new-buyer-category-name" type="text" ng-model="profileVm.buyerCategories.new.name"/>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary" ng-click="profileVm.addBuyerCategory();">Add New</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Categories -->
+                <div class="innerWrapper profile">
+                    <div class="row" ng-repeat="category in profileVm.user.productCategories">
+                        <div class="col-md-8">
+                            {{category.name}}
+                            {{category.maxDiscount}}
+                            {{category.isConsumerGoods}}
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.modifyProductCategory(category.id);">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input id="product-category-name" type="text" ng-model="profileVm.productCategory.new.name"/>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="product-category-max-discount" type="text" ng-model="profileVm.productCategory.new.maxDiscount"/>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="product-category-consumer-goods" type="checkbox" ng-model="profileVm.productCategory.new.isConsumerGoods"/>
+                        </div>
+                        <div class="col-md-2">
+                            <select ng-model="profileVm.productCategory.new.superCategory">
+                                <option ng-repeat="category in profileVm.user.productCategories" value="{{category.id}}">{{category.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.addProductCategory();">Add New</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Discounts -->
+                <div class="innerWrapper profile">
+                    <div class="row" ng-repeat="actionDiscount in profileVm.user.actionDiscounts">
+                        <div class="col-md-8">
+                            {{actionDiscount.name}}
+                            {{actionDiscount.from | date:'dd. MM. yyyy.'}}
+                            {{actionDiscount.to | date:'dd. MM. yyyy.'}}
+                            {{actionDiscount.discount}}
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" ng-click="profileVm.modifyActionDiscount(actionDiscount.id);">Edit</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <input id="action-discount-name" type="text" ng-model="profileVm.actionDiscount.new.name"/>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="action-discount-from" ng-model="profileVm.actionDiscount.new.from">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="action-discount-to" ng-model="profileVm.actionDiscount.new.to">
+                        </div>
+                        <div class="col-md-2">
+                            <input id="action-discount-discount" type="text" ng-model="profileVm.actionDiscount.new.discount"/>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary" ng-click="profileVm.addActionDiscount();">Add New</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>

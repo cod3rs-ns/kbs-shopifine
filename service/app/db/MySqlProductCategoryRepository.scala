@@ -2,7 +2,7 @@ package db
 
 import javax.inject.Inject
 
-import domain.ProductCategory
+import domain.{ActionDiscountProductCategory, ProductCategory}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.ProductCategoryRepository
 import slick.driver.JdbcProfile
@@ -24,6 +24,10 @@ class MySqlProductCategoryRepository @Inject()(protected val dbConfigProvider: D
 
   override def retrieveAllSubcategories(id: Long, offset: Int, limit: Int): Future[Seq[ProductCategory]] = {
     db.run(productCategories.filter(_.superCategory === id).drop(offset).take(limit).result)
+  }
+
+  override def retrieveAllByActionDiscount(id: Long, offset: Int, limit: Int): Future[Seq[(ProductCategory, ActionDiscountProductCategory)]] = {
+    db.run((productCategories join actionDiscountsProductCategories.filter(_.discount === id) on (_.id === _.category)).result)
   }
 
   override def modify(id: Long, category: ProductCategory): Future[Int] = {
