@@ -90,6 +90,7 @@
                 .then(function (response) {
                     _.forEach(response.data, function (bill) {
                         profileVm.user.bills.push({
+                            'id': bill.id,
                             'createdAt': bill.attributes.createdAt,
                             'amount': bill.attributes.amount,
                             'discount': bill.attributes.discount,

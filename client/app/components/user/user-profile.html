@@ -60,15 +60,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="bill in profileVm.user.bills">
-                                <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{bill.amount}}</td>
-                                <td>{{bill.discount}}</td>
-                                <td>{{bill.discountAmount}}</td>
-                                <td>{{bill.pointsGained}}</td>
-                                <td>{{bill.pointsSpent}}</td>
-                                <td>{{bill.status}}</td>
-                                <td><a href="#" class="btn btn-default">View</a></td>
+                            <tr ng-repeat="b in profileVm.user.bills">
+                                <td>{{b.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
+                                <td>{{b.amount}}</td>
+                                <td>{{b.discount}}</td>
+                                <td>{{b.discountAmount}}</td>
+                                <td>{{b.pointsGained}}</td>
+                                <td>{{b.pointsSpent}}</td>
+                                <td>{{b.status}}</td>
+                                <td><a ui-sref="bill({id: b.id})" class="btn btn-default">View</a></td>
                             </tr>
                             </tbody>
                         </table>

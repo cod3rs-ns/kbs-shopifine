@@ -21,3 +21,20 @@
     padding: 35px;
     border: 1px solid #e4e4e4;
 }
+
+.single-bill-discounts {
+    color: #b4b4b4;
+    padding-left: 15px;
+}
+.single-bill-discounts li {
+    font-size: 12px;
+    display: list-item;
+    list-style-type: square;
+}
+
+.single-bill-discount {
+    font-size: 16px !important;
+    display: list-item !important;
+    list-style-type: none !important;
+    padding-top: 8px !important;
+}
