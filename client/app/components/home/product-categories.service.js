@@ -48,7 +48,7 @@
         }
 
         function modify(id, category) {
-            return $http.put(CONFIG.SERVICE_URL + '/' + id, category)
+            return $http.put(CONFIG.SERVICE_URL + '/product-categories/' + id, category)
                 .then(function success(response) {
                     return response.data;
                 })
@@ -56,6 +56,5 @@
                     throw response.data;
                 });
         }
-
     }
 })();

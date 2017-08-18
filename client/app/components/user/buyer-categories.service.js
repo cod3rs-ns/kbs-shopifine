@@ -67,6 +67,5 @@
                     throw response.data;
                 });
         }
-
     }
 })();
