@@ -7839,7 +7839,7 @@ cite {
 }
 
 /* Contact Forms */
-#contactForm .form-control {
+.contactForm .form-control {
   border-radius: 0;
   background-color: #f0f0f0;
   border: none;
@@ -7857,7 +7857,7 @@ cite {
   appearance: none;
 }
 
-#contactForm textarea {
+.contactForm textarea {
   max-width: 100%;
   min-height: 130px !important;
   max-height: 211px;
@@ -7898,17 +7898,17 @@ cite {
 }
 
 /* Contact Form 1 */
-#contact-form-1 .form-group {
+.contact-form-1 .form-group {
   margin-bottom: 0;
 }
 
-#contact-form-1 #contactForm {
+.contact-form-1 .contactForm {
   width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
 
-#contact-form-1 .btn-form-submit {
+.contact-form-1 .btn-form-submit {
   width: 100%;
   border-radius: 0;
   padding: 14px 24px;
@@ -7920,15 +7920,15 @@ cite {
   margin-bottom: 50px;
 }
 
-#contactForm.contact-form-2 .form-control#name {
+.contactForm.contact-form-2 .form-control#name {
   width: 70%;
 }
 
-#contactForm.contact-form-2 .form-control#email {
+.contactForm.contact-form-2 .form-control#email {
   width: 70%;
 }
 
-#contactForm.contact-form-2 .form-control#subject {
+.contactForm.contact-form-2 .form-control#subject {
   width: 70%;
 }
 
@@ -7936,7 +7936,7 @@ cite {
   margin-bottom: 0;
 }
 
-#contact-form-2 #contactForm {
+#contact-form-2 .contactForm {
   width: 100%;
   margin-left: auto;
   margin-right: auto;

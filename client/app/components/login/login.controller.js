@@ -35,6 +35,5 @@
                     loginVm.message = _.first(data.errors).detail;
                 })
         }
-
     }
 })();

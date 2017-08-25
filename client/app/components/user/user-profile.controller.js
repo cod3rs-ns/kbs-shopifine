@@ -8,6 +8,7 @@
     UserProfileController.$inject = [
         '$log',
         '$localStorage',
+        'ngToast',
         'users',
         'bills',
         'buyerCategories',
@@ -16,7 +17,7 @@
         'productService'
     ];
 
-    function UserProfileController($log, $localStorage, users, bills, buyerCategories, productCategories, discounts, productService) {
+    function UserProfileController($log, $localStorage, ngToast, users, bills, buyerCategories, productCategories, discounts, productService) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -46,6 +47,7 @@
 
         profileVm.retrieveAllBills = retrieveAllBills;
         profileVm.confirmBill = confirmBill;
+        profileVm.cancelBill = cancelBill;
 
         init();
 
@@ -58,7 +60,7 @@
             users.findBy(id)
                 .then(function (response) {
                     profileVm.user = response.data.attributes;
-                    $log.info(response.data.attributes.role);
+
                     if (response.data.attributes.role === 'CUSTOMER') {
                         profileVm.user.bills = [];
                         retrieveBills(id);
@@ -86,7 +88,7 @@
         function retrieveBills(id) {
             bills.getBillsByUser(id)
                 .then(function (response) {
-                    _.forEach(response.data, function(bill) {
+                    _.forEach(response.data, function (bill) {
                         profileVm.user.bills.push({
                             'createdAt': bill.attributes.createdAt,
                             'amount': bill.attributes.amount,
@@ -106,7 +108,7 @@
         function retrieveBuyerCategories() {
             buyerCategories.getCategories()
                 .then(function (response) {
-                    _.forEach(response.data, function(category) {
+                    _.forEach(response.data, function (category) {
                         var c = {
                             'id': category.id,
                             'name': category.attributes.name,
@@ -129,7 +131,6 @@
                             });
 
                         profileVm.user.buyerCategories.push(c);
-
                     });
                 })
                 .catch(function (data) {
@@ -149,46 +150,89 @@
 
             buyerCategories.createCategory(request)
                 .then(function (response) {
-                    $log.info(response);
+                    ngToast.success({
+                        content: 'Buyer Category successfully created!'
+                    });
+
+                    profileVm.user.buyerCategories.push({
+                        'id': response.data.id,
+                        'name': response.data.attributes.name,
+                        'thresholds': []
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
                 })
         }
 
-        function addThresholdFor(categoryId) {
+        function addThresholdFor(category) {
             var request = {
                 'data': {
                     'type': 'consumption-thresholds',
                     'attributes': {
-                        'from': parseFloat(profileVm.thresholds.new.from),
-                        'to': parseFloat(profileVm.thresholds.new.to),
-                        'award': parseFloat(profileVm.thresholds.new.award)
+                        'from': parseFloat(category.threshold.new.from),
+                        'to': parseFloat(category.threshold.new.to),
+                        'award': parseFloat(category.threshold.new.award)
                     },
                     'relationships': {
                         'category': {
                             'data': {
                                 'type': "buyer-categories",
-                                'id': _.parseInt(categoryId)
+                                'id': _.parseInt(category.id)
                             }
                         }
                     }
                 }
             };
 
-            buyerCategories.addThresholdTo(categoryId, request)
+            buyerCategories.addThresholdTo(category.id, request)
                 .then(function (response) {
-                    $log.info(response);
+                    ngToast.success({
+                        content: 'Threshold successfully added to Buyer Category!'
+                    });
+
+                    _.forEach(profileVm.user.buyerCategories, function (c) {
+                        if (c.id === category.id) {
+                            c.thresholds.push({
+                                'id': response.data.id,
+                                'from': response.data.attributes.from,
+                                'to': response.data.attributes.to,
+                                'award': response.data.attributes.award
+                            });
+
+                            c.threshold.new = {
+                                'from': '',
+                                'to': '',
+                                'award': ''
+                            }
+                        }
+                    });
                 })
                 .catch(function (data) {
-                    $log.error(data);
+                    if (!_.isUndefined(data.errors)) {
+                        var error = _.first(data.errors);
+
+                        ngToast.danger({
+                            content: error.detail
+                        });
+                    }
                 })
         }
 
         function removeThreshold(categoryId, thresholdId) {
             buyerCategories.removeThreshold(categoryId, thresholdId)
-                .then(function (response) {
-                    $log.info(response);
+                .then(function () {
+                    ngToast.danger({
+                        content: 'Successfully removed threshold!'
+                    });
+
+                    _.forEach(profileVm.user.buyerCategories, function (c) {
+                        if (c.id === categoryId) {
+                            c.thresholds = _.filter(c.thresholds, function (t) {
+                                return t.id !== thresholdId;
+                            });
+                        }
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -198,11 +242,18 @@
         function retrieveProductCategories() {
             productCategories.getAll()
                 .then(function (response) {
-                    _.forEach(response.data, function(category) {
+                    _.forEach(response.data, function (category) {
                         var c = {
                             'id': category.id,
                             'name': category.attributes.name,
-                            'maxDiscount': category.attributes.maxDiscount
+                            'isConsumerGoods': category.attributes.isConsumerGoods,
+                            'maxDiscount': category.attributes.maxDiscount,
+                            'edit': false,
+                            'edited': {
+                                'name': category.attributes.name,
+                                'maxDiscount': category.attributes.maxDiscount,
+                                'isConsumerGoods': category.attributes.isConsumerGoods
+                            }
                         };
 
                         profileVm.user.productCategories.push(c);
@@ -235,28 +286,85 @@
 
             productCategories.create(request)
                 .then(function (response) {
-                   $log.info(response);
+                    ngToast.success({
+                        content: 'Product Category successfully created!'
+                    });
+
+                    profileVm.user.productCategories.push({
+                        'id': response.data.id,
+                        'name': response.data.attributes.name,
+                        'maxDiscount': response.data.attributes.maxDiscount
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
                 });
         }
 
-        function modifyProductCategory(id) {
-            $log.info(id);
+        function modifyProductCategory(category) {
+            var request = {
+                'data': {
+                    'type': "product-categories",
+                    'attributes': {
+                        'name': category.edited.name,
+                        'maxDiscount': parseFloat(category.edited.maxDiscount),
+                        'isConsumerGoods': category.edited.isConsumerGoods
+                    }
+                    // ,
+                    // 'relationships': {
+                    //     'superCategory': {
+                    //         'data': {
+                    //             'type': 'product-categories',
+                    //             'id': _.parseInt(profileVm.productCategory.new.superCategory)
+                    //         }
+                    //     }
+                    // }
+                }
+            };
+
+            productCategories.modify(category.id, request)
+                .then(function (response) {
+                    ngToast.success({
+                        content: 'Product Category successfully modified!'
+                    });
+
+                    _.forEach(profileVm.user.productCategories, function (c) {
+                        var attributes = response.data.attributes;
+                        if (c.id === response.data.id) {
+                            c.name = attributes.name;
+                            c.maxDiscount = attributes.maxDiscount;
+                            c.isConsumerGoods = attributes.isConsumerGoods;
+                            c.edited = {
+                                'name': attributes.name,
+                                'maxDiscount': attributes.maxDiscount,
+                                'isConsumerGoods': attributes.isConsumerGoods
+                            };
+                            c.edit = false;
+                        }
+                    })
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
         }
 
         function retrieveActionDiscounts() {
             discounts.getAll()
                 .then(function (response) {
-                    $log.info(response);
-                    _.forEach(response.data, function(discount) {
+                    _.forEach(response.data, function (discount) {
                         profileVm.user.actionDiscounts.push({
                             'id': discount.id,
                             'name': discount.attributes.name,
                             'from': discount.attributes.from,
                             'to': discount.attributes.to,
-                            'discount': discount.attributes.discount
+                            'discount': discount.attributes.discount,
+                            'edit': false,
+                            'edited': {
+                                'name': discount.attributes.name,
+                                'from': new Date(discount.attributes.from),
+                                'to': new Date(discount.attributes.to),
+                                'discount': discount.attributes.discount
+                            }
                         });
                     });
                 })
@@ -266,7 +374,6 @@
         }
 
         function addActionDiscount() {
-            $log.info(profileVm.actionDiscount.new);
             var request = {
                 'data': {
                     'type': "action-discounts",
@@ -281,15 +388,69 @@
 
             discounts.create(request)
                 .then(function (response) {
-                    $log.info(response.data);
+                    ngToast.success({
+                        content: 'Action Discount successfully created.'
+                    });
+
+                    profileVm.user.actionDiscounts.push({
+                        'id': response.data.id,
+                        'name': response.data.attributes.name,
+                        'from': response.data.attributes.from,
+                        'to': response.data.attributes.to,
+                        'discount': response.data.attributes.discount,
+                        'edit': false,
+                        'edited': {
+                            'name': response.data.attributes.name,
+                            'from': new Date(response.data.attributes.from),
+                            'to': new Date(response.data.attributes.to),
+                            'discount': response.data.attributes.discount
+                        }
+                    });
                 })
                 .catch(function (data) {
-                   $log.error(data);
+                    $log.error(data);
                 });
         }
 
-        function modifyActionDiscount(id) {
-            $log.info(id);
+        function modifyActionDiscount(actionDiscount) {
+            var request = {
+                'data': {
+                    'type': 'action-discounts',
+                    'attributes': {
+                        'name': actionDiscount.edited.name,
+                        'from': actionDiscount.edited.from,
+                        'to': actionDiscount.edited.to,
+                        'discount': parseFloat(actionDiscount.edited.discount)
+                    }
+                }
+            };
+
+            discounts.modify(actionDiscount.id, request)
+                .then(function (response) {
+                    ngToast.success({
+                        content: 'Action Discount successfully modified!'
+                    });
+
+                    _.forEach(profileVm.user.actionDiscounts, function (discount) {
+                        var attributes = response.data.attributes;
+                        if (discount.id === response.data.id) {
+                            discount.name = attributes.name;
+                            discount.from = attributes.from;
+                            discount.to = attributes.to;
+                            discount.discount = attributes.discount;
+                            discount.edited = {
+                                'name': attributes.name,
+                                'from': attributes.from,
+                                'to': attributes.to,
+                                'discount': attributes.discount
+                            };
+                            discount.edit = false;
+                        }
+                    })
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
         }
 
         function retrieveOutOfStockProducts() {
@@ -300,7 +461,8 @@
                             'id': product.id,
                             'name': product.attributes.name,
                             'quantity': product.attributes.quantity,
-                            'minQuantity': product.attributes.minQuantity
+                            'minQuantity': product.attributes.minQuantity,
+                            'orderQuantity': 0
                         }
                     });
                 })
@@ -309,10 +471,18 @@
                 });
         }
 
-        function orderProduct(productId) {
-            productService.orderProduct(productId, _.parseInt(profileVm.user.products.test))
+        function orderProduct(product) {
+            productService.orderProduct(product.id, _.parseInt(product.orderQuantity))
                 .then(function (response) {
-                    $log.info(response);
+                    ngToast.success({
+                        content: 'Product quantity successfully updated.'
+                    });
+
+                    _.forEach(profileVm.user.outOfStockProducts, function (p) {
+                        if (p.id === product.id) {
+                            p.quantity = response.data.attributes.quantity;
+                        }
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -322,7 +492,7 @@
         function retrieveAllBills() {
             bills.getAll()
                 .then(function (response) {
-                    _.forEach(response.data, function(bill) {
+                    _.forEach(response.data, function (bill) {
                         profileVm.user.bills.push({
                             'id': bill.id,
                             'createdAt': bill.attributes.createdAt,
@@ -343,12 +513,37 @@
         function confirmBill(id) {
             bills.confirm(id)
                 .then(function (response) {
-                    $log.info(response);
+                    ngToast.success({
+                        content: 'Bill successfully processed!'
+                    });
+
+                    $log.info(response.data);
                 })
-                .catch(function (data) {
-                    $log.error(data);
+                .catch(function () {
+                    ngToast.danger({
+                        content: 'Error in Bill processing!'
+                    });
                 });
         }
 
+        function cancelBill(id) {
+            bills.cancel(id)
+                .then(function (response) {
+                    ngToast.success({
+                        content: 'Bill successfully cancelled!'
+                    });
+
+                    _.forEach(profileVm.user.bills, function (bill) {
+                        if (bill.id === response.data.id) {
+                            bill.status = response.data.attributes.state;
+                        }
+                    });
+                })
+                .catch(function () {
+                    ngToast.danger({
+                        content: 'Error in Bill processing!'
+                    });
+                });
+        }
     }
 })();

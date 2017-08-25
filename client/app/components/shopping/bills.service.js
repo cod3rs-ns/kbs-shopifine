@@ -12,7 +12,8 @@
             getBillsByUser: getBillsByUser,
             getAll: getAll,
             create: create,
-            confirm: confirm
+            confirm: confirm,
+            cancel: cancel
         };
 
         return service;
@@ -57,5 +58,14 @@
                 });
         }
 
+        function cancel(id) {
+            return $http.put(CONFIG.SERVICE_URL + '/bills/' + id + '?state=CANCELLED')
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
     }
 })();

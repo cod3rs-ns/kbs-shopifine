@@ -35,11 +35,9 @@
                 }
             };
 
-            bills.create(1, bill)
+            bills.create($localStorage.user.id, bill)
                 .then(function (response) {
                     _.forEach(cartVm.$storage.items, function (item) {
-                        $log.info(response);
-                        $log.info(response.data.id);
                         var billItem = {
                             'data': {
                                 'type': 'bill-items',
@@ -80,5 +78,4 @@
                 });
         }
     }
-
 })();

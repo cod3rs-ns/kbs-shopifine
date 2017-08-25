@@ -21,7 +21,7 @@
                                 <li ng-repeat="item in navbarVm.$storage.items">
                                     <a>
                                         <div class="media">
-                                            <img class="media-left media-object" ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
+                                            <img class="media-left media-object" style="max-width: 64px;" ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
                                             <div class="media-body">
                                                 <h5 class="media-heading">
                                                     {{item.product.name}}<br>
@@ -63,15 +63,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active">
+                    <li>
                         <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="home">Home</a>
                     </li>
-                    <li class="dropdown" ng-if="navbarVm.isCustomer();">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li><a>Dashboard</a></li>
-                            <li><a ui-sref="profile">Profile</a></li>
-                        </ul>
+                    <li ng-if="!navbarVm.isGuest();">
+                        <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="profile">Profile</a>
                     </li>
                 </ul>
             </div>

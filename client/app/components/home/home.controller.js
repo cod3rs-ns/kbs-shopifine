@@ -39,6 +39,8 @@
         homeVm.searchByCategory = searchByCategory;
 
         homeVm.addToCart = addToCart;
+        homeVm.isInCart = isInCart;
+        homeVm.removeFromCart = removeFromCart;
         homeVm.discountsFor = setDialogDiscounts;
 
         init();
@@ -167,6 +169,7 @@
                     homeVm.filters[name] = undefined;
                 }
             });
+
             applyFilters();
         }
 
@@ -182,8 +185,21 @@
             });
         }
 
+        function removeFromCart(productId) {
+            _.remove($localStorage.items, function (item) {
+                return item.product.id === productId;
+            });
+        }
+
+        function isInCart(productId) {
+            var items = _.find($localStorage.items, function (item) {
+                return item.product.id === productId;
+            });
+
+            return _.size(items) > 0;
+        }
+
         function setDialogDiscounts(product) {
-            $log.info(product.discounts);
             homeVm.productDiscounts = product.discounts;
         }
     }

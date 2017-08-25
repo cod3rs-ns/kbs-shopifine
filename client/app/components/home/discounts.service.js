@@ -48,7 +48,7 @@
         }
 
         function modify(id, actionDiscount) {
-            return $http.put(CONFIG.SERVICE_URL + '/' + id, actionDiscount)
+            return $http.put(CONFIG.SERVICE_URL + '/action-discounts/' + id, actionDiscount)
                 .then(function success(response) {
                     return response.data;
                 })
@@ -56,6 +56,5 @@
                     throw response.data;
                 });
         }
-
     }
 })();
