@@ -84,4 +84,27 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
     }
   }
 
+  def addProductCategory(id: Long, categoryId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
+    discounts.findOne(id).flatMap {
+      case Some(_) =>
+        categories.findOne(categoryId).flatMap {
+          case Some(_) =>
+            discounts.addProductCategory(id, categoryId).flatMap(result =>
+              discounts.findOne(result.discount).map(discount =>
+                Ok(Json.toJson(ActionDiscountResponse.fromDomain(discount.get))))
+            )
+
+          case None =>
+            Future.successful(NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+            )))
+        }
+
+      case None =>
+        Future.successful(NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
+        )))
+    }
+  }
+
 }
