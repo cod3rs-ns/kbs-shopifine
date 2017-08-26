@@ -175,6 +175,7 @@
                                 <th>Category Name</th>
                                 <th>Max Discount</th>
                                 <th>Consumer Goods Category</th>
+                                <th>Super Category</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -193,6 +194,16 @@
                                 <td>
                                     <input type="checkbox" ng-model="category.isConsumerGoods"
                                            ng-disabled="!category.edit"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="category.edit">{{category.superCategory.name}}</span>
+                                    <select class="form-control" ng-show="category.edit" ng-model="category.edited.superCategory">
+                                        <option value="0">No super category</option>
+                                        <option ng-repeat="category in profileVm.user.productCategories"
+                                                ng-value="category.id">
+                                            {{category.name}}
+                                        </option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary" ng-click="category.edit = true;"
@@ -248,9 +259,11 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="form-group">
+                                            <span ng-init="profileVm.productCategory.new.superCategory = '0';"></span>
                                             <label for="product-category-supercategory">Choose supercategory:</label>
                                             <select id="product-category-supercategory" class="form-control"
                                                     ng-model="profileVm.productCategory.new.superCategory">
+                                                <option value="0" selected>No super category</option>
                                                 <option ng-repeat="category in profileVm.user.productCategories"
                                                         value="{{category.id}}">{{category.name}}
                                                 </option>
