@@ -10,7 +10,6 @@
     function RegisterController(ngToast, _, users) {
         var registerVm = this;
 
-        // FIXME Extract toDto function
         registerVm.error = false;
         registerVm.passwordRepeat = "";
         registerVm.user = {
