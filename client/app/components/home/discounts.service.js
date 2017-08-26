@@ -12,7 +12,8 @@
             retrieveFrom: retrieveFrom,
             getAll: getAll,
             create: create,
-            modify: modify
+            modify: modify,
+            addProductCategory: addProductCategoryToActionDiscount
         };
 
         return service;
@@ -49,6 +50,16 @@
 
         function modify(id, actionDiscount) {
             return $http.put(CONFIG.SERVICE_URL + '/action-discounts/' + id, actionDiscount)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function addProductCategoryToActionDiscount(discountId, categoryId) {
+            return $http.post(CONFIG.SERVICE_URL + '/action-discounts/' + discountId + '/product-categories/' + categoryId)
                 .then(function success(response) {
                     return response.data;
                 })
