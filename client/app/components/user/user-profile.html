@@ -437,6 +437,7 @@
                                 <th>Minimum Quantity</th>
                                 <th>Quantity</th>
                                 <th>Quantity to add</th>
+                                <th>Reason</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -446,6 +447,7 @@
                                 <td>{{product.minQuantity}}</td>
                                 <td>{{product.quantity}}</td>
                                 <td><input type="number" min="0" ng-model="product.orderQuantity"/></td>
+                                <td>You have {{product.quantity}} but minimum quantity is {{product.minQuantity}}.</td>
                                 <td>
                                     <button ng-click="profileVm.orderProduct(product);"
                                             class="btn btn-xs btn-primary-filled">
