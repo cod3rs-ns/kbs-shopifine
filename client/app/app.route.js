@@ -82,5 +82,18 @@ angular
                         controllerAs: "cartVm"
                     }
                 }
+            })
+            .state('bill', {
+                url: "/bill/:id",
+                data: {
+                    pageTitle: "Shopifine | Bill"
+                },
+                views: {
+                    'content@': {
+                        templateUrl: "app/components/bills/single-bill.html",
+                        controller: "SingleBillController",
+                        controllerAs: "billVm"
+                    }
+                }
             });
     });

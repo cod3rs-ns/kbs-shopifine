@@ -11,7 +11,8 @@
         var service = {
             retrieveAllFrom: retrieveAllFrom,
             retrieveOutOfStock: retrieveOutOfStock,
-            orderProduct: orderProduct
+            orderProduct: orderProduct,
+            getOne: getOne
         };
 
         return service;
@@ -38,6 +39,16 @@
 
         function orderProduct(productId, quantity) {
             return $http.put(CONFIG.SERVICE_URL + '/products/' + productId + '?quantity='+ quantity)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function getOne(productId) {
+            return $http.get(CONFIG.SERVICE_URL + '/products/' + productId)
                 .then(function success(response) {
                     return response.data;
                 })

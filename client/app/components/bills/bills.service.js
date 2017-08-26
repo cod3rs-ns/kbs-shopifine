@@ -13,7 +13,8 @@
             getAll: getAll,
             create: create,
             confirm: confirm,
-            cancel: cancel
+            cancel: cancel,
+            getOne: getOne
         };
 
         return service;
@@ -60,6 +61,16 @@
 
         function cancel(id) {
             return $http.put(CONFIG.SERVICE_URL + '/bills/' + id + '?state=CANCELLED')
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function getOne(userId, billId) {
+            return $http.get(CONFIG.SERVICE_URL + '/users/' + userId + '/bills/' + billId)
                 .then(function success(response) {
                     return response.data;
                 })
