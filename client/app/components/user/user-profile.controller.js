@@ -69,6 +69,11 @@
                         profileVm.user.buyerCategories = [];
                         profileVm.user.productCategories = [];
                         profileVm.user.actionDiscounts = [];
+                        profileVm.actionDiscount = {
+                            'new': {
+                                'categories': []
+                            }
+                        };
                         retrieveBuyerCategories();
                         retrieveProductCategories();
                         retrieveActionDiscounts();
@@ -389,6 +394,17 @@
 
             discounts.create(request)
                 .then(function (response) {
+                    _.forEach(profileVm.actionDiscount.new.categories, function (category) {
+                        var discountId = response.data.id;
+                        discounts.addProductCategory(discountId, category.id)
+                            .then(function () {
+                                $log.info("Added Product Category " + category.name + ".");
+                            })
+                            .catch(function (data) {
+                                $log.error(data);
+                            });
+                    });
+
                     ngToast.success({
                         content: 'Action Discount successfully created.'
                     });

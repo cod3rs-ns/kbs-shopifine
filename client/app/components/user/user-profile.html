@@ -350,6 +350,24 @@
                                                    placeholder="Pick date..."
                                                    ng-model="profileVm.actionDiscount.new.from">
                                         </div>
+                                        <div class="form-group">
+                                            <label for="action-discount-from">Choose Product Category to add:</label>
+                                            <div class="input-group">
+                                                <select id="action-discount-product-category" class="form-control"
+                                                        ng-model="actionDiscountProductCategory">
+                                                    <option ng-repeat="category in profileVm.user.productCategories"
+                                                            ng-value="category">
+                                                        {{category.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-md btn-primary-filled btn-newsletter inside" style="margin-top: -30px !important;"
+                                                            ng-click="profileVm.actionDiscount.new.categories.push(actionDiscountProductCategory);">
+                                                        Add
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-sm-offset-1 col-sm-5">
                                         <div class="form-group">
@@ -363,6 +381,17 @@
                                             <input type="date" id="action-discount-to" class="form-control"
                                                    placeholder="Pick date..."
                                                    ng-model="profileVm.actionDiscount.new.to">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Product Categories:</label>
+                                            <ul ng-hide="profileVm.actionDiscount.new.categories.length == 0">
+                                                <li ng-repeat="category in profileVm.actionDiscount.new.categories" style="display: inline;">
+                                                    {{category.name}}<span ng-if="!$last">,</span>
+                                                </li>
+                                            </ul>
+                                            <p ng-show="profileVm.actionDiscount.new.categories.length == 0">
+                                                You haven't added any Product Categories yet!
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
