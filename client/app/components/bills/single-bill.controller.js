@@ -28,6 +28,7 @@
 
                     billVm.bill = {
                         'id': response.data.id,
+                        'amountWithoutDiscounts': attributes.amount + attributes.discountAmount,
                         'amount': attributes.amount,
                         'createdAt': attributes.createdAt,
                         'discount': attributes.discount,
@@ -39,7 +40,7 @@
                         'discounts': []
                     };
 
-                    discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + '/' + response.data.relationships.discounts.links.related)
+                    discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + response.data.relationships.discounts.links.related)
                         .then(function (response) {
                             _.forEach(response.data, function (discount) {
                                billVm.bill.discounts.push({
@@ -52,7 +53,7 @@
                             $log.error(data);
                         });
 
-                    billItems.retrieveAllFrom(CONFIG.SERVICE_BASE_URL + '/' + response.data.relationships.items.links.related)
+                    billItems.retrieveAllFrom(CONFIG.SERVICE_BASE_URL + response.data.relationships.items.links.related)
                         .then(function (response) {
                             _.forEach(response.data, function (item) {
                                 var billItem = {
@@ -76,7 +77,7 @@
                                         $log.error(data);
                                     });
 
-                                discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + '/' + item.relationships.discounts.links.related)
+                                discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + item.relationships.discounts.links.related)
                                     .then(function (response) {
                                         _.forEach(response.data, function (discount) {
                                             billItem.discounts.push({

@@ -55,7 +55,7 @@ package object bill_items {
             id = billItem.productId
           ),
           links = RelationshipLinks(
-            related = s"api/products/${billItem.productId}"
+            related = s"/api/products/${billItem.productId}"
           )
         ),
         bill = ResponseRelationship(
@@ -64,12 +64,12 @@ package object bill_items {
             id = billItem.billId
           ),
           links = RelationshipLinks(
-            related = s"api/users/$customer/bills/${billItem.billId}"
+            related = s"/api/users/$customer/bills/${billItem.billId}"
           )
         ),
         discounts = ResponseRelationshipCollection(
           links = RelationshipLinks(
-            related = s"api/users/$customer/bills/${billItem.billId}/bill-items/${billItem.id.get}/discounts"
+            related = s"/api/users/$customer/bills/${billItem.billId}/bill-items/${billItem.id.get}/discounts"
           )
         )
       )

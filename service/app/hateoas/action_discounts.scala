@@ -42,7 +42,7 @@ package object action_discounts {
         relationships = ActionDiscountResponseRelationships(
           categories = ResponseRelationshipCollection(
             links = RelationshipLinks(
-              related = s"api/action-discounts/${actionDiscount.id.get}/product-categories"
+              related = s"/api/action-discounts/${actionDiscount.id.get}/product-categories"
             )
           )
         )

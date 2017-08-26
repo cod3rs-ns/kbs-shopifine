@@ -61,7 +61,7 @@ package object bills {
       val relationships = BillResponseRelationships(
         customer = ResponseRelationship(
           links = RelationshipLinks(
-            related = s"api/users/${bill.customerId}"
+            related = s"/api/users/${bill.customerId}"
           ),
           data = RelationshipData(
             `type` = UsersType,
@@ -69,12 +69,12 @@ package object bills {
           )),
         items = ResponseRelationshipCollection(
           links = RelationshipLinks(
-            related = s"api/users/${bill.customerId}/bills/${bill.id.get}/bill-items"
+            related = s"/api/users/${bill.customerId}/bills/${bill.id.get}/bill-items"
           )
         ),
         discounts = ResponseRelationshipCollection(
           links = RelationshipLinks(
-            related = s"api/users/${bill.customerId}/bills/${bill.id.get}/discounts"
+            related = s"/api/users/${bill.customerId}/bills/${bill.id.get}/discounts"
           )
         )
       )
