@@ -147,37 +147,38 @@ class Bills @Inject()(bills: BillService,
                     discount = bonuses.discount,
                     discountAmount = bonuses.discountAmount
                   )
-                ).map(billItem => {
+                ).flatMap(billItem => {
                   // Store all retrieved Discounts for Bill Item
                   bonuses.discounts.foreach(d => billItemDiscounts.save(d.toBillItemDiscount(billItem)))
-
-                  // Update total amount of Bill
-                  bills.enlargeAmount(billId, bonuses.amount)
 
                   // Update when Product is bought last time
                   products.boughtNow(billItem.productId)
 
-                  // If item is last on the Bill trigger Bill price and discounts calculating
-                  if (billItem.ordinal == bill.totalItems) {
-                    drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
-                      // Store all retrieved Discounts for Bill
-                      bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
+                  // Update total amount of Bill
+                  bills.enlargeAmount(billId, bonuses.amount)
+                    .flatMap(_ => {
+                      // If item is last on the Bill trigger Bill price and discounts calculating
+                      if (billItem.ordinal == bill.totalItems) {
+                        drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
+                          // Store all retrieved Discounts for Bill
+                          bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
 
-                      // Update stuffs related to Bill calculated price
-                      bills.updateBillCalculation(
-                        bill.copy(
-                          amount = bonuses.amount,
-                          discount = bonuses.discount,
-                          discountAmount = bonuses.discountAmount,
-                          pointsGained = bonuses.pointsGained
-                        )
-                      )
+                          // Update stuffs related to Bill calculated price
+                          bills.updateBillCalculation(
+                            bill.copy(
+                              amount = bonuses.amount,
+                              discount = bonuses.discount,
+                              discountAmount = bonuses.discountAmount,
+                              pointsGained = bonuses.pointsGained
+                            )
+                          )
+                        })
+                      }
+
+                      Future.successful(Created(Json.toJson(
+                        BillItemResponse.fromDomain(billItem, bill.id.get)
+                      )))
                     })
-                  }
-
-                  Created(Json.toJson(
-                    BillItemResponse.fromDomain(billItem, bill.id.get)
-                  ))
                 })
               )
 

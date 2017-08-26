@@ -14,6 +14,7 @@ case class BillItemRequestData(`type`: String, attributes: BillItemRequestAttrib
 
 case class BillItemRequest(data: BillItemRequestData) {
   def toDomain: Future[BillItem] = {
+    // FIXME Use Real User
     BillsProxy.retrieveBill(1, data.relationships.bill.data.id).flatMap(bill =>
       ProductsProxy.retrieveProduct(data.relationships.product.data.id).map(product =>
         BillItem(
@@ -37,6 +38,26 @@ object BillItemWithDiscountsResponseJson {
       discount = item.discount,
       discountAmount = item.discountAmount,
       discounts = item.discounts.map(DiscountResponseJson.fromDomain)
+    )
+  }
+}
+
+case class BillItemResponseAttributes(ordinal: Int, price: Double, quantity: Int, amount: Double, discount: Double, discountAmount: Double)
+
+case class BillItemResponseRelationships(product: ResponseRelationship, bill: ResponseRelationship, discounts: ResponseRelationshipCollection)
+
+case class BillItemResponseData(`type`: String, id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
+
+case class BillItemCollectionResponse(data: Seq[BillItemResponseData], links: CollectionLinks) {
+  def toDomain: Seq[BillItem] = {
+    data.map(item =>
+      BillItem(
+        price = item.attributes.price,
+        quantity = item.attributes.quantity,
+        amount = item.attributes.amount,
+        discount = item.attributes.discount,
+        discountAmount = item.attributes.discountAmount
+      )
     )
   }
 }

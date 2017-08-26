@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('ShoppingCartController', ShoppingCartController);
 
-    ShoppingCartController.$inject = ['$log', '$localStorage', 'bills', 'billItems', '_'];
+    ShoppingCartController.$inject = ['$log', '$state', '$timeout', '$localStorage', 'ngToast', 'bills', 'billItems', '_'];
 
-    function ShoppingCartController($log, $localStorage, bills, billItems, _) {
+    function ShoppingCartController($log, $state, $timeout, $localStorage, ngToast, bills, billItems, _) {
         var cartVm = this;
 
         cartVm.$storage = $localStorage;
@@ -37,6 +37,7 @@
 
             bills.create($localStorage.user.id, bill)
                 .then(function (response) {
+                    var billId = response.data.id;
                     _.forEach(cartVm.$storage.items, function (item) {
                         var billItem = {
                             'data': {
@@ -56,17 +57,25 @@
                                     'bill': {
                                         'data': {
                                             'type': 'bills',
-                                            'id': response.data.id
+                                            'id': billId
                                         }
                                     }
                                 }
                             }
                         };
 
-                        billItems.create(userId, response.data.id, billItem)
-                            .then(function (response) {
-                                // TODO Handle response
-                                $log.info(response.data);
+                        billItems.create(userId, billId, billItem)
+                            .then(function () {
+                                if (item === _.last(cartVm.$storage.items)) {
+                                    ngToast.success({
+                                        content: 'Bill successfully created!'
+                                    });
+
+                                    $timeout(function () {
+                                        $state.transitionTo('bill', {id: billId});
+                                    }, 3000);
+
+                                }
                             })
                             .catch(function (data) {
                                 $log.error(data);

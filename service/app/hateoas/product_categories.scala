@@ -41,7 +41,7 @@ package object product_categories {
               id = category.superCategoryId.get
             ),
             links = RelationshipLinks(
-              related = s"api/product-categories/${category.superCategoryId.get}"
+              related = s"/api/product-categories/${category.superCategoryId.get}"
             )
           ))
         else None
@@ -51,7 +51,7 @@ package object product_categories {
           superCategory = superCategoryRelationship,
           subcategories = ResponseRelationshipCollection(
             links = RelationshipLinks(
-              related = s"api/product-categories/${category.id.get}/subcategories"
+              related = s"/api/product-categories/${category.id.get}/subcategories"
             )
           )
         )
