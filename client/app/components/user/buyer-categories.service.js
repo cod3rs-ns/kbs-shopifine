@@ -11,6 +11,7 @@
         var service = {
             getCategories: getCategories,
             createCategory: createCategory,
+            modify: modify,
             getThresholdsFrom: getThresholdsFrom,
             addThresholdTo: addThresholdTo,
             removeThreshold: removeThreshold
@@ -30,6 +31,16 @@
 
         function createCategory(category) {
             return $http.post(CONFIG.SERVICE_URL + '/buyer-categories', category)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function modify(id, category) {
+            return $http.put(CONFIG.SERVICE_URL + '/buyer-categories/' + id, category)
                 .then(function success(response) {
                     return response.data;
                 })

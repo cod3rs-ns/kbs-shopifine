@@ -28,6 +28,7 @@
         // Thresholds and Buyer Categories
         profileVm.retrieveBuyerCategories = retrieveBuyerCategories;
         profileVm.addBuyerCategory = addBuyerCategory;
+        profileVm.modifyBuyerCategory = modifyBuyerCategory;
         profileVm.addThresholdFor = addThresholdFor;
         profileVm.removeThreshold = removeThreshold;
 
@@ -118,7 +119,11 @@
                         var c = {
                             'id': category.id,
                             'name': category.attributes.name,
-                            'thresholds': []
+                            'thresholds': [],
+                            'edit': false,
+                            'edited': {
+                                'name': category.attributes.name
+                            }
                         };
 
                         buyerCategories.getThresholdsFrom(category.relationships.thresholds.links.related)
@@ -163,12 +168,48 @@
                     profileVm.user.buyerCategories.push({
                         'id': response.data.id,
                         'name': response.data.attributes.name,
+                        'edit': false,
+                        'edited': {
+                            'name': response.data.attributes.name
+                        },
                         'thresholds': []
                     });
                 })
                 .catch(function (data) {
                     $log.error(data);
                 })
+        }
+
+        function modifyBuyerCategory(category) {
+            var request = {
+                'data': {
+                    'type': "buyer-categories",
+                    'attributes': {
+                        'name': category.edited.name
+                    }
+                }
+            };
+
+            buyerCategories.modify(category.id, request)
+                .then(function (response) {
+                    ngToast.success({
+                        content: 'Buyer Category successfully modified!'
+                    });
+
+                    _.forEach(profileVm.user.buyerCategories, function (c) {
+                        var attributes = response.data.attributes;
+                        if (c.id === response.data.id) {
+                            c.name = attributes.name;
+                            c.edited = {
+                                'name': attributes.name
+                            };
+                            c.edit = false;
+                        }
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
         }
 
         function addThresholdFor(category) {
@@ -405,7 +446,7 @@
                             };
                             c.edit = false;
                         }
-                    })
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
