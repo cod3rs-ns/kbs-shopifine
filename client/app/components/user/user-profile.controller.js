@@ -249,16 +249,31 @@
             productCategories.getAll()
                 .then(function (response) {
                     _.forEach(response.data, function (category) {
+                        var superCategory = category.relationships.superCategory;
+                        var superCategoryId = "0";
+                        var superCategoryName = "";
+                        if (!_.isUndefined(superCategory)) {
+                            superCategoryId = superCategory.data.id;
+                            superCategoryName = _.head(_.filter(profileVm.user.productCategories, function (c) {
+                                return _.parseInt(c.id) === _.parseInt(superCategoryId);
+                            })).name;
+                        }
+
                         var c = {
                             'id': category.id,
                             'name': category.attributes.name,
                             'isConsumerGoods': category.attributes.isConsumerGoods,
                             'maxDiscount': category.attributes.maxDiscount,
+                            'superCategory': {
+                                'id': superCategoryId,
+                                'name': superCategoryName
+                            },
                             'edit': false,
                             'edited': {
                                 'name': category.attributes.name,
                                 'maxDiscount': category.attributes.maxDiscount,
-                                'isConsumerGoods': category.attributes.isConsumerGoods
+                                'isConsumerGoods': category.attributes.isConsumerGoods,
+                                'superCategory': superCategoryId
                             }
                         };
 
@@ -278,17 +293,21 @@
                         'name': profileVm.productCategory.new.name,
                         'maxDiscount': parseFloat(profileVm.productCategory.new.maxDiscount),
                         'isConsumerGoods': profileVm.productCategory.new.isConsumerGoods
-                    },
-                    'relationships': {
-                        'superCategory': {
-                            'data': {
-                                'type': 'product-categories',
-                                'id': _.parseInt(profileVm.productCategory.new.superCategory)
-                            }
-                        }
                     }
                 }
             };
+
+            if (_.parseInt(profileVm.productCategory.new.superCategory) !== 0) {
+                request.data['relationships'] =
+                {
+                    'superCategory': {
+                        'data': {
+                            'type': 'product-categories',
+                                'id': _.parseInt(profileVm.productCategory.new.superCategory)
+                        }
+                    }
+                }
+            }
 
             productCategories.create(request)
                 .then(function (response) {
@@ -296,10 +315,31 @@
                         content: 'Product Category successfully created!'
                     });
 
+                    var superCategory = response.data.relationships.superCategory;
+                    var superCategoryId = "0";
+                    var superCategoryName = "";
+                    if (!_.isUndefined(superCategory)) {
+                        superCategoryId = superCategory.data.id;
+                        superCategoryName = _.head(_.filter(profileVm.user.productCategories, function (c) {
+                            return _.parseInt(c.id) === _.parseInt(superCategoryId);
+                        })).name;
+                    }
+
                     profileVm.user.productCategories.push({
                         'id': response.data.id,
                         'name': response.data.attributes.name,
-                        'maxDiscount': response.data.attributes.maxDiscount
+                        'maxDiscount': response.data.attributes.maxDiscount,
+                        'superCategory': {
+                            'id': superCategoryId,
+                            'name': superCategoryName
+                        },
+                        'edit': false,
+                        'edited': {
+                            'name': response.data.attributes.name,
+                            'maxDiscount': response.data.attributes.maxDiscount,
+                            'isConsumerGoods': response.data.attributes.isConsumerGoods,
+                            'superCategory': superCategoryId
+                        }
                     });
                 })
                 .catch(function (data) {
@@ -316,17 +356,20 @@
                         'maxDiscount': parseFloat(category.edited.maxDiscount),
                         'isConsumerGoods': category.edited.isConsumerGoods
                     }
-                    // ,
-                    // 'relationships': {
-                    //     'superCategory': {
-                    //         'data': {
-                    //             'type': 'product-categories',
-                    //             'id': _.parseInt(profileVm.productCategory.new.superCategory)
-                    //         }
-                    //     }
-                    // }
                 }
             };
+
+            if (_.parseInt(category.edited.superCategory) !== 0) {
+                request.data['relationships'] =
+                    {
+                        'superCategory': {
+                            'data': {
+                                'type': 'product-categories',
+                                'id': _.parseInt(category.edited.superCategory)
+                            }
+                        }
+                    }
+            }
 
             productCategories.modify(category.id, request)
                 .then(function (response) {
@@ -337,13 +380,28 @@
                     _.forEach(profileVm.user.productCategories, function (c) {
                         var attributes = response.data.attributes;
                         if (c.id === response.data.id) {
+                            var superCategory = response.data.relationships.superCategory;
+                            var superCategoryId = "0";
+                            var superCategoryName = "";
+                            if (!_.isUndefined(superCategory)) {
+                                superCategoryId = superCategory.data.id;
+                                superCategoryName = _.head(_.filter(profileVm.user.productCategories, function (c) {
+                                    return _.parseInt(c.id) === _.parseInt(superCategoryId);
+                                })).name;
+                            }
+
                             c.name = attributes.name;
                             c.maxDiscount = attributes.maxDiscount;
                             c.isConsumerGoods = attributes.isConsumerGoods;
+                            c.superCategory = {
+                                'id': superCategoryId,
+                                'name': superCategoryName
+                            };
                             c.edited = {
                                 'name': attributes.name,
                                 'maxDiscount': attributes.maxDiscount,
-                                'isConsumerGoods': attributes.isConsumerGoods
+                                'isConsumerGoods': attributes.isConsumerGoods,
+                                'superCategory': superCategoryId
                             };
                             c.edit = false;
                         }
