@@ -62,9 +62,9 @@
                             <tbody>
                             <tr ng-repeat="b in profileVm.user.bills">
                                 <td>{{b.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{b.amount}}</td>
+                                <td>{{b.amount}} €</td>
                                 <td>{{b.discount}}</td>
-                                <td>{{b.discountAmount}}</td>
+                                <td>{{b.discountAmount}} €</td>
                                 <td>{{b.pointsGained}}</td>
                                 <td>{{b.pointsSpent}}</td>
                                 <td>{{b.status}}</td>
@@ -85,7 +85,28 @@
                     <div class="row">
                         <div class="panel panel-primary" ng-repeat="category in profileVm.user.buyerCategories">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{{category.name}}</h3>
+                                <span ng-hide="category.edit">
+                                    <h3 class="panel-title">
+                                        {{category.name}}
+                                        <button class="btn btn-xs btn-primary pull-right" ng-click="category.edit = true;"
+                                                ng-hide="category.edit" style="margin-top: -8px;">
+                                            Edit
+                                        </button>
+                                    </h3>
+                                </span>
+                                <span ng-show="category.edit">
+                                    <input ng-model="category.edited.name" style="color: black !important; margin-top: -6px;"/>
+                                    <button class="btn btn-xs btn-danger-filled pull-right" style="margin-left: 8px; margin-top: -8px;"
+                                            ng-click="category.edit = false;"
+                                            ng-show="category.edit">
+                                        Cancel
+                                    </button>
+                                    <button class="btn btn-xs btn-success-filled pull-right" style="margin-top: -8px;"
+                                            ng-click="profileVm.modifyBuyerCategory(category);"
+                                            ng-show="category.edit">
+                                        Save changes
+                                    </button>
+                                </span>
                             </div>
                             <div class="panel-body">
                                 <div class="table-responsive">
@@ -437,6 +458,7 @@
                                 <th>Minimum Quantity</th>
                                 <th>Quantity</th>
                                 <th>Quantity to add</th>
+                                <th>Reason</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -446,6 +468,7 @@
                                 <td>{{product.minQuantity}}</td>
                                 <td>{{product.quantity}}</td>
                                 <td><input type="number" min="0" ng-model="product.orderQuantity"/></td>
+                                <td>You have {{product.quantity}} but minimum quantity is {{product.minQuantity}}.</td>
                                 <td>
                                     <button ng-click="profileVm.orderProduct(product);"
                                             class="btn btn-xs btn-primary-filled">
@@ -507,9 +530,9 @@
                             <tbody>
                             <tr ng-repeat="bill in profileVm.user.bills | filter: {status: billFilter}">
                                 <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{bill.amount}}</td>
-                                <td>{{bill.discount}}</td>
-                                <td>{{bill.discountAmount}}</td>
+                                <td>{{bill.amount}} €</td>
+                                <td>{{bill.discount}}%</td>
+                                <td>{{bill.discountAmount}} €</td>
                                 <td>{{bill.pointsGained}}</td>
                                 <td>{{bill.pointsSpent}}</td>
                                 <td>{{bill.status}}</td>
