@@ -11,14 +11,16 @@ package object drools {
         category = category,
         quantity = quantity,
         minQuantity = minQuantity,
-        fillStock = fillStock
+        fillStock = fillStock,
+        lastBoughtAt = DateTime.now()
       )
 
     def singleProductWithCategory(category: ProductCategory): Product =
       Product(
         category = Some(category),
         quantity = 0,
-        minQuantity = 0
+        minQuantity = 0,
+        lastBoughtAt = DateTime.now()
       )
   }
 

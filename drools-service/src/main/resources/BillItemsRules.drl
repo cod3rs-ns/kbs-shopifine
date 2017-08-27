@@ -63,8 +63,15 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Categ
         }
 end
 
-// Pro Discounts
-
+rule "Determine if Bill Item achieves Pro Discount based on Last Time Bought"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem(product.lastBoughtAt() > DateTime.now().minusDays(15))
+    then
+        final BillItemDiscount discount = new BillItemDiscount(2, DiscountType.PRO);
+        $item.addDiscount(discount);
+end
 
 rule "Determine Bill Item discount and price"
     salience -16

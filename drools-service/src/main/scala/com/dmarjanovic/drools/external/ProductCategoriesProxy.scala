@@ -11,13 +11,13 @@ import scala.concurrent.Future
 
 object ProductCategoriesProxy extends JsonSupport {
 
-  def retrieveCategory(id: Long): Future[ProductCategory] = {
+  def retrieveCategory(id: Long, fetchProducts: Boolean = false): Future[ProductCategory] = {
     val uri: String = s"$CoreBaseUrl/api/product-categories/$id"
 
     Http().singleRequest(HttpRequest(uri = uri)
       .withHeaders(Authorization))
       .flatMap(response => {
-        Unmarshal(response.entity).to[ProductCategoryResponse].map(json =>
+        Unmarshal(response.entity).to[ProductCategoryResponse].flatMap(json =>
           json.toDomain
         )
       })
