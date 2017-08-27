@@ -67,10 +67,41 @@ rule "Determine if Bill Item achieves Pro Discount based on Last Time Bought"
     salience -8
     agenda-group "bill-item-bonuses"
     when
-        $item: BillItem(product.lastBoughtAt() > DateTime.now().minusDays(15))
+        $item: BillItem(product.lastBoughtAt().isAfter(DateTime.now().minusDays(15)))
     then
         final BillItemDiscount discount = new BillItemDiscount(2, DiscountType.PRO);
         $item.addDiscount(discount);
+end
+
+rule "Determine if Bill Item achieves Pro Discount based on Category Products Last Time Bought"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem($products: product.category.products)
+    then
+        final List<Product> products = JavaConversions.seqAsJavaList($products);
+        for (final Product product: products) {
+            if (product.lastBoughtAt().isAfter(DateTime.now().minusDays(30)) && product.id().get() != $item.getProduct().id().get()) {
+                final BillItemDiscount discount = new BillItemDiscount(1, DiscountType.PRO);
+                $item.addDiscount(discount);
+                break;
+            }
+        }
+end
+
+rule "Determine Discounts based on Action Discounts"
+    salience -8
+    agenda-group "bill-item-bonuses"
+    when
+        $item: BillItem($discounts: product.category.actionDiscounts)
+    then
+        final List<ActionDiscount> discounts = JavaConversions.seqAsJavaList($discounts);
+        for (final ActionDiscount d: discounts) {
+            if ($item.billCreatedAt().isAfter(d.from()) && $item.billCreatedAt().isBefore(d.to())) {
+                final BillItemDiscount discount = new BillItemDiscount(d.discount(), DiscountType.PRO);
+                $item.addDiscount(discount);
+            }
+        }
 end
 
 rule "Determine Bill Item discount and price"

@@ -29,15 +29,17 @@ object DroolsService extends JsonSupport {
             }
           }
         } ~
-          pathPrefix("bill-items") {
-            path("discounts") {
-              put {
-                entity(as[BillItemRequest]) { spec =>
-                  complete {
-                    spec.toDomain.map(item => {
-                      RulesEngine.calculateBillItemDiscounts(item)
-                      BillItemWithDiscountsResponseJson.fromDomain(item)
-                    })
+          pathPrefix("users") {
+            path(IntNumber / "bill-items" / "discounts") {
+              userId => {
+                put {
+                  entity(as[BillItemRequest]) { spec =>
+                    complete {
+                      spec.toDomain(userId).map(item => {
+                        RulesEngine.calculateBillItemDiscounts(item)
+                        BillItemWithDiscountsResponseJson.fromDomain(item)
+                      })
+                    }
                   }
                 }
               }

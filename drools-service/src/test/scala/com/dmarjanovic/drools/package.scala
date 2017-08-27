@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 package object drools {
 
   trait ProductsFixture {
-    def createProduct(seed: Long, quantity: Long, minQuantity: Long, fillStock: Boolean = false, category: Option[ProductCategory] = None): Product =
+    def createProduct(seed: Long, quantity: Long, minQuantity: Long, fillStock: Boolean = false, category: Option[ProductCategory] = None, lastBoughtAt: DateTime = DateTime.now): Product =
       Product(
         category = category,
         quantity = quantity,
@@ -15,23 +15,24 @@ package object drools {
         lastBoughtAt = DateTime.now()
       )
 
-    def singleProductWithCategory(category: ProductCategory): Product =
+    def singleProductWithCategory(category: ProductCategory, lastBoughtAt: DateTime = DateTime.now()): Product =
       Product(
         category = Some(category),
         quantity = 0,
         minQuantity = 0,
-        lastBoughtAt = DateTime.now()
+        lastBoughtAt = lastBoughtAt
       )
   }
 
   trait BillItemsFixture {
-    def createBillItem(seed: Long, quantity: Int, product: Option[Product] = None): BillItem =
+    def createBillItem(seed: Long, quantity: Int, product: Option[Product] = None, billCreatedAt: DateTime = DateTime.now, price: Double = 1000): BillItem =
       BillItem(
-        price = 1000,
+        price = price,
         quantity = quantity,
         discount = seed,
-        amount = quantity * 1000 * (100.0 - seed * 2) / 100,
-        product = product
+        amount = quantity * price * (100.0 - seed * 2) / 100,
+        product = product,
+        billCreatedAt = billCreatedAt
       )
   }
 
@@ -89,6 +90,15 @@ package object drools {
         discountAmount = 0,
         pointsGained = 0,
         pointsSpent = 0
+      )
+  }
+
+  trait ActionDiscountsFixture {
+    def createActionDiscount(from: DateTime, to: DateTime, discount: Double): ActionDiscount =
+      ActionDiscount(
+        from = from,
+        to = to,
+        discount = discount
       )
   }
 

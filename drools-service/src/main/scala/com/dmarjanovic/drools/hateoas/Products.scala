@@ -88,7 +88,7 @@ object ProductCollectionResponseJson {
 }
 
 object LastBoughtAtParser {
-  def get(date: String) =
+  def get(date: String): DateTime =
     if ("never" == date.toLowerCase)
       DateTime.now.minusYears(DateTime.now.getYear)
     else
