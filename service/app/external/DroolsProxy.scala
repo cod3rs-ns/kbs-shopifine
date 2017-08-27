@@ -23,8 +23,8 @@ class DroolsProxy @Inject()(ws: WSClient, config: Configuration)(implicit val ec
       .get()
       .map(_.json.as[BillWithDiscountsResponse])
 
-  def calculateBillItemPriceAndDiscounts(item: BillItemRequest): Future[BillItemWithDiscountsResponse] =
-    ws.url(s"$DroolsServiceBaseUrl/api/bill-items/discounts")
+  def calculateBillItemPriceAndDiscounts(userId: Long, item: BillItemRequest): Future[BillItemWithDiscountsResponse] =
+    ws.url(s"$DroolsServiceBaseUrl/api/users/$userId/bill-items/discounts")
       .put(Json.toJson(item))
       .map(_.json.as[BillItemWithDiscountsResponse])
 

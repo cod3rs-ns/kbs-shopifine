@@ -2,11 +2,12 @@ package com.dmarjanovic.drools.hateoas
 
 import com.dmarjanovic.drools.domain.Product
 import com.dmarjanovic.drools.external.ProductCategoriesProxy
+import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class ProductResponseAttributes(quantity: Long, fillStock: Boolean, minQuantity: Long)
+case class ProductResponseAttributes(quantity: Long, fillStock: Boolean, minQuantity: Long, lastBoughtAt: String)
 
 case class ProductResponseRelationships(category: ResponseRelationship, discounts: ResponseRelationshipCollection)
 
@@ -19,7 +20,8 @@ case class ProductResponseData(`type`: String,
       id = Some(id),
       quantity = attributes.quantity,
       fillStock = attributes.fillStock,
-      minQuantity = attributes.minQuantity
+      minQuantity = attributes.minQuantity,
+      lastBoughtAt = LastBoughtAtParser.get(attributes.lastBoughtAt)
     )
   }
 }
@@ -29,7 +31,8 @@ object ProductResponseDataJson {
     val attributes = ProductResponseAttributes(
       quantity = product.quantity,
       fillStock = product.fillStock,
-      minQuantity = product.minQuantity
+      minQuantity = product.minQuantity,
+      lastBoughtAt = product.lastBoughtAt.toString
     )
 
     val relationships = ProductResponseRelationships(
@@ -56,7 +59,8 @@ object ProductResponseDataJson {
 }
 
 case class ProductResponse(data: ProductResponseData) {
-  def toDomain: Future[Product] = {
+  def toDomain(fetchCategory: Boolean = false): Future[Product] = {
+
     ProductCategoriesProxy.retrieveCategory(data.relationships.category.data.id).flatMap(category =>
       Future.successful(
         Product(
@@ -64,7 +68,8 @@ case class ProductResponse(data: ProductResponseData) {
           category = Some(category),
           quantity = data.attributes.quantity,
           fillStock = data.attributes.fillStock,
-          minQuantity = data.attributes.minQuantity
+          minQuantity = data.attributes.minQuantity,
+          lastBoughtAt = LastBoughtAtParser.get(data.attributes.lastBoughtAt)
         )
       )
     )
@@ -80,4 +85,12 @@ object ProductCollectionResponseJson {
       links = links
     )
   }
+}
+
+object LastBoughtAtParser {
+  def get(date: String): DateTime =
+    if ("never" == date.toLowerCase)
+      DateTime.now.minusYears(DateTime.now.getYear)
+    else
+      DateTime.parse(date)
 }

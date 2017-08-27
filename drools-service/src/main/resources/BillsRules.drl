@@ -33,7 +33,15 @@ rule "Determine if Bill achieves Pro Discount based on Amount"
     when
         $bill: Bill(amount > 50000)
     then
-        $bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
+        final List<BillItem> items = JavaConversions.seqAsJavaList($bill.getSortedItems());
+        final int size = (items.size() < 10) ? items.size() : 10;
+        int total = 0;
+        for (int i = 0; i < size; ++i) {
+            total += items.get(i).amount();
+        }
+
+        if (total > 0.5 * $bill.amount())
+            $bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
 end
 
 rule "Determine final Bill discount and price"

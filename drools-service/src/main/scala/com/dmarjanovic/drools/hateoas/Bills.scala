@@ -36,7 +36,7 @@ case class BillResponse(data: BillResponseData) {
 
       if (fetchItems)
         BillsProxy.retrieveBillItemsFrom(data.relationships.items.links.related).flatMap(items => {
-          Future.successful(bill.copy(items = items))
+          Future.successful(bill.copy(items = items.map(item => item.copy(billCreatedAt = bill.createdAt))))
         })
       else
         Future.successful(bill)

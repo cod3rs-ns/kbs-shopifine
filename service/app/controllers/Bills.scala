@@ -139,7 +139,7 @@ class Bills @Inject()(bills: BillService,
         spec => {
           bills.retrieveOne(billId) flatMap {
             case Some(bill) =>
-              drools.calculateBillItemPriceAndDiscounts(spec).flatMap(bonuses =>
+              drools.calculateBillItemPriceAndDiscounts(userId, spec).flatMap(bonuses =>
                 billItems.save(
                   spec.toDomain.copy(
                     price = bonuses.price,
