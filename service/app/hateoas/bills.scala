@@ -7,7 +7,7 @@ package object bills {
 
   import hateoas._
 
-  case class BillRequestAttributes(state: String, totalItems: Long)
+  case class BillRequestAttributes(state: String, totalItems: Long, pointsSpent: Long)
 
   case class BillRequestRelationships(customer: RequestRelationship)
 
@@ -27,7 +27,7 @@ package object bills {
         discount = 0,
         discountAmount = 0,
         pointsGained = 0,
-        pointsSpent = 0
+        pointsSpent = attributes.pointsSpent
       )
     }
   }

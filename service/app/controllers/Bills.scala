@@ -109,6 +109,11 @@ class Bills @Inject()(bills: BillService,
             Ok(Json.toJson(BillResponse.fromDomain(bill.get)))
           )
         }
+        else if (affected == -1) {
+          Future.successful(BadRequest(Json.toJson(
+            ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, s"Insufficiently Products for Bill Accepting.")))
+          )))
+        }
         else {
           Future.successful(NotFound(Json.toJson(
             ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $id doesn't exist!")))

@@ -547,9 +547,15 @@ definitions:
         format: int64
         description: Number of items in Bill
         example: 21
+      pointsSpent:
+        type: long
+        format: int64
+        description: Number of applied points
+        example: 10
     required:
       - state
       - totalItems
+      - pointsSpent
   BillRequestRelationships:
     type: object
     properties:

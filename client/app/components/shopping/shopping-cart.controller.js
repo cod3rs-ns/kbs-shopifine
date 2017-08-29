@@ -11,18 +11,21 @@
         var cartVm = this;
 
         cartVm.$storage = $localStorage;
+        cartVm.points = 0;
 
         cartVm.confirm = orderItems;
 
         function orderItems() {
             var userId = $localStorage.user.id;
+            $log.info(cartVm.points);
 
             var bill = {
                 'data': {
                     'type': 'bills',
                     'attributes': {
                         'state': 'ORDERED',
-                        'totalItems': _.size(cartVm.$storage.items)
+                        'totalItems': _.size(cartVm.$storage.items),
+                        'pointsSpent': _.parseInt(cartVm.points)
                     },
                     'relationships': {
                         'customer': {
