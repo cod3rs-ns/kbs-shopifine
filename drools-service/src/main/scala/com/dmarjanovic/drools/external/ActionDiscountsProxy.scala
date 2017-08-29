@@ -17,10 +17,7 @@ object ActionDiscountsProxy extends JsonSupport {
     Http().singleRequest(HttpRequest(uri = uri)
       .withHeaders(Authorization))
       .flatMap(response => {
-        Unmarshal(response.entity).to[ActionDiscountCollectionResponse].map(json => {
-          println(json.toDomain)
-          json.toDomain
-        })
+        Unmarshal(response.entity).to[ActionDiscountCollectionResponse].map(json => json.toDomain)
       })
   }
 

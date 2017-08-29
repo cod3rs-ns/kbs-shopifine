@@ -34,8 +34,9 @@
                         </div>
                         <div class="updateArea">
                             <div class="input-group">
-                                <input type="text" class="form-control" placeholder="I have award points" aria-describedby="basic-addon2">
-                                <button class="btn input-group-addon" id="basic-addon2">Apply points</button>
+                                <span ng-init="applied = false;"></span>
+                                <input type="number" min="0" ng-model="cartVm.points" ng-readonly="applied" class="form-control" placeholder="I have award points..." aria-describedby="basic-addon2">
+                                <button class="btn input-group-addon" id="basic-addon2" ng-click="applied = true;">Apply points</button>
                             </div>
                         </div>
                         <div class="checkBtnArea">

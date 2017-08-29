@@ -22,6 +22,18 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     db.run(users.filter(_.id === id).result.headOption)
   }
 
+  override def updateUserPoints(id: Long, points: Long): Future[Int] = {
+    val query =
+      sql"""
+           UPDATE
+              users
+           SET
+              points = points + $points
+           WHERE id = $id;
+        """.as[Int].head
+    db.run(query)
+  }
+
   override def findByUsernameAndPassword(username: String, password: String): Future[Option[User]] = {
     db.run(users.filter(u => u.username === username && u.password === password).result.headOption)
   }

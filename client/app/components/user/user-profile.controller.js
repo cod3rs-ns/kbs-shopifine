@@ -633,11 +633,15 @@
                         content: 'Bill successfully processed!'
                     });
 
-                    $log.info(response.data);
+                    _.forEach(profileVm.user.bills, function (bill) {
+                        if (bill.id === response.data.id) {
+                            bill.status = response.data.attributes.state;
+                        }
+                    });
                 })
-                .catch(function () {
+                .catch(function (data) {
                     ngToast.danger({
-                        content: 'Error in Bill processing!'
+                        content: _.head(data.errors).detail
                     });
                 });
         }
