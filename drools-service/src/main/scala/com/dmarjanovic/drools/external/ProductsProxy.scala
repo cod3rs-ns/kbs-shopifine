@@ -24,7 +24,7 @@ object ProductsProxy extends JsonSupport {
   }
 
   def retrieveProducts(category: Option[Long] = None): Future[Seq[Product]] = {
-    val filter = if (category.isDefined) s"?filter[category]=${category.get}" else ""
+    val filter = if (category.isDefined) s"?filter[category]=${category.get}&page[limit]=${Int.MaxValue}" else s"?page[limit]=${Int.MaxValue}"
     val url: String = s"$CoreBaseUrl/api/products$filter"
 
     Http().singleRequest(HttpRequest(uri = url))
