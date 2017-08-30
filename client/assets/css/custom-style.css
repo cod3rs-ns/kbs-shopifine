@@ -7,8 +7,9 @@
 }
 
 .product-name {
-    height: 24px !important;
+    height: 32px !important;
     overflow: hidden;
+    margin-bottom: 8px !important;
 }
 
 .margin-top-8 {
