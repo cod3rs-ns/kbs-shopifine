@@ -331,7 +331,7 @@
                         profileVm.user.productCategories.push(c);
                     });
 
-                    profileVm.actionDiscount.new.actionDiscountProductCategory = _.head(profileVm.productCategories);
+                    profileVm.actionDiscount.new.actionDiscountProductCategory = _.head(profileVm.user.productCategories);
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -547,7 +547,7 @@
                         'from': null,
                         'to': null,
                         'discount': '',
-                        'actionDiscountProductCategory': _.head(profileVm.productCategories)
+                        'actionDiscountProductCategory': _.head(profileVm.user.productCategories)
                     }
 
                 })
