@@ -65,7 +65,7 @@
                             <div class="productImage clearfix">
                                 <img ng-src="{{product.preview}}" alt="{{product.name}}">
                                 <span class="sticker" ng-show="product.discount > 0">-{{product.discount}}%</span>
-                                <div class="productMasking">
+                                <div class="productMasking" ng-if="homeVm.isCustomer();">
                                     <ul class="list-inline btn-group" role="group">
                                         <li class="text-center">
                                             <div class="form-group">

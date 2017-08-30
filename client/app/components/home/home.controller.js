@@ -38,6 +38,7 @@
         homeVm.resetFilters = resetFilters;
         homeVm.searchByCategory = searchByCategory;
 
+        homeVm.isCustomer = isCustomer;
         homeVm.addToCart = addToCart;
         homeVm.isInCart = isInCart;
         homeVm.removeFromCart = removeFromCart;
@@ -201,6 +202,10 @@
 
         function setDialogDiscounts(product) {
             homeVm.productDiscounts = product.discounts;
+        }
+
+        function isCustomer() {
+            return !_.isUndefined($localStorage.user) && "CUSTOMER" === $localStorage.user.role;
         }
     }
 })();
