@@ -12,7 +12,10 @@ angular
             'SERVICE_URL': 'http://localhost:9000/api'
         }
     )
-    .config(function ($stateProvider, $urlRouterProvider) {
+    .config(function ($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider) {
+
+        // For excluding exclamation from url
+        $locationProvider.hashPrefix('');
 
         // For any unmatched url, redirect to /home
         $urlRouterProvider.otherwise("/home");
@@ -96,4 +99,19 @@ angular
                     }
                 }
             });
+
+            $httpProvider.interceptors.push(['$localStorage', '_', function ($localStorage, _) {
+                return {
+                    // Set Header to Request if user is logged
+                    'request': function (config) {
+                        var user = $localStorage.user;
+
+                        if (!_.isUndefined(user)) {
+                            config.headers['Authorization'] = 'Bearer ' + user.token;
+                        }
+
+                        return config;
+                    }
+                };
+            }]);
     });

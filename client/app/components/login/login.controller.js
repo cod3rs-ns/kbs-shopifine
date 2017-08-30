@@ -25,7 +25,8 @@
                     $localStorage.user = {
                         'id': payload.id,
                         'username': payload.username,
-                        'role': payload.role
+                        'role': payload.role,
+                        'token': token
                     };
 
                     $location.path('/home');
