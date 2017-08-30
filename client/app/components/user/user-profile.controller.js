@@ -174,6 +174,8 @@
                         },
                         'thresholds': []
                     });
+
+                    profileVm.buyerCategories.new.name = "";
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -213,13 +215,21 @@
         }
 
         function addThresholdFor(category) {
+            var award = parseFloat(category.threshold.new.award);
+            if (_.isNaN(award)) {
+                ngToast.danger({
+                    content: 'Threshold award must be between 0 and 99.'
+                });
+                return;
+            }
+
             var request = {
                 'data': {
                     'type': 'consumption-thresholds',
                     'attributes': {
                         'from': parseFloat(category.threshold.new.from),
                         'to': parseFloat(category.threshold.new.to),
-                        'award': parseFloat(category.threshold.new.award)
+                        'award': award
                     },
                     'relationships': {
                         'category': {
@@ -320,6 +330,8 @@
 
                         profileVm.user.productCategories.push(c);
                     });
+
+                    profileVm.actionDiscount.new.actionDiscountProductCategory = _.head(profileVm.productCategories);
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -382,6 +394,13 @@
                             'superCategory': superCategoryId
                         }
                     });
+
+                    profileVm.productCategory.new = {
+                        'name': '',
+                        'maxDiscount': '',
+                        'superCategory': 0,
+                        'isConsumerGoods': false
+                    }
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -522,6 +541,15 @@
                             'discount': response.data.attributes.discount
                         }
                     });
+
+                    profileVm.actionDiscount.new = {
+                        'name': '',
+                        'from': null,
+                        'to': null,
+                        'discount': '',
+                        'actionDiscountProductCategory': _.head(profileVm.productCategories)
+                    }
+
                 })
                 .catch(function (data) {
                     $log.error(data);

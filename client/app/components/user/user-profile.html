@@ -213,7 +213,7 @@
                                            ng-show="category.edit"/>
                                 </td>
                                 <td>
-                                    <input type="checkbox" ng-model="category.isConsumerGoods"
+                                    <input type="checkbox" ng-model="category.edited.isConsumerGoods"
                                            ng-disabled="!category.edit"/>
                                 </td>
                                 <td>
@@ -273,6 +273,7 @@
                                         <div class="form-group text-center">
                                             <label for="product-category-consumer-goods">Is category consumer
                                                 goods:</label>
+                                            <span ng-init="profileVm.productCategory.new.isConsumerGoods = false;"></span>
                                             <input id="product-category-consumer-goods" type="checkbox" class="checkbox"
                                                    style="margin-left: 50%; margin-top: 20px;"
                                                    ng-model="profileVm.productCategory.new.isConsumerGoods"/>
@@ -388,7 +389,7 @@
                                             <label for="action-discount-from">Choose Product Category to add:</label>
                                             <div class="input-group">
                                                 <select id="action-discount-product-category" class="form-control"
-                                                        ng-model="actionDiscountProductCategory">
+                                                        ng-model="profileVm.actionDiscount.new.actionDiscountProductCategory">
                                                     <option ng-repeat="category in profileVm.user.productCategories"
                                                             ng-value="category">
                                                         {{category.name}}
@@ -396,7 +397,7 @@
                                                 </select>
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-md btn-primary-filled btn-newsletter inside" style="margin-top: -30px !important;"
-                                                            ng-click="profileVm.actionDiscount.new.categories.push(actionDiscountProductCategory);">
+                                                            ng-click="profileVm.actionDiscount.new.categories.push(profileVm.actionDiscount.new.actionDiscountProductCategory);">
                                                         Add
                                                     </button>
                                                 </span>
