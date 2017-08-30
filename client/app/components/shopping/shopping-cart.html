@@ -18,16 +18,14 @@
                                 <tbody>
                                 <tr ng-repeat="item in cartVm.$storage.items">
                                     <td class="col-xs-2">
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span></button>
                                         <span class="cartImage">
                                             <img style="max-width: 64px;" ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
                                         </span>
                                     </td>
                                     <td class="col-xs-4">{{item.product.name}}</td>
-                                    <td class="col-xs-2">{{item.product.price}} €</td>
+                                    <td class="col-xs-2">{{item.product.price | number : 2}} €</td>
                                     <td class="col-xs-2">{{item.quantity}}</td>
-                                    <td class="col-xs-2">{{item.quantity * item.product.price}} €</td>
+                                    <td class="col-xs-2">{{item.quantity * item.product.price | number : 2}} €</td>
                                 </tr>
                                 </tbody>
                             </table>

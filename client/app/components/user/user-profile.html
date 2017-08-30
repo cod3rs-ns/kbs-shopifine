@@ -62,9 +62,9 @@
                             <tbody>
                             <tr ng-repeat="b in profileVm.user.bills">
                                 <td>{{b.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{b.amount}} €</td>
-                                <td>{{b.discount}}</td>
-                                <td>{{b.discountAmount}} €</td>
+                                <td>{{b.amount | number : 2}} €</td>
+                                <td>{{b.discount}}%</td>
+                                <td>{{b.discountAmount | number : 2}} €</td>
                                 <td>{{b.pointsGained}}</td>
                                 <td>{{b.pointsSpent}}</td>
                                 <td>{{b.status}}</td>
@@ -530,9 +530,9 @@
                             <tbody>
                             <tr ng-repeat="bill in profileVm.user.bills | filter: {status: billFilter}">
                                 <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{bill.amount}} €</td>
+                                <td>{{bill.amount | number : 2}} €</td>
                                 <td>{{bill.discount}}%</td>
-                                <td>{{bill.discountAmount}} €</td>
+                                <td>{{bill.discountAmount | number : 2}} €</td>
                                 <td>{{bill.pointsGained}}</td>
                                 <td>{{bill.pointsSpent}}</td>
                                 <td>{{bill.status}}</td>

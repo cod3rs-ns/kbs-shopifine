@@ -59,7 +59,7 @@
                                 <td class="col-xs-4">
                                     {{item.name}} <br/>
                                 </td>
-                                <td>{{item.price}} €</td>
+                                <td>{{item.price | number : 2}} €</td>
                                 <td>{{item.quantity}}</td>
                                 <td>
                                     <ul class="single-bill-discounts" ng-repeat="d in item.discounts">
@@ -68,7 +68,7 @@
                                         </li>
                                     </ul>
                                 </td>
-                                <td>{{item.amount}} €</td>
+                                <td>{{item.amount | number : 2}} €</td>
                             </tr>
                             </tbody>
                         </table>
@@ -84,10 +84,10 @@
                         </div>
                         <div class="col-sm-4 col-sm-offset-8 col-xs-12">
                             <ul class="list-unstyled">
-                                <li>Total without Discounts: <span>{{billVm.bill.amountWithoutDiscounts}} €</span></li>
+                                <li>Total without Discounts: <span>{{billVm.bill.amountWithoutDiscounts | number : 2}} €</span></li>
                                 <li>Discount: <span>{{billVm.bill.discount}}%</span></li>
                                 <li>Discount Amount: <span>{{billVm.bill.discountAmount}} €</span></li>
-                                <li>Total: <span>{{billVm.bill.amount}} €</span></li>
+                                <li>Total: <span>{{billVm.bill.amount | number : 2}} €</span></li>
                             </ul>
                         </div>
                     </div>

@@ -25,7 +25,7 @@
                                             <div class="media-body" style="max-width: 190px !important;">
                                                 <h5 class="media-heading">
                                                     {{item.product.name}}<br>
-                                                    <span>{{item.quantity + ' X ' + item.product.price}} €</span>
+                                                    <span>{{item.quantity}} X {{item.product.price | number : 2}} €</span>
                                                 </h5>
                                             </div>
                                         </div>
