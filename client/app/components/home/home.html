@@ -70,12 +70,16 @@
                                         <li class="text-center">
                                             <div class="form-group">
                                                 <label for="quantity">Quantity:</label>
-                                                <input id="quantity" type="number" min="1" ng-model="product.quantity" ng-disabled="homeVm.isInCart(product.id)"/>
+                                                <input id="quantity" type="number" min="1" ng-model="product.quantity"
+                                                       ng-disabled="homeVm.isInCart(product.id)"/>
                                             </div>
-                                            <button class="btn btn-default" ng-click="homeVm.addToCart(product);" ng-hide="homeVm.isInCart(product.id)">
+                                            <button class="btn btn-default" ng-click="homeVm.addToCart(product);"
+                                                    ng-hide="homeVm.isInCart(product.id)">
                                                 <i class="fa fa-shopping-cart"></i>
                                             </button>
-                                            <button class="btn btn-default" ng-click="homeVm.removeFromCart(product.id);" ng-show="homeVm.isInCart(product.id)">
+                                            <button class="btn btn-default"
+                                                    ng-click="homeVm.removeFromCart(product.id);"
+                                                    ng-show="homeVm.isInCart(product.id)">
                                                 <i class="fa fa-times"></i>
                                             </button>
                                         </li>

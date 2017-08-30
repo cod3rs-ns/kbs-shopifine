@@ -352,14 +352,14 @@
 
             if (_.parseInt(profileVm.productCategory.new.superCategory) !== 0) {
                 request.data['relationships'] =
-                {
-                    'superCategory': {
-                        'data': {
-                            'type': 'product-categories',
+                    {
+                        'superCategory': {
+                            'data': {
+                                'type': 'product-categories',
                                 'id': _.parseInt(profileVm.productCategory.new.superCategory)
+                            }
                         }
                     }
-                }
             }
 
             productCategories.create(request)

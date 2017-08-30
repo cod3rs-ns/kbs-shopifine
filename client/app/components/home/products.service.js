@@ -38,7 +38,7 @@
         }
 
         function orderProduct(productId, quantity) {
-            return $http.put(CONFIG.SERVICE_URL + '/products/' + productId + '?quantity='+ quantity)
+            return $http.put(CONFIG.SERVICE_URL + '/products/' + productId + '?quantity=' + quantity)
                 .then(function success(response) {
                     return response.data;
                 })

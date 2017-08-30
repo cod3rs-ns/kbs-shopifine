@@ -100,18 +100,18 @@ angular
                 }
             });
 
-            $httpProvider.interceptors.push(['$localStorage', '_', function ($localStorage, _) {
-                return {
-                    // Set Header to Request if user is logged
-                    'request': function (config) {
-                        var user = $localStorage.user;
+        $httpProvider.interceptors.push(['$localStorage', '_', function ($localStorage, _) {
+            return {
+                // Set Header to Request if user is logged
+                'request': function (config) {
+                    var user = $localStorage.user;
 
-                        if (!_.isUndefined(user)) {
-                            config.headers['Authorization'] = 'Bearer ' + user.token;
-                        }
-
-                        return config;
+                    if (!_.isUndefined(user)) {
+                        config.headers['Authorization'] = 'Bearer ' + user.token;
                     }
-                };
-            }]);
+
+                    return config;
+                }
+            };
+        }]);
     });

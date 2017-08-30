@@ -70,12 +70,12 @@
                                 p.category = response.data.attributes.name;
                             })
                             .catch(function (data) {
-                               $log.error(data);
+                                $log.error(data);
                             });
 
                         discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
                             .then(function (response) {
-                                p.discounts = _.forEach(response.data, function(discount) {
+                                p.discounts = _.forEach(response.data, function (discount) {
                                     p.discount += discount.attributes.discount;
                                     return {
                                         'name': discount.attributes.name,
@@ -106,7 +106,7 @@
         function retrieveCategories(url) {
             productCategories.retrieveFrom(url)
                 .then(function (response) {
-                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function(category) {
+                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function (category) {
                         return {
                             'id': category.id,
                             'name': category.attributes.name,
@@ -121,7 +121,7 @@
                     }
                 })
                 .catch(function (data) {
-                   $log.error(data);
+                    $log.error(data);
                 });
         }
 
@@ -155,7 +155,7 @@
 
         function applyFilters() {
             var filters = '';
-            _.forEach(homeVm.filters, function(value, name) {
+            _.forEach(homeVm.filters, function (value, name) {
                 if (!_.isUndefined(value) && !_.isEmpty(value)) {
                     filters += '&filter[' + name + ']=' + value;
                 }
@@ -165,7 +165,7 @@
         }
 
         function resetFilters() {
-            _.forEach(homeVm.filters, function(value, name) {
+            _.forEach(homeVm.filters, function (value, name) {
                 if (name !== 'active') {
                     homeVm.filters[name] = undefined;
                 }

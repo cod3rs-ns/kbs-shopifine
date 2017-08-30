@@ -43,10 +43,10 @@
                     discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + response.data.relationships.discounts.links.related)
                         .then(function (response) {
                             _.forEach(response.data, function (discount) {
-                               billVm.bill.discounts.push({
-                                   'type': discount.attributes.type,
-                                   'discount': discount.attributes.discount
-                               });
+                                billVm.bill.discounts.push({
+                                    'type': discount.attributes.type,
+                                    'discount': discount.attributes.discount
+                                });
                             });
                         })
                         .catch(function (data) {
@@ -101,7 +101,6 @@
                     $log.error(data);
                 });
         }
-
     }
 
 })();

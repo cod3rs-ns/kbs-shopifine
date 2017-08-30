@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     angular
@@ -17,7 +17,7 @@
 
         function auth() {
             users.auth(loginVm.credentials)
-                .then(function(response) {
+                .then(function (response) {
                     var token = response.data.token;
 
                     $http.defaults.headers.common.Authorization = 'Bearer ' + token;
@@ -31,7 +31,7 @@
 
                     $location.path('/home');
                 })
-                .catch(function(data) {
+                .catch(function (data) {
                     loginVm.wrongAuth = true;
                     loginVm.message = _.first(data.errors).detail;
                 })

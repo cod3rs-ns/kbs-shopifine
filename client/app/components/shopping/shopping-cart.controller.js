@@ -17,7 +17,6 @@
 
         function orderItems() {
             var userId = $localStorage.user.id;
-            $log.info(cartVm.points);
 
             var bill = {
                 'data': {
