@@ -209,7 +209,7 @@ class Bills @Inject()(bills: BillService,
           val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 
           Ok(Json.toJson(
-            BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self = self, next = next))
+            BillItemCollectionResponse.fromDomain(result, userId, CollectionLinks(self = self, next = next))
           ))
         })
 
