@@ -18,16 +18,15 @@
                                 <tbody>
                                 <tr ng-repeat="item in cartVm.$storage.items">
                                     <td class="col-xs-2">
-                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span></button>
                                         <span class="cartImage">
-                                            <img style="max-width: 64px;" ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
+                                            <img style="max-width: 64px;" ng-src="{{item.product.preview}}"
+                                                 alt="{{item.product.name}}">
                                         </span>
                                     </td>
                                     <td class="col-xs-4">{{item.product.name}}</td>
-                                    <td class="col-xs-2">{{item.product.price}} €</td>
+                                    <td class="col-xs-2">{{item.product.price | number : 2}} €</td>
                                     <td class="col-xs-2">{{item.quantity}}</td>
-                                    <td class="col-xs-2">{{item.quantity * item.product.price}} €</td>
+                                    <td class="col-xs-2">{{item.quantity * item.product.price | number : 2}} €</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -35,8 +34,12 @@
                         <div class="updateArea">
                             <div class="input-group">
                                 <span ng-init="applied = false;"></span>
-                                <input type="number" min="0" ng-model="cartVm.points" ng-readonly="applied" class="form-control" placeholder="I have award points..." aria-describedby="basic-addon2">
-                                <button class="btn input-group-addon" id="basic-addon2" ng-click="applied = true;">Apply points</button>
+                                <input type="number" min="0" ng-model="cartVm.points" ng-readonly="applied"
+                                       class="form-control" placeholder="I have award points..."
+                                       aria-describedby="basic-addon2">
+                                <button class="btn input-group-addon" id="basic-addon2" ng-click="applied = true;">Apply
+                                    points
+                                </button>
                             </div>
                         </div>
                         <div class="checkBtnArea">

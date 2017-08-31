@@ -41,7 +41,7 @@
         }
 
         function shoppingCartSum() {
-            return _.sumBy(navbarVm.$storage.items, function(item) {
+            return _.sumBy(navbarVm.$storage.items, function (item) {
                 return item.quantity * item.product.price;
             });
         }

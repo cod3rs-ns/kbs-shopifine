@@ -48,7 +48,7 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository,
     }
   }
 
-  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(SalesManager, Customer)).async { implicit request =>
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     buyerCategories.retrieveAll(offset, limit).map(categories => {
       val self = routes.BuyerCategories.retrieveAll(offset, limit).absoluteURL()
       val next = if (limit == categories.length) Some(routes.BuyerCategories.retrieveAll(offset + limit, limit).absoluteURL()) else None

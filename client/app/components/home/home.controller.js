@@ -20,8 +20,8 @@
         homeVm.filters = {
             'name': undefined,
             'category': undefined,
-            'price-range-from': undefined,
-            'price-range-to': undefined,
+            'price-range-from': 0,
+            'price-range-to': 10000,
             'active': 'ACTIVE'
         };
 
@@ -38,6 +38,7 @@
         homeVm.resetFilters = resetFilters;
         homeVm.searchByCategory = searchByCategory;
 
+        homeVm.isCustomer = isCustomer;
         homeVm.addToCart = addToCart;
         homeVm.isInCart = isInCart;
         homeVm.removeFromCart = removeFromCart;
@@ -69,12 +70,12 @@
                                 p.category = response.data.attributes.name;
                             })
                             .catch(function (data) {
-                               $log.error(data);
+                                $log.error(data);
                             });
 
                         discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
                             .then(function (response) {
-                                p.discounts = _.forEach(response.data, function(discount) {
+                                p.discounts = _.forEach(response.data, function (discount) {
                                     p.discount += discount.attributes.discount;
                                     return {
                                         'name': discount.attributes.name,
@@ -105,14 +106,18 @@
         function retrieveCategories(url) {
             productCategories.retrieveFrom(url)
                 .then(function (response) {
-                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function(category) {
-                        return {
-                            'id': category.id,
-                            'name': category.attributes.name,
-                            'subcategoriesUrl': category.relationships.subcategories.links.related,
-                            'subcategories': []
+                    homeVm.data.categories = _.concat(homeVm.data.categories, _.reduce(response.data, function (init, category) {
+                        if (_.isUndefined(category.relationships.superCategory)) {
+                            init.push({
+                                'id': category.id,
+                                'name': category.attributes.name,
+                                'subcategoriesUrl': category.relationships.subcategories.links.related,
+                                'subcategories': []
+                            });
                         }
-                    }));
+
+                        return init;
+                    }, []));
 
                     var next = response.links.next;
                     if (!_.isEmpty(next)) {
@@ -120,32 +125,29 @@
                     }
                 })
                 .catch(function (data) {
-                   $log.error(data);
+                    $log.error(data);
                 });
+
+            _.forEach(homeVm.data.categories, function (category) {
+                homeVm.retrieveSubcategoriesFor(category);
+            });
         }
 
         function retrieveSubcategoriesFor(category) {
             productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
-                    if (_.isEmpty(category.subcategories)) {
-                        category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {
-                            return {
-                                'id': subcategory.id,
-                                'name': subcategory.attributes.name,
-                                'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
-                                'subcategories': []
-                            }
-                        }));
-                    }
+                    category.subcategories = _.map(response.data, function (subcategory) {
+                        return {
+                            'id': subcategory.id,
+                            'name': subcategory.attributes.name,
+                            'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
+                            'subcategories': []
+                        }
+                    });
 
-                    homeVm.filters['category'] = category.id.toString();
-                    applyFilters();
-
-                    // FIXME
-                    // var next = response.links.next;
-                    // if (!_.isEmpty(next)) {
-                    //     homeVm.retrieveCategories(next);
-                    // }
+                    _.forEach(category.subcategories, function (c) {
+                        retrieveSubcategoriesFor(c);
+                    })
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -154,9 +156,9 @@
 
         function applyFilters() {
             var filters = '';
-            _.forEach(homeVm.filters, function(value, name) {
-                if (!_.isUndefined(value) && !_.isEmpty(value)) {
-                    filters += '&filter[' + name + ']=' + value;
+            _.forEach(homeVm.filters, function (value, name) {
+                if (!_.isUndefined(value) && !_.isEmpty(_.toString(value))) {
+                    filters += '&filter[' + name + ']=' + _.toString(value);
                 }
             });
 
@@ -164,7 +166,7 @@
         }
 
         function resetFilters() {
-            _.forEach(homeVm.filters, function(value, name) {
+            _.forEach(homeVm.filters, function (value, name) {
                 if (name !== 'active') {
                     homeVm.filters[name] = undefined;
                 }
@@ -201,6 +203,10 @@
 
         function setDialogDiscounts(product) {
             homeVm.productDiscounts = product.discounts;
+        }
+
+        function isCustomer() {
+            return !_.isUndefined($localStorage.user) && "CUSTOMER" === $localStorage.user.role;
         }
     }
 })();

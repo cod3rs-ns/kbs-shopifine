@@ -7,25 +7,29 @@
                 <div class="col-md-6 col-sm-5 hidden-xs">
                     <ul class="list-inline padding-top-10">
                         <li><a href="https://github.com/dmarjanovic94"><i class="fa fa-github"></i></a></li>
-                        <li><a href="https://www.linkedin.com/in/dragutin-marjanovi%C4%87-157631a5/"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/dragutin-marjanovi%C4%87-157631a5/"><i
+                                class="fa fa-linkedin"></i></a></li>
                         <li><a href="https://www.facebook.com/dmarjanovic94"><i class="fa fa-facebook"></i></a></li>
                     </ul>
                 </div>
                 <div class="col-md-6 col-sm-7 col-xs-12">
                     <ul class="list-inline pull-right top-right">
-                        <li class="account-login" ng-if="navbarVm.isGuest();"><span><a ui-sref="login">Log in</a><small>or</small><a ui-sref="register">Create an account</a></span></li>
+                        <li class="account-login" ng-if="navbarVm.isGuest();"><span><a ui-sref="login">Log in</a><small>or</small><a
+                                ui-sref="register">Create an account</a></span></li>
                         <li class="dropdown cart-dropdown" ng-if="navbarVm.isCustomer();">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>{{navbarVm.total()}} €</a>
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i
+                                    class="fa fa-shopping-cart"></i>{{navbarVm.total()}} €</a>
                             <ul class="dropdown-menu dropdown-menu-right">
                                 <li>Item(s) in your cart</li>
                                 <li ng-repeat="item in navbarVm.$storage.items">
                                     <a>
                                         <div class="media">
-                                            <img class="media-left media-object" style="max-width: 64px;" ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
-                                            <div class="media-body">
+                                            <img class="media-left media-object" style="max-width: 64px;"
+                                                 ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
+                                            <div class="media-body" style="max-width: 190px !important;">
                                                 <h5 class="media-heading">
                                                     {{item.product.name}}<br>
-                                                    <span>{{item.quantity + ' X ' + item.product.price}} €</span>
+                                                    <span>{{item.quantity}} X {{item.product.price | number : 2}} €</span>
                                                 </h5>
                                             </div>
                                         </div>
@@ -33,13 +37,16 @@
                                 </li>
                                 <li>
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-default" ui-sref="shopping-cart">Shopping Cart</button>
+                                        <button type="button" class="btn btn-default" ui-sref="shopping-cart">Shopping
+                                            Cart
+                                        </button>
                                         <button type="button" class="btn btn-default">Checkout</button>
                                     </div>
                                 </li>
                             </ul>
                         </li>
-                        <li class="account-login" ng-if="!navbarVm.isGuest();"><span><a ng-click="navbarVm.logout();">Logout</a></span></li>
+                        <li class="account-login" ng-if="!navbarVm.isGuest();"><span><a ng-click="navbarVm.logout();">Logout</a></span>
+                        </li>
                     </ul>
                 </div>
             </div>

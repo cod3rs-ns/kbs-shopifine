@@ -1,17 +1,18 @@
-(function() {
+(function () {
     'use strict';
 
     angular
         .module('shopifine-app')
         .controller('RegisterController', RegisterController);
 
-    RegisterController.$inject = ['ngToast', '_', 'users'];
+    RegisterController.$inject = ['ngToast', '_', 'users', 'buyerCategories'];
 
-    function RegisterController(ngToast, _, users) {
+    function RegisterController(ngToast, _, users, buyerCategories) {
         var registerVm = this;
 
         registerVm.error = false;
         registerVm.passwordRepeat = "";
+        registerVm.buyerCategories = [];
         registerVm.user = {
             "data": {
                 "type": "users",
@@ -30,13 +31,37 @@
             "buyerCategory": {
                 "data": {
                     "type": "buyer-categories",
-                    "id": null
+                    "id": undefined
                 }
             }
         };
 
+        registerVm.getBuyerCategories = getBuyerCategories;
         registerVm.register = register;
         registerVm.isCustomer = isCustomer;
+
+        init();
+
+        function init() {
+            getBuyerCategories();
+        }
+
+        function getBuyerCategories() {
+            buyerCategories.getCategories()
+                .then(function (response) {
+                    _.forEach(response.data, function (category) {
+                        registerVm.buyerCategories.push({
+                            'id': category.id,
+                            'name': category.attributes.name
+                        });
+                    });
+
+                    registerVm.relationships.buyerCategory.data.id = _.head(registerVm.buyerCategories).id;
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
 
         function register() {
             if (registerVm.passwordRepeat !== registerVm.user.data.attributes.password) {
@@ -45,7 +70,6 @@
                 return;
             }
 
-            // FIXME Better implementation
             if (!isCustomer()) {
                 registerVm.user.data.relationships = null;
                 registerVm.user.data.attributes.address = null;
@@ -61,7 +85,7 @@
                 })
                 .catch(function (data) {
                     registerVm.error = true;
-                    registerVm.message = _.first(data.errors).detail;
+                    registerVm.message = _.head(data.errors).detail;
                 });
         }
 

@@ -62,9 +62,9 @@
                             <tbody>
                             <tr ng-repeat="b in profileVm.user.bills">
                                 <td>{{b.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{b.amount}} €</td>
-                                <td>{{b.discount}}</td>
-                                <td>{{b.discountAmount}} €</td>
+                                <td>{{b.amount | number : 2}} €</td>
+                                <td>{{b.discount}}%</td>
+                                <td>{{b.discountAmount | number : 2}} €</td>
                                 <td>{{b.pointsGained}}</td>
                                 <td>{{b.pointsSpent}}</td>
                                 <td>{{b.status}}</td>
@@ -88,15 +88,18 @@
                                 <span ng-hide="category.edit">
                                     <h3 class="panel-title">
                                         {{category.name}}
-                                        <button class="btn btn-xs btn-primary pull-right" ng-click="category.edit = true;"
+                                        <button class="btn btn-xs btn-primary pull-right"
+                                                ng-click="category.edit = true;"
                                                 ng-hide="category.edit" style="margin-top: -8px;">
                                             Edit
                                         </button>
                                     </h3>
                                 </span>
                                 <span ng-show="category.edit">
-                                    <input ng-model="category.edited.name" style="color: black !important; margin-top: -6px;"/>
-                                    <button class="btn btn-xs btn-danger-filled pull-right" style="margin-left: 8px; margin-top: -8px;"
+                                    <input ng-model="category.edited.name"
+                                           style="color: black !important; margin-top: -6px;"/>
+                                    <button class="btn btn-xs btn-danger-filled pull-right"
+                                            style="margin-left: 8px; margin-top: -8px;"
                                             ng-click="category.edit = false;"
                                             ng-show="category.edit">
                                         Cancel
@@ -213,12 +216,13 @@
                                            ng-show="category.edit"/>
                                 </td>
                                 <td>
-                                    <input type="checkbox" ng-model="category.isConsumerGoods"
+                                    <input type="checkbox" ng-model="category.edited.isConsumerGoods"
                                            ng-disabled="!category.edit"/>
                                 </td>
                                 <td>
                                     <span ng-hide="category.edit">{{category.superCategory.name}}</span>
-                                    <select class="form-control" ng-show="category.edit" ng-model="category.edited.superCategory">
+                                    <select class="form-control" ng-show="category.edit"
+                                            ng-model="category.edited.superCategory">
                                         <option value="0">No super category</option>
                                         <option ng-repeat="category in profileVm.user.productCategories"
                                                 ng-value="category.id">
@@ -273,6 +277,7 @@
                                         <div class="form-group text-center">
                                             <label for="product-category-consumer-goods">Is category consumer
                                                 goods:</label>
+                                            <span ng-init="profileVm.productCategory.new.isConsumerGoods = false;"></span>
                                             <input id="product-category-consumer-goods" type="checkbox" class="checkbox"
                                                    style="margin-left: 50%; margin-top: 20px;"
                                                    ng-model="profileVm.productCategory.new.isConsumerGoods"/>
@@ -388,15 +393,16 @@
                                             <label for="action-discount-from">Choose Product Category to add:</label>
                                             <div class="input-group">
                                                 <select id="action-discount-product-category" class="form-control"
-                                                        ng-model="actionDiscountProductCategory">
+                                                        ng-model="profileVm.actionDiscount.new.actionDiscountProductCategory">
                                                     <option ng-repeat="category in profileVm.user.productCategories"
                                                             ng-value="category">
                                                         {{category.name}}
                                                     </option>
                                                 </select>
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-md btn-primary-filled btn-newsletter inside" style="margin-top: -30px !important;"
-                                                            ng-click="profileVm.actionDiscount.new.categories.push(actionDiscountProductCategory);">
+                                                    <button class="btn btn-md btn-primary-filled btn-newsletter inside"
+                                                            style="margin-top: -30px !important;"
+                                                            ng-click="profileVm.actionDiscount.new.categories.push(profileVm.actionDiscount.new.actionDiscountProductCategory);">
                                                         Add
                                                     </button>
                                                 </span>
@@ -419,7 +425,8 @@
                                         <div class="form-group">
                                             <label>Product Categories:</label>
                                             <ul ng-hide="profileVm.actionDiscount.new.categories.length == 0">
-                                                <li ng-repeat="category in profileVm.actionDiscount.new.categories" style="display: inline;">
+                                                <li ng-repeat="category in profileVm.actionDiscount.new.categories"
+                                                    style="display: inline;">
                                                     {{category.name}}<span ng-if="!$last">,</span>
                                                 </li>
                                             </ul>
@@ -530,9 +537,9 @@
                             <tbody>
                             <tr ng-repeat="bill in profileVm.user.bills | filter: {status: billFilter}">
                                 <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{bill.amount}} €</td>
+                                <td>{{bill.amount | number : 2}} €</td>
                                 <td>{{bill.discount}}%</td>
-                                <td>{{bill.discountAmount}} €</td>
+                                <td>{{bill.discountAmount | number : 2}} €</td>
                                 <td>{{bill.pointsGained}}</td>
                                 <td>{{bill.pointsSpent}}</td>
                                 <td>{{bill.status}}</td>

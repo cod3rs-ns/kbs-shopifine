@@ -28,6 +28,7 @@
     "angular-jwt": "^0.1.9",
     "ngstorage": "^0.3.11",
     "ngToast": "ngtoast#^2.0.0",
-    "angular-animate": "^1.6.5"
+    "angular-animate": "^1.6.5",
+    "angularjs-slider": "^6.4.0"
   }
 }

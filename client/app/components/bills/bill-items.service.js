@@ -34,6 +34,5 @@
                     throw response.data;
                 });
         }
-
     }
 })();
