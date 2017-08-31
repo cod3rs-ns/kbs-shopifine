@@ -159,6 +159,8 @@
                 }
             };
 
+            if (!isBuyerCategoryValid(profileVm.buyerCategories.new)) return;
+
             buyerCategories.createCategory(request)
                 .then(function (response) {
                     ngToast.success({
@@ -192,6 +194,8 @@
                 }
             };
 
+            if (!isBuyerCategoryValid(category.edited)) return;
+
             buyerCategories.modify(category.id, request)
                 .then(function (response) {
                     ngToast.success({
@@ -215,13 +219,8 @@
         }
 
         function addThresholdFor(category) {
-            var award = parseFloat(category.threshold.new.award);
-            if (_.isNaN(award)) {
-                ngToast.danger({
-                    content: 'Threshold award must be between 0 and 99.'
-                });
-                return;
-            }
+
+            if (!isThresholdValid(category.threshold.new)) return;
 
             var request = {
                 'data': {
@@ -229,7 +228,7 @@
                     'attributes': {
                         'from': parseFloat(category.threshold.new.from),
                         'to': parseFloat(category.threshold.new.to),
-                        'award': award
+                        'award': parseFloat(category.threshold.new.award)
                     },
                     'relationships': {
                         'category': {
@@ -339,6 +338,9 @@
         }
 
         function addProductCategory() {
+
+            if (!isProductCategoryValid(profileVm.productCategory.new)) return;
+
             var request = {
                 'data': {
                     'type': "product-categories",
@@ -408,6 +410,9 @@
         }
 
         function modifyProductCategory(category) {
+
+            if (!isProductCategoryValid(category.edited)) return;
+
             var request = {
                 'data': {
                     'type': "product-categories",
@@ -498,6 +503,9 @@
         }
 
         function addActionDiscount() {
+
+            if (!isActionDiscountValid(profileVm.actionDiscount.new)) return;
+
             var request = {
                 'data': {
                     'type': "action-discounts",
@@ -557,6 +565,9 @@
         }
 
         function modifyActionDiscount(actionDiscount) {
+
+            if (!isActionDiscountValid(actionDiscount.edited)) return;
+
             var request = {
                 'data': {
                     'type': 'action-discounts',
@@ -713,6 +724,130 @@
                         content: 'Error in Bill processing!'
                     });
                 });
+        }
+
+        // Validation
+        function isBuyerCategoryValid(category) {
+            if (_.isUndefined(category.name)) {
+                ngToast.danger({
+                    content: 'You must provide buyer category name!'
+                });
+                return false;
+            }
+
+            if (_.isEmpty(category.name)) {
+                ngToast.danger({
+                    content: 'Buyer category name must not be empty!'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        function isThresholdValid(threshold) {
+            if (_.isNaN(parseFloat(threshold.award))) {
+                ngToast.danger({
+                    content: 'Threshold award must be between 0 and 99.'
+                });
+                return false;
+            }
+
+            if (_.isNaN(parseFloat(threshold.from))) {
+                ngToast.danger({
+                    content: 'Minimum Bill amount must be specified'
+                });
+                return false;
+            }
+
+            if (_.isNaN(parseFloat(threshold.to))) {
+                ngToast.danger({
+                    content: 'Maximum Bill amount must be specified'
+                });
+                return false;
+            }
+
+            if (parseFloat(threshold.from) >= parseFloat(threshold.to)) {
+                ngToast.danger({
+                    content: 'Maximum Bill amount must be larger than minimum Bill amount!'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        function isProductCategoryValid(category) {
+            if (_.isUndefined(category.name)) {
+                ngToast.danger({
+                    content: 'You must provide buyer category name!'
+                });
+                return false;
+            }
+
+            if (_.isEmpty(category.name)) {
+                ngToast.danger({
+                    content: 'Buyer category name must not be empty!'
+                });
+                return false;
+            }
+
+            if (_.isNaN(parseFloat(category.maxDiscount))) {
+                ngToast.danger({
+                    content: 'Maximum discount must be between 0 and 99.'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        function isActionDiscountValid(discount) {
+            if (_.isUndefined(discount.name)) {
+                ngToast.danger({
+                    content: 'You must provide action discount name!'
+                });
+                return false;
+            }
+
+            if (_.isEmpty(discount.name)) {
+                ngToast.danger({
+                    content: 'Action discount name must not be empty!'
+                });
+                return false;
+            }
+
+            $log.info(new Date(discount.from));
+
+            if (_.isNull(discount.from) || _.isUndefined(discount.from)) {
+                ngToast.danger({
+                    content: 'Begin date of action discount must be specified!'
+                });
+                return false;
+            }
+
+            if (_.isNull(discount.to) || _.isUndefined(discount.from)) {
+                ngToast.danger({
+                    content: 'End date of action discount must be specified!'
+                });
+                return false;
+            }
+
+            if (new Date(discount.from).getTime() >= new Date(discount.to).getTime()) {
+                ngToast.danger({
+                    content: 'End date must be after begin date!'
+                });
+                return false;
+            }
+
+            if (_.isNaN(parseFloat(discount.discount))) {
+                ngToast.danger({
+                    content: 'Discount must be between 0 and 99.'
+                });
+                return false;
+            }
+
+            return true;
         }
     }
 })();

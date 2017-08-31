@@ -144,11 +144,12 @@
                                                        ng-model="category.threshold.new.to"/>
                                             </td>
                                             <td>
-                                                <input id="threshold-award" type="number" min="1" max="100"
+                                                <input id="threshold-award" type="number" min="1" max="99"
                                                        ng-model="category.threshold.new.award"/>
                                             </td>
                                             <td>
                                                 <button class="btn btn-xs btn-success-filled"
+                                                        ng-disabled="category.threshold === undefined"
                                                         ng-click="profileVm.addThresholdFor(category);">Add New
                                                 </button>
                                             </td>
@@ -176,6 +177,7 @@
                                         <div class="col-sm-3">
                                             <div class="form-group">
                                                 <button class="btn btn-md btn-primary-filled btn-form-submit"
+                                                        ng-disabled="profileVm.buyerCategories === undefined"
                                                         ng-click="profileVm.addBuyerCategory();">Add New Buyer Category
                                                 </button>
                                             </div>
@@ -440,6 +442,7 @@
                                     <div class="col-sm-offset-8 col-sm-3">
                                         <div class="form-group">
                                             <button class="btn btn-md btn-primary-filled btn-form-submit"
+                                                    ng-disabled="profileVm.actionDiscount === undefined"
                                                     ng-click="profileVm.addActionDiscount();">
                                                 Add New Action Discount
                                             </button>
