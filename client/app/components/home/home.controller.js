@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', '_', 'productService', 'productCategories', 'discounts'];
+    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', 'ngToast', '_', 'productService', 'productCategories', 'discounts'];
 
-    function HomeController($log, $localStorage, CONFIG, _, productService, productCategories, discounts) {
+    function HomeController($log, $localStorage, CONFIG, ngToast, _, productService, productCategories, discounts) {
         var homeVm = this;
 
         homeVm.data = {
@@ -181,6 +181,13 @@
         }
 
         function addToCart(product) {
+            if (_.isUndefined(product.quantity) || product.quantity === "") {
+                ngToast.danger({
+                    content: 'You must specify valid quantity!'
+                });
+                return;
+            }
+
             $localStorage.items.push({
                 'quantity': product.quantity,
                 'product': product

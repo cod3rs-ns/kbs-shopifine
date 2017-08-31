@@ -52,7 +52,7 @@
                             <div class="form-group" ng-show="registerVm.isCustomer();">
                                 <label for="buyer-category">Buyer Category</label>
                                 <select id="buyer-category" class="form-control"
-                                        ng-model="registerVm.relationships.buyerCategory.data.id">
+                                        ng-model="registerVm.relationships.buyerCategory">
                                     <option ng-repeat="category in registerVm.buyerCategories"
                                             ng-value="category.id">
                                         {{category.name}}

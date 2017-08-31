@@ -27,10 +27,20 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
-      spec =>
-        users.save(spec.toDomain).map({ user =>
-          Created(Json.toJson(UserResponse.fromDomain(user)))
-        })
+      spec => {
+        val user = spec.toDomain
+        users.findByUsername(user.username).flatMap {
+          case Some(_) =>
+            Future.successful(Conflict(Json.toJson(
+              ErrorResponse(errors = Seq(Error(CONFLICT.toString, "Username already exists.")))
+            )))
+
+          case None =>
+            users.save(user).map({ registered =>
+              Created(Json.toJson(UserResponse.fromDomain(registered)))
+            })
+        }
+      }
     )
   }
 

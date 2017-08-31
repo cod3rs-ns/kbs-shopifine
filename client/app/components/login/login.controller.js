@@ -16,6 +16,12 @@
         loginVm.auth = auth;
 
         function auth() {
+            if (_.isEmpty(loginVm.credentials.username) || _.isEmpty(loginVm.credentials.password)) {
+                loginVm.wrongAuth = true;
+                loginVm.message = "You must specify Username and Password!";
+                return;
+            }
+
             users.auth(loginVm.credentials)
                 .then(function (response) {
                     var token = response.data.token;
