@@ -616,17 +616,38 @@
         }
 
         function orderProduct(product) {
+            if (_.isUndefined(product.orderQuantity)) {
+                ngToast.danger({
+                    content: 'You must enter positive value!'
+                });
+                return;
+            }
+
+            if (_.isNull(product.orderQuantity)) {
+                ngToast.danger({
+                    content: 'Please enter how much product you want to order.'
+                });
+                return;
+            }
+
             productService.orderProduct(product.id, _.parseInt(product.orderQuantity))
                 .then(function (response) {
                     ngToast.success({
                         content: 'Product quantity successfully updated.'
                     });
 
-                    _.forEach(profileVm.user.outOfStockProducts, function (p) {
-                        if (p.id === product.id) {
-                            p.quantity = response.data.attributes.quantity;
-                        }
-                    });
+                    if (response.data.attributes.quantity >= response.data.attributes.minQuantity) {
+                        _.remove(profileVm.user.outOfStockProducts, function (p) {
+                           return p.id === product.id;
+                        });
+                    }
+                    else {
+                        _.forEach(profileVm.user.outOfStockProducts, function (p) {
+                            if (p.id === product.id) {
+                                p.quantity = response.data.attributes.quantity;
+                            }
+                        });
+                    }
                 })
                 .catch(function (data) {
                     $log.error(data);

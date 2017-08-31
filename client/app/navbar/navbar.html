@@ -18,8 +18,8 @@
                                 ui-sref="register">Create an account</a></span></li>
                         <li class="dropdown cart-dropdown" ng-if="navbarVm.isCustomer();">
                             <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i
-                                    class="fa fa-shopping-cart"></i>{{navbarVm.total()}} €</a>
-                            <ul class="dropdown-menu dropdown-menu-right">
+                                    class="fa fa-shopping-cart"></i>{{navbarVm.total() | number : 2}} €</a>
+                            <ul class="dropdown-menu dropdown-menu-right" ng-show="navbarVm.$storage.items.length > 0">
                                 <li>Item(s) in your cart</li>
                                 <li ng-repeat="item in navbarVm.$storage.items">
                                     <a>
@@ -43,6 +43,9 @@
                                         <button type="button" class="btn btn-default">Checkout</button>
                                     </div>
                                 </li>
+                            </ul>
+                            <ul class="dropdown-menu dropdown-menu-right" ng-hide="navbarVm.$storage.items.length > 0">
+                                <li>You don't have any item in your Cart!</li>
                             </ul>
                         </li>
                         <li class="account-login" ng-if="!navbarVm.isGuest();"><span><a ng-click="navbarVm.logout();">Logout</a></span>

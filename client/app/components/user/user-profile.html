@@ -531,7 +531,6 @@
                                 <th>Status</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -543,11 +542,6 @@
                                 <td>{{bill.pointsGained}}</td>
                                 <td>{{bill.pointsSpent}}</td>
                                 <td>{{bill.status}}</td>
-                                <td>
-                                    <button class="btn btn-xs btn-default">
-                                        View
-                                    </button>
-                                </td>
                                 <td>
                                     <button ng-click="profileVm.confirmBill(bill.id);"
                                             ng-if="bill.status === 'ORDERED'"
