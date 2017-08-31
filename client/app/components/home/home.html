@@ -36,14 +36,12 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Filter by Price</div>
                     <div class="panel-body">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Minimum price"
-                                   ng-model="homeVm.filters['price-range-from']">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Maximum price"
-                                   ng-model="homeVm.filters['price-range-to']">
-                        </div>
+                        <rzslider
+                                class="shopifine-slider"
+                                rz-slider-model="homeVm.filters['price-range-from']"
+                                rz-slider-high="homeVm.filters['price-range-to']"
+                                rz-slider-options="{floor: 0, ceil: 10000}">
+                        </rzslider>
                     </div>
                 </div>
                 <button class="btn btn-default-filled col-xs-12" ng-click="homeVm.applyFilters();">Apply filters

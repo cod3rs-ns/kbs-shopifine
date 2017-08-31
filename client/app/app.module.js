@@ -3,5 +3,6 @@ angular
         'ui.router',
         'ngStorage',
         'ngToast',
-        'angular-jwt'
+        'angular-jwt',
+        'rzModule'
     ]);

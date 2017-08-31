@@ -20,8 +20,8 @@
         homeVm.filters = {
             'name': undefined,
             'category': undefined,
-            'price-range-from': undefined,
-            'price-range-to': undefined,
+            'price-range-from': 0,
+            'price-range-to': 10000,
             'active': 'ACTIVE'
         };
 
@@ -151,10 +151,12 @@
         function applyFilters() {
             var filters = '';
             _.forEach(homeVm.filters, function (value, name) {
-                if (!_.isUndefined(value) && !_.isEmpty(value)) {
-                    filters += '&filter[' + name + ']=' + value;
+                if (!_.isUndefined(value) && !_.isEmpty(_.toString(value))) {
+                    filters += '&filter[' + name + ']=' + _.toString(value);
                 }
             });
+
+            $log.info(filters);
 
             retrieveProducts(CONFIG.SERVICE_URL + '/products?page[limit]=6' + filters)
         }
