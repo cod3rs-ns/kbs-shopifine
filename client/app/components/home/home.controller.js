@@ -127,21 +127,27 @@
                 .catch(function (data) {
                     $log.error(data);
                 });
+
+            _.forEach(homeVm.data.categories, function (category) {
+                homeVm.retrieveSubcategoriesFor(category);
+            });
         }
 
         function retrieveSubcategoriesFor(category) {
             productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
-                    if (_.isEmpty(category.subcategories)) {
-                        category.subcategories = _.map(response.data, function (subcategory) {
-                            return {
-                                'id': subcategory.id,
-                                'name': subcategory.attributes.name,
-                                'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
-                                'subcategories': []
-                            }
-                        });
-                    }
+                    category.subcategories = _.map(response.data, function (subcategory) {
+                        return {
+                            'id': subcategory.id,
+                            'name': subcategory.attributes.name,
+                            'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
+                            'subcategories': []
+                        }
+                    });
+
+                    _.forEach(category.subcategories, function (c) {
+                        retrieveSubcategoriesFor(c);
+                    })
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -155,8 +161,6 @@
                     filters += '&filter[' + name + ']=' + _.toString(value);
                 }
             });
-
-            $log.info(filters);
 
             retrieveProducts(CONFIG.SERVICE_URL + '/products?page[limit]=6' + filters)
         }

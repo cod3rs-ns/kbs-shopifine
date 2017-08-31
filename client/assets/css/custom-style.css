@@ -81,3 +81,7 @@
 .shopifine-slider.rzslider .rz-tick.rz-selected {
     background: orange;
 }
+
+li.subcategory {
+    margin-left: 12px;
+}
