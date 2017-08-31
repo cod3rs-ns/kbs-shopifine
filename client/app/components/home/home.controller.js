@@ -106,14 +106,18 @@
         function retrieveCategories(url) {
             productCategories.retrieveFrom(url)
                 .then(function (response) {
-                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function (category) {
-                        return {
-                            'id': category.id,
-                            'name': category.attributes.name,
-                            'subcategoriesUrl': category.relationships.subcategories.links.related,
-                            'subcategories': []
+                    homeVm.data.categories = _.concat(homeVm.data.categories, _.reduce(response.data, function (init, category) {
+                        if (_.isUndefined(category.relationships.superCategory)) {
+                            init.push({
+                                'id': category.id,
+                                'name': category.attributes.name,
+                                'subcategoriesUrl': category.relationships.subcategories.links.related,
+                                'subcategories': []
+                            });
                         }
-                    }));
+
+                        return init;
+                    }, []));
 
                     var next = response.links.next;
                     if (!_.isEmpty(next)) {
@@ -129,24 +133,15 @@
             productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
                     if (_.isEmpty(category.subcategories)) {
-                        category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {
+                        category.subcategories = _.map(response.data, function (subcategory) {
                             return {
                                 'id': subcategory.id,
                                 'name': subcategory.attributes.name,
                                 'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
                                 'subcategories': []
                             }
-                        }));
+                        });
                     }
-
-                    homeVm.filters['category'] = category.id.toString();
-                    applyFilters();
-
-                    // FIXME
-                    // var next = response.links.next;
-                    // if (!_.isEmpty(next)) {
-                    //     homeVm.retrieveCategories(next);
-                    // }
                 })
                 .catch(function (data) {
                     $log.error(data);

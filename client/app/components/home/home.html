@@ -22,7 +22,7 @@
                                         <i class="fa fa-plus"></i></a>
                                     <ul id="{{'category-' + category.id}}" class="collapse collapseItem">
                                         <li ng-repeat="subcategory in category.subcategories">
-                                            <a href ng-click="homeVm.searchByCategory(subcategory.id);">
+                                            <a href ng-click="homeVm.searchByCategory(subcategory.id.toString());">
                                                 <i class="fa fa-caret-right" aria-hidden="true"></i>
                                                 {{subcategory.name}}
                                             </a>
