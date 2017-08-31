@@ -200,6 +200,10 @@ POST    /api/products           controllers.Products.add()
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    409:
+#      description: Username already exists.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    500:
 #      description: Internal server error occured.
 #      schema:
