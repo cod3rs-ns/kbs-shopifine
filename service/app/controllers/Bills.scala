@@ -208,7 +208,7 @@ class Bills @Inject()(bills: BillService,
     }
     else {
       bills.retrieveOne(billId) flatMap {
-        case Some(bill) => billItems.retrieveByBill(billId, offset, limit).map(result => {
+        case Some(_) => billItems.retrieveByBill(billId, offset, limit).map(result => {
           val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
           val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 

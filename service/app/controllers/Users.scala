@@ -67,7 +67,6 @@ class Users @Inject()(users: UserRepository, jwt: JwtUtil, secure: SecuredAuthen
         users.findByUsernameAndPassword(auth.username, auth.password) map {
           case Some(user) =>
             val issuedAt = DateTime.now
-            // FIXME Repair JWT common claim set
             val token = jwt.createToken(JwtPayload(
               iss = "issuer-of-token",
               iat = issuedAt.getMillis,

@@ -731,7 +731,7 @@ GET     /api/bills                                      controllers.Bills.retrie
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    400:
-#      description:Customer doesn't have enough points.
+#      description: Customer doesn't have enough points.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
