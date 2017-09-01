@@ -57,25 +57,23 @@ class BillService @Inject()(repository: BillRepository,
   private def setBillToSuccessful(bill: Bill): Future[Int] = {
     val billId = bill.id.get
 
-    users.retrieve(bill.customerId).map(_.get).flatMap(user => {
-      // Update User Points
-      if (user.points.get > bill.pointsSpent) {
-        users.updateUserPoints(bill.customerId, -bill.pointsSpent)
-      } else {
-        Future.successful(-1)
-      }
-    })
-
     billItems.retrieveByBill(billId, 0, Int.MaxValue).flatMap(items =>
       if (hasBillItems(items)) {
         // Update products quantity
         items.foreach(item => products.fillStock(item.productId, -item.quantity))
 
-        // Update User points
-        users.updateUserPoints(bill.customerId, bill.pointsGained)
+        users.retrieve(bill.customerId).map(_.get).flatMap(user => {
+          // Update User Points
+          if (user.points.get > bill.pointsSpent) {
+            // Update User points
+            users.updateUserPoints(bill.customerId, bill.pointsGained - bill.pointsSpent)
 
-        // Set Bill State
-        repository.setState(billId, BillState.SUCCESSFUL)
+            // Set Bill State
+            repository.setState(billId, BillState.SUCCESSFUL)
+          } else {
+            Future.successful(-2)
+          }
+        })
       } else {
         Future.successful(-1)
       }

@@ -730,6 +730,10 @@ GET     /api/bills                                      controllers.Bills.retrie
 #      description: Insufficiently Products for Bill Accepting.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    400:
+#      description:Customer doesn't have enough points.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Bill doesn't exist.
 #      schema:
