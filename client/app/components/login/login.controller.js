@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
 
     angular
@@ -16,8 +16,14 @@
         loginVm.auth = auth;
 
         function auth() {
+            if (_.isEmpty(loginVm.credentials.username) || _.isEmpty(loginVm.credentials.password)) {
+                loginVm.wrongAuth = true;
+                loginVm.message = "You must specify Username and Password!";
+                return;
+            }
+
             users.auth(loginVm.credentials)
-                .then(function(response) {
+                .then(function (response) {
                     var token = response.data.token;
 
                     $http.defaults.headers.common.Authorization = 'Bearer ' + token;
@@ -25,16 +31,16 @@
                     $localStorage.user = {
                         'id': payload.id,
                         'username': payload.username,
-                        'role': payload.role
+                        'role': payload.role,
+                        'token': token
                     };
 
                     $location.path('/home');
                 })
-                .catch(function(data) {
+                .catch(function (data) {
                     loginVm.wrongAuth = true;
                     loginVm.message = _.first(data.errors).detail;
                 })
         }
-
     }
 })();

@@ -1,6 +1,7 @@
 package com.dmarjanovic.drools
 
 import com.dmarjanovic.drools.domain.{Bill, BillItem, Product}
+import org.kie.api.runtime.KieSession
 
 object RulesEngine {
 
@@ -15,11 +16,11 @@ object RulesEngine {
       .setFocus()
 
     session.fireAllRules()
-    session.dispose()
+    session.destroy()
   }
 
   def calculateBillItemDiscounts(item: BillItem): Unit = {
-    val session = Kie.newSession
+    val session: KieSession = Kie.newStatelessSession
 
     session.insert(item)
 

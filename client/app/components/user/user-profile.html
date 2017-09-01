@@ -60,19 +60,512 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr ng-repeat="bill in profileVm.user.bills">
-                                <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
-                                <td>{{bill.amount}}</td>
-                                <td>{{bill.discount}}</td>
-                                <td>{{bill.discountAmount}}</td>
-                                <td>{{bill.pointsGained}}</td>
-                                <td>{{bill.pointsSpent}}</td>
-                                <td>{{bill.status}}</td>
-                                <td><a href="#" class="btn btn-default">View</a></td>
+                            <tr ng-repeat="b in profileVm.user.bills">
+                                <td>{{b.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
+                                <td>{{b.amount | number : 2}} €</td>
+                                <td>{{b.discount}}%</td>
+                                <td>{{b.discountAmount | number : 2}} €</td>
+                                <td>{{b.pointsGained}}</td>
+                                <td>{{b.pointsSpent}}</td>
+                                <td>{{b.status}}</td>
+                                <td><a ui-sref="bill({id: b.id})" class="btn btn-default">View</a></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALES_MANAGER'">
+                <!-- Buyer Categories -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Buyer Categories</h2>
+                    </div>
+
+                    <div class="row">
+                        <div class="panel panel-primary" ng-repeat="category in profileVm.user.buyerCategories">
+                            <div class="panel-heading">
+                                <span ng-hide="category.edit">
+                                    <h3 class="panel-title">
+                                        {{category.name}}
+                                        <button class="btn btn-xs btn-primary pull-right"
+                                                ng-click="category.edit = true;"
+                                                ng-hide="category.edit" style="margin-top: -8px;">
+                                            Edit
+                                        </button>
+                                    </h3>
+                                </span>
+                                <span ng-show="category.edit">
+                                    <input ng-model="category.edited.name"
+                                           style="color: black !important; margin-top: -6px;"/>
+                                    <button class="btn btn-xs btn-danger-filled pull-right"
+                                            style="margin-left: 8px; margin-top: -8px;"
+                                            ng-click="category.edit = false;"
+                                            ng-show="category.edit">
+                                        Cancel
+                                    </button>
+                                    <button class="btn btn-xs btn-success-filled pull-right" style="margin-top: -8px;"
+                                            ng-click="profileVm.modifyBuyerCategory(category);"
+                                            ng-show="category.edit">
+                                        Save changes
+                                    </button>
+                                </span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Award</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="threshold in category.thresholds">
+                                            <th>{{threshold.from}}</th>
+                                            <th>{{threshold.to}}</th>
+                                            <th>{{threshold.award}}%</th>
+                                            <th>
+                                                <button type="button" class="btn btn-xs btn-danger-filled"
+                                                        ng-click="profileVm.removeThreshold(category.id, threshold.id);">
+                                                    Remove threshold
+                                                </button>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input id="threshold-from" type="number" min="0"
+                                                       ng-model="category.threshold.new.from"/>
+                                            </td>
+                                            <td>
+                                                <input id="threshold-to" type="number" min="0"
+                                                       ng-model="category.threshold.new.to"/>
+                                            </td>
+                                            <td>
+                                                <input id="threshold-award" type="number" min="1" max="99"
+                                                       ng-model="category.threshold.new.award"/>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-xs btn-success-filled"
+                                                        ng-disabled="category.threshold === undefined"
+                                                        ng-click="profileVm.addThresholdFor(category);">Add New
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr/>
+                        <div class="container">
+                            <h4 class="sub-title">Add new Buyer Category</h4>
+                            <div class="contact-form-1">
+                                <form class="contactForm">
+                                    <div class="row">
+                                        <div class="col-sm-8">
+                                            <div class="form-group">
+                                                <input type="text" placeholder="Buyer Category Name"
+                                                       class="form-control"
+                                                       id="new-buyer-category-name"
+                                                       ng-model="profileVm.buyerCategories.new.name"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="form-group">
+                                                <button class="btn btn-md btn-primary-filled btn-form-submit"
+                                                        ng-disabled="profileVm.buyerCategories === undefined"
+                                                        ng-click="profileVm.addBuyerCategory();">Add New Buyer Category
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Categories -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Product Categories</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Max Discount</th>
+                                <th>Consumer Goods Category</th>
+                                <th>Super Category</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="category in profileVm.user.productCategories"
+                                ng-show="profileVm.user.productCategories.length > 0">
+                                <td>
+                                    <span ng-hide="category.edit">{{category.name}}</span>
+                                    <input type="text" ng-model="category.edited.name" ng-show="category.edit"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="category.edit">{{category.maxDiscount}}%</span>
+                                    <input type="number" min="1" max="99" ng-model="category.edited.maxDiscount"
+                                           ng-show="category.edit"/>
+                                </td>
+                                <td>
+                                    <input type="checkbox" ng-model="category.edited.isConsumerGoods"
+                                           ng-disabled="!category.edit"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="category.edit">{{category.superCategory.name}}</span>
+                                    <select class="form-control" ng-show="category.edit"
+                                            ng-model="category.edited.superCategory">
+                                        <option value="0">No super category</option>
+                                        <option ng-repeat="category in profileVm.user.productCategories"
+                                                ng-value="category.id">
+                                            {{category.name}}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary" ng-click="category.edit = true;"
+                                            ng-hide="category.edit">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-xs btn-success-filled"
+                                            ng-click="profileVm.modifyProductCategory(category);"
+                                            ng-show="category.edit">
+                                        Save changes
+                                    </button>
+                                    <button class="btn btn-xs btn-danger-filled"
+                                            ng-click="category.edit = false;"
+                                            ng-show="category.edit">
+                                        Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr/>
+                    <div class="container" style="padding-bottom: 24px;">
+                        <h4 class="sub-title">Add new Product Category</h4>
+                        <div class="contact-form-1">
+                            <form class="contactForm">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <label for="product-category-name">Product Category Name:</label>
+                                            <input id="product-category-name" type="text"
+                                                   class="form-control" placeholder="Enter name..."
+                                                   ng-model="profileVm.productCategory.new.name"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label for="product-category-max-discount">Max allowed discount:</label>
+                                            <input id="product-category-max-discount" type="number" min="0" max="99"
+                                                   class="form-control" placeholder="e.g. 10"
+                                                   ng-model="profileVm.productCategory.new.maxDiscount"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group text-center">
+                                            <label for="product-category-consumer-goods">Is category consumer
+                                                goods:</label>
+                                            <span ng-init="profileVm.productCategory.new.isConsumerGoods = false;"></span>
+                                            <input id="product-category-consumer-goods" type="checkbox" class="checkbox"
+                                                   style="margin-left: 50%; margin-top: 20px;"
+                                                   ng-model="profileVm.productCategory.new.isConsumerGoods"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <div class="form-group">
+                                            <span ng-init="profileVm.productCategory.new.superCategory = '0';"></span>
+                                            <label for="product-category-supercategory">Choose supercategory:</label>
+                                            <select id="product-category-supercategory" class="form-control"
+                                                    ng-model="profileVm.productCategory.new.superCategory">
+                                                <option value="0" selected>No super category</option>
+                                                <option ng-repeat="category in profileVm.user.productCategories"
+                                                        value="{{category.id}}">{{category.name}}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-8 col-sm-3">
+                                        <div class="form-group">
+                                            <button class="btn btn-md btn-primary-filled btn-form-submit"
+                                                    ng-click="profileVm.addProductCategory();">
+                                                Add New Product Category
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Discounts -->
+                <div class="innerWrapper profile">
+                    <div class="row">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Discount Name</th>
+                                <th>Date when discount begins</th>
+                                <th>Date when discount ends</th>
+                                <th>Discount</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="actionDiscount in profileVm.user.actionDiscounts"
+                                ng-show="profileVm.user.actionDiscounts.length > 0">
+                                <td>
+                                    <span ng-hide="actionDiscount.edit">{{actionDiscount.name}}</span>
+                                    <input type="text" ng-show="actionDiscount.edit"
+                                           ng-model="actionDiscount.edited.name"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="actionDiscount.edit">{{actionDiscount.from | date : "d. M. y."}}</span>
+                                    <input type="date" ng-show="actionDiscount.edit"
+                                           ng-model="actionDiscount.edited.from"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="actionDiscount.edit">{{actionDiscount.to | date : "d. M. y."}}</span>
+                                    <input type="date" ng-show="actionDiscount.edit"
+                                           ng-model="actionDiscount.edited.to"/>
+                                </td>
+                                <td>
+                                    <span ng-hide="actionDiscount.edit" class="label label-danger-filled"
+                                          style="width: 60px !important;">-{{actionDiscount.discount}}%</span>
+                                    <input type="number" min="1" max="99" ng-show="actionDiscount.edit"
+                                           ng-model="actionDiscount.edited.discount"/>
+                                </td>
+                                <td>
+                                    <button class="btn btn-xs btn-primary" ng-click="actionDiscount.edit = true;"
+                                            ng-hide="actionDiscount.edit">
+                                        Edit
+                                    </button>
+                                    <button class="btn btn-xs btn-success-filled"
+                                            ng-click="profileVm.modifyActionDiscount(actionDiscount);"
+                                            ng-show="actionDiscount.edit">
+                                        Save changes
+                                    </button>
+                                    <button class="btn btn-xs btn-danger-filled"
+                                            ng-click="actionDiscount.edit = false;"
+                                            ng-show="actionDiscount.edit">
+                                        Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr/>
+                    <div class="container" style="padding-bottom: 24px;">
+                        <h4 class="sub-title">Add new Action Discount</h4>
+                        <div class="contact-form-1">
+                            <form class="contactForm">
+                                <div class="row">
+                                    <div class="col-sm-5">
+                                        <div class="form-group">
+                                            <label for="action-discount-name">Action Discount name:</label>
+                                            <input id="action-discount-name" type="text" class="form-control"
+                                                   placeholder="Enter name..."
+                                                   ng-model="profileVm.actionDiscount.new.name"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="action-discount-from">Pick start date:</label>
+                                            <input type="date" id="action-discount-from" class="form-control"
+                                                   placeholder="Pick date..."
+                                                   ng-model="profileVm.actionDiscount.new.from">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="action-discount-from">Choose Product Category to add:</label>
+                                            <div class="input-group">
+                                                <select id="action-discount-product-category" class="form-control"
+                                                        ng-model="profileVm.actionDiscount.new.actionDiscountProductCategory">
+                                                    <option ng-repeat="category in profileVm.user.productCategories"
+                                                            ng-value="category">
+                                                        {{category.name}}
+                                                    </option>
+                                                </select>
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-md btn-primary-filled btn-newsletter inside"
+                                                            style="margin-top: -30px !important;"
+                                                            ng-click="profileVm.actionDiscount.new.categories.push(profileVm.actionDiscount.new.actionDiscountProductCategory);">
+                                                        Add
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-offset-1 col-sm-5">
+                                        <div class="form-group">
+                                            <label for="action-discount-discount">Choose discount:</label>
+                                            <input id="action-discount-discount" type="number" min="1" max="99"
+                                                   class="form-control" placeholder="e.g. 21"
+                                                   ng-model="profileVm.actionDiscount.new.discount"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="action-discount-to">Pick end date:</label>
+                                            <input type="date" id="action-discount-to" class="form-control"
+                                                   placeholder="Pick date..."
+                                                   ng-model="profileVm.actionDiscount.new.to">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Product Categories:</label>
+                                            <ul ng-hide="profileVm.actionDiscount.new.categories.length == 0">
+                                                <li ng-repeat="category in profileVm.actionDiscount.new.categories"
+                                                    style="display: inline;">
+                                                    {{category.name}}<span ng-if="!$last">,</span>
+                                                </li>
+                                            </ul>
+                                            <p ng-show="profileVm.actionDiscount.new.categories.length == 0">
+                                                You haven't added any Product Categories yet!
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-8 col-sm-3">
+                                        <div class="form-group">
+                                            <button class="btn btn-md btn-primary-filled btn-form-submit"
+                                                    ng-disabled="profileVm.actionDiscount === undefined"
+                                                    ng-click="profileVm.addActionDiscount();">
+                                                Add New Action Discount
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12" ng-if="profileVm.user.role === 'SALESMAN'">
+                <!-- Out of Stock Products -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Out of Stock Products</h2>
+                    </div>
+                    <div class="table-responsive" ng-if="profileVm.user.outOfStockProducts.length > 0">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Minimum Quantity</th>
+                                <th>Quantity</th>
+                                <th>Quantity to add</th>
+                                <th>Reason</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="product in profileVm.user.outOfStockProducts">
+                                <td>{{product.name}}</td>
+                                <td>{{product.minQuantity}}</td>
+                                <td>{{product.quantity}}</td>
+                                <td><input type="number" min="0" ng-model="product.orderQuantity"/></td>
+                                <td>You have {{product.quantity}} but minimum quantity is {{product.minQuantity}}.</td>
+                                <td>
+                                    <button ng-click="profileVm.orderProduct(product);"
+                                            class="btn btn-xs btn-primary-filled">
+                                        Order
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h4 ng-if="profileVm.user.outOfStockProducts.length === 0">
+                        You don't have <b>out of stock</b> products!
+                    </h4>
+                </div>
+                <!-- Bills -->
+                <div class="innerWrapper profile">
+                    <div class="orderBox">
+                        <h2>Bills</h2>
+                    </div>
+                    <div class="table-responsive" ng-if="profileVm.user.bills.length > 0">
+                        <div class="row">
+                            <span ng-init="billFilter = '';"></span>
+                            <div class="col-md-3">
+                                <button ng-class="billFilter === '' ? 'btn btn-default-filled' : 'btn btn-default'"
+                                        ng-click="billFilter = '';">Show All
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button ng-class="billFilter === 'SUCCESSFUL' ? 'btn btn-success-filled' : 'btn btn-success'"
+                                        ng-click="billFilter = 'SUCCESSFUL';">Show Accepted
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button ng-class="billFilter === 'ORDERED' ? 'btn btn-primary-filled' : 'btn btn-primary'"
+                                        ng-click="billFilter = 'ORDERED';">Show Ordered
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <button ng-class="billFilter === 'CANCELLED' ? 'btn btn-danger-filled' : 'btn btn-danger'"
+                                        ng-click="billFilter = 'CANCELLED';">Show Cancelled
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Price</th>
+                                <th>Discount</th>
+                                <th>Discount Amount</th>
+                                <th>Gained Points</th>
+                                <th>Spent Points</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="bill in profileVm.user.bills | filter: {status: billFilter}">
+                                <td>{{bill.createdAt | date : "d. M. y. 'at' HH:mm"}}</td>
+                                <td>{{bill.amount | number : 2}} €</td>
+                                <td>{{bill.discount}}%</td>
+                                <td>{{bill.discountAmount | number : 2}} €</td>
+                                <td>{{bill.pointsGained}}</td>
+                                <td>{{bill.pointsSpent}}</td>
+                                <td>{{bill.status}}</td>
+                                <td>
+                                    <button ng-click="profileVm.confirmBill(bill.id);"
+                                            ng-if="bill.status === 'ORDERED'"
+                                            class="btn btn-xs btn-success-filled">
+                                        Accept
+                                    </button>
+                                </td>
+                                <td>
+                                    <button ng-click="profileVm.cancelBill(bill.id);"
+                                            ng-if="bill.status === 'ORDERED'"
+                                            class="btn btn-xs btn-danger-filled">
+                                        Cancel
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h4 ng-if="profileVm.user.bills.length === 0">
+                        There's no Bills to show!
+                    </h4>
                 </div>
             </div>
         </div>

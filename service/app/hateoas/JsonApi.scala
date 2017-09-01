@@ -111,6 +111,7 @@ object JsonApi {
   implicit val actionDiscAttrs: OFormat[ActionDiscountAttributes] = Json.format[ActionDiscountAttributes]
   implicit val actionDiscReqData: OFormat[ActionDiscountRequestData] = Json.format[ActionDiscountRequestData]
   implicit val actionDiscReq: OFormat[ActionDiscountRequest] = Json.format[ActionDiscountRequest]
+  implicit val actionDiscResRels: OFormat[ActionDiscountResponseRelationships] = Json.format[ActionDiscountResponseRelationships]
   implicit val actionDiscResData: OFormat[ActionDiscountResponseData] = Json.format[ActionDiscountResponseData]
   implicit val actionDiscRes: OFormat[ActionDiscountResponse] = Json.format[ActionDiscountResponse]
   implicit val actionDiscResCollection: OFormat[ActionDiscountCollectionResponse] = Json.format[ActionDiscountCollectionResponse]

@@ -13,10 +13,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain allOf(
-          BillDiscount(discount = 5, `type` = DiscountType.BASIC),
-          BillDiscount(discount = 3, `type` = DiscountType.PRO)
-        )
+        bill.discounts must contain only BillDiscount(discount = 5, `type` = DiscountType.BASIC)
       }
 
       "not create any 'BASIC' discount" in new BillsFixture {
@@ -38,7 +35,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
       }
 
       "create 'PRO' discount based only on Customer category" in new BillsFixture {
-        val bill: Bill = createBill(Some(customer(categoryName = "Gold Category")), 15000)
+        val bill: Bill = createBill(Some(customer(categoryName = "Gold Buyer")), 15000)
 
         RulesEngine.calculateBillDiscounts(bill)
 
@@ -46,7 +43,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
       }
 
       "create 'PRO' discount both based on Customer membership and category" in new BillsFixture {
-        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Category")), 15000)
+        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Buyer")), 15000)
 
         RulesEngine.calculateBillDiscounts(bill)
 
@@ -55,21 +52,46 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
       }
 
       "create all 'PRO' discounts" in new BillsFixture {
-        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Category")), 150000)
+        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Buyer")), 150000)
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain allOf(
-          BillDiscount(discount = 3, `type` = DiscountType.PRO),
-          BillDiscount(discount = 1, `type` = DiscountType.PRO)
-        )
-        bill.discounts.length must be(3)
+        bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
+        bill.discounts.length must be(2)
+      }
+
+      "create 'PRO' discount based on amount and Products" in new BillsFixture with BillItemsFixture {
+        val bill: Bill = createBill(Some(customer()), 60000)
+
+        (0 until 5).foreach(seed => bill.addBillItem(
+          createBillItem(seed, seed, price = 10000)
+        ))
+
+        (6 until 10).foreach(seed => bill.addBillItem(
+          createBillItem(seed, seed, price = 2000)
+        ))
+
+        RulesEngine.calculateBillDiscounts(bill)
+
+        bill.discounts must contain only BillDiscount(discount = 3, `type` = DiscountType.PRO)
+      }
+
+      "not create 'PRO' discount based on amount and Products" in new BillsFixture with BillItemsFixture {
+        val bill: Bill = createBill(Some(customer()), 60000)
+
+        (0 until 60).foreach(seed => bill.addBillItem(
+          createBillItem(seed, seed, price = 100)
+        ))
+
+        RulesEngine.calculateBillDiscounts(bill)
+
+        bill.discounts must be(Seq())
       }
     }
 
     "calculating final Bill Discount and Bill price" should {
       "return Bill with price and accumulated discounts" in new BillsFixture with BillItemsFixture {
-        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Category")), 150000)
+        val bill: Bill = createBill(Some(customer(DateTime.now.minusYears(3), "Silver Buyer")), 150000)
 
         (1 until 5).foreach(index => bill.addBillItem(createBillItem(index, index * 3)))
 

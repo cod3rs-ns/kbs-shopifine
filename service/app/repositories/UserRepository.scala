@@ -10,6 +10,8 @@ trait UserRepository {
 
   def retrieve(id: Long): Future[Option[User]]
 
+  def updateUserPoints(id: Long, points: Long): Future[Int]
+
   def findByUsernameAndPassword(username: String, password: String): Future[Option[User]]
 
   def findByUsername(username: String): Future[Option[User]]

@@ -30,4 +30,5 @@ class MySqlBuyerCategoryRepository @Inject()(protected val dbConfigProvider: Dat
     val q = for {c <- buyerCategories if c.id === id} yield c.name
     db.run(q.update(category.name))
   }
+
 }

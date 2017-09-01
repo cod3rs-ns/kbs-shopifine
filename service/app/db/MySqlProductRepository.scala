@@ -35,7 +35,7 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
               (SELECT COUNT(*) AS result FROM products WHERE id = $id AND quantity + $quantity > min_quantity) stock
            SET
               quantity = quantity + $quantity,
-              fill_stock = stock.result
+              fill_stock = !stock.result
            WHERE id = $id;
         """.as[Int].head
     db.run(query)

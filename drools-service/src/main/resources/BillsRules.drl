@@ -9,8 +9,7 @@ rule "Determine if Bill achieves Basic Discount based on Amount"
     when
         $bill: Bill(amount > 200000)
     then
-        final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(5, DiscountType.BASIC));
+        $bill.addDiscount(new BillDiscount(5, DiscountType.BASIC));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Old Customer"
@@ -18,17 +17,15 @@ rule "Determine if Bill achieves Pro Discount based on Old Customer"
     when
         $bill: Bill(customer.registeredAt() < DateTime.now().minusYears(2))
     then
-        final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
+        $bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Customer Category"
     agenda-group "bill-bonuses"
     when
-        $bill: Bill(customer.buyerCategory.name.equals("Gold Category") || customer.buyerCategory.name.equals("Silver Category"))
+        $bill: Bill(customer.buyerCategory.name.equals("Gold Buyer") || customer.buyerCategory.name.equals("Silver Buyer"))
     then
-        final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
+        $bill.addDiscount(new BillDiscount(1, DiscountType.PRO));
 end
 
 rule "Determine if Bill achieves Pro Discount based on Amount"
@@ -36,8 +33,15 @@ rule "Determine if Bill achieves Pro Discount based on Amount"
     when
         $bill: Bill(amount > 50000)
     then
-        final Bill bill = $bill;
-        bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
+        final List<BillItem> items = JavaConversions.seqAsJavaList($bill.getSortedItems());
+        final int size = (items.size() < 10) ? items.size() : 10;
+        int total = 0;
+        for (int i = 0; i < size; ++i) {
+            total += items.get(i).amount();
+        }
+
+        if (total > 0.5 * $bill.amount())
+            $bill.addDiscount(new BillDiscount(3, DiscountType.PRO));
 end
 
 rule "Determine final Bill discount and price"

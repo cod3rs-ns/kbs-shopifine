@@ -5,9 +5,9 @@
         .module('shopifine-app')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$log', 'CONFIG', '_', 'productService', 'productCategories'];
+    HomeController.$inject = ['$log', '$localStorage', 'CONFIG', 'ngToast', '_', 'productService', 'productCategories', 'discounts'];
 
-    function HomeController($log, CONFIG, _, productService, productCategories) {
+    function HomeController($log, $localStorage, CONFIG, ngToast, _, productService, productCategories, discounts) {
         var homeVm = this;
 
         homeVm.data = {
@@ -20,10 +20,13 @@
         homeVm.filters = {
             'name': undefined,
             'category': undefined,
-            'price-range-from': undefined,
-            'price-range-to': undefined,
+            'price-range-from': 0,
+            'price-range-to': 10000,
             'active': 'ACTIVE'
         };
+
+        $localStorage.items = [];
+        homeVm.productDiscounts = [];
 
         homeVm.next = retrieveProducts;
         homeVm.prev = retrieveProducts;
@@ -34,6 +37,12 @@
         homeVm.applyFilters = applyFilters;
         homeVm.resetFilters = resetFilters;
         homeVm.searchByCategory = searchByCategory;
+
+        homeVm.isCustomer = isCustomer;
+        homeVm.addToCart = addToCart;
+        homeVm.isInCart = isInCart;
+        homeVm.removeFromCart = removeFromCart;
+        homeVm.discountsFor = setDialogDiscounts;
 
         init();
 
@@ -46,11 +55,41 @@
             productService.retrieveAllFrom(url)
                 .then(function (response) {
                     homeVm.data.products = _.map(response.data, function (product) {
-                        return {
+                        var p = {
+                            'id': product.id,
                             'name': product.attributes.name,
                             'price': product.attributes.price,
-                            'preview': product.attributes.imageUrl
-                        }
+                            'preview': product.attributes.imageUrl,
+                            'discount': 0,
+                            'category': '',
+                            'discounts': []
+                        };
+
+                        productCategories.retrieveFrom(CONFIG.SERVICE_URL + "/product-categories/" + product.relationships.category.data.id)
+                            .then(function (response) {
+                                p.category = response.data.attributes.name;
+                            })
+                            .catch(function (data) {
+                                $log.error(data);
+                            });
+
+                        discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
+                            .then(function (response) {
+                                p.discounts = _.forEach(response.data, function (discount) {
+                                    p.discount += discount.attributes.discount;
+                                    return {
+                                        'name': discount.attributes.name,
+                                        'from': discount.attributes.from,
+                                        'to': discount.attributes.to,
+                                        'discount': discount.attributes.discount
+                                    }
+                                });
+                            })
+                            .catch(function (data) {
+                                $log.error(data);
+                            });
+
+                        return p;
                     });
 
                     var prev = response.links.prev;
@@ -65,16 +104,20 @@
         }
 
         function retrieveCategories(url) {
-            productCategories.retrieveAllFrom(url)
+            productCategories.retrieveFrom(url)
                 .then(function (response) {
-                    homeVm.data.categories = _.concat(homeVm.data.categories, _.map(response.data, function(category) {
-                        return {
-                            'id': category.id,
-                            'name': category.attributes.name,
-                            'subcategoriesUrl': category.relationships.subcategories.links.related,
-                            'subcategories': []
+                    homeVm.data.categories = _.concat(homeVm.data.categories, _.reduce(response.data, function (init, category) {
+                        if (_.isUndefined(category.relationships.superCategory)) {
+                            init.push({
+                                'id': category.id,
+                                'name': category.attributes.name,
+                                'subcategoriesUrl': category.relationships.subcategories.links.related,
+                                'subcategories': []
+                            });
                         }
-                    }));
+
+                        return init;
+                    }, []));
 
                     var next = response.links.next;
                     if (!_.isEmpty(next)) {
@@ -82,32 +125,29 @@
                     }
                 })
                 .catch(function (data) {
-                   $log.error(data);
+                    $log.error(data);
                 });
+
+            _.forEach(homeVm.data.categories, function (category) {
+                homeVm.retrieveSubcategoriesFor(category);
+            });
         }
 
         function retrieveSubcategoriesFor(category) {
-            productCategories.retrieveAllFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
+            productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + category.subcategoriesUrl)
                 .then(function (response) {
-                    if (_.isEmpty(category.subcategories)) {
-                        category.subcategories = _.concat(category.subcategories, _.map(response.data, function (subcategory) {
-                            return {
-                                'id': subcategory.id,
-                                'name': subcategory.attributes.name,
-                                'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
-                                'subcategories': []
-                            }
-                        }));
-                    }
+                    category.subcategories = _.map(response.data, function (subcategory) {
+                        return {
+                            'id': subcategory.id,
+                            'name': subcategory.attributes.name,
+                            'subcategoriesUrl': subcategory.relationships.subcategories.links.related,
+                            'subcategories': []
+                        }
+                    });
 
-                    homeVm.filters['category'] = category.id.toString();
-                    applyFilters();
-
-                    // FIXME
-                    // var next = response.links.next;
-                    // if (!_.isEmpty(next)) {
-                    //     homeVm.retrieveCategories(next);
-                    // }
+                    _.forEach(category.subcategories, function (c) {
+                        retrieveSubcategoriesFor(c);
+                    })
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -116,9 +156,9 @@
 
         function applyFilters() {
             var filters = '';
-            _.forEach(homeVm.filters, function(value, name) {
-                if (!_.isUndefined(value) && !_.isEmpty(value)) {
-                    filters += '&filter[' + name + ']=' + value;
+            _.forEach(homeVm.filters, function (value, name) {
+                if (!_.isUndefined(value) && !_.isEmpty(_.toString(value))) {
+                    filters += '&filter[' + name + ']=' + _.toString(value);
                 }
             });
 
@@ -126,17 +166,54 @@
         }
 
         function resetFilters() {
-            _.forEach(homeVm.filters, function(value, name) {
+            _.forEach(homeVm.filters, function (value, name) {
                 if (name !== 'active') {
                     homeVm.filters[name] = undefined;
                 }
             });
+
             applyFilters();
         }
 
         function searchByCategory(id) {
             homeVm.filters['category'] = id;
             applyFilters();
+        }
+
+        function addToCart(product) {
+            if (_.isUndefined(product.quantity) || product.quantity === "") {
+                ngToast.danger({
+                    content: 'You must specify valid quantity!'
+                });
+                return;
+            }
+
+            $localStorage.items.push({
+                'quantity': product.quantity,
+                'product': product
+            });
+        }
+
+        function removeFromCart(productId) {
+            _.remove($localStorage.items, function (item) {
+                return item.product.id === productId;
+            });
+        }
+
+        function isInCart(productId) {
+            var items = _.find($localStorage.items, function (item) {
+                return item.product.id === productId;
+            });
+
+            return _.size(items) > 0;
+        }
+
+        function setDialogDiscounts(product) {
+            homeVm.productDiscounts = product.discounts;
+        }
+
+        function isCustomer() {
+            return !_.isUndefined($localStorage.user) && "CUSTOMER" === $localStorage.user.role;
         }
     }
 })();

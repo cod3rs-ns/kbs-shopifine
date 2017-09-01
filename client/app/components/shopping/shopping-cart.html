@@ -1,0 +1,55 @@
+<section class="mainContent clearfix cartListWrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="cartListInner">
+                    <form>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="item in cartVm.$storage.items">
+                                    <td class="col-xs-2">
+                                        <span class="cartImage">
+                                            <img style="max-width: 64px;" ng-src="{{item.product.preview}}"
+                                                 alt="{{item.product.name}}">
+                                        </span>
+                                    </td>
+                                    <td class="col-xs-4">{{item.product.name}}</td>
+                                    <td class="col-xs-2">{{item.product.price | number : 2}} €</td>
+                                    <td class="col-xs-2">{{item.quantity}}</td>
+                                    <td class="col-xs-2">{{item.quantity * item.product.price | number : 2}} €</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="updateArea">
+                            <div class="input-group">
+                                <span ng-init="applied = false;"></span>
+                                <input type="number" min="0" ng-model="cartVm.points" ng-readonly="applied"
+                                       class="form-control" placeholder="I have award points..."
+                                       aria-describedby="basic-addon2">
+                                <button class="btn input-group-addon" id="basic-addon2" ng-click="applied = true;">Apply
+                                    points
+                                </button>
+                            </div>
+                        </div>
+                        <div class="checkBtnArea">
+                            <button ng-click="cartVm.confirm();" class="btn btn-primary btn-block">
+                                Confirm<i class="fa fa-arrow-circle-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

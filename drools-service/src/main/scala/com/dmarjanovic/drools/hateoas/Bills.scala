@@ -1,7 +1,7 @@
 package com.dmarjanovic.drools.hateoas
 
 import com.dmarjanovic.drools.domain.Bill
-import com.dmarjanovic.drools.external.CustomersProxy
+import com.dmarjanovic.drools.external.{BillsProxy, CustomersProxy}
 import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,9 +21,9 @@ case class BillResponseRelationships(customer: ResponseRelationship, items: Resp
 case class BillResponseData(`type`: String, id: Long, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
 
 case class BillResponse(data: BillResponseData) {
-  def toDomain: Future[Bill] = {
-    CustomersProxy.retrieveUser(data.relationships.customer.data.id).map(customer =>
-      Bill(
+  def toDomain(fetchItems: Boolean = false): Future[Bill] = {
+    CustomersProxy.retrieveUser(data.relationships.customer.data.id).flatMap(customer => {
+      val bill = Bill(
         id = Some(data.id),
         createdAt = DateTime.parse(data.attributes.createdAt),
         customer = Some(customer),
@@ -33,7 +33,14 @@ case class BillResponse(data: BillResponseData) {
         pointsSpent = data.attributes.pointsSpent,
         pointsGained = data.attributes.pointsGained
       )
-    )
+
+      if (fetchItems)
+        BillsProxy.retrieveBillItemsFrom(data.relationships.items.links.related).flatMap(items => {
+          Future.successful(bill.copy(items = items.map(item => item.copy(billCreatedAt = bill.createdAt))))
+        })
+      else
+        Future.successful(bill)
+    })
   }
 }
 

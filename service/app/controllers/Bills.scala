@@ -25,6 +25,7 @@ class Bills @Inject()(bills: BillService,
                       secure: SecuredAuthenticator)
                      (implicit val ec: ExecutionContext) extends Controller {
 
+  import Bills.FilterStartsWith
   import hateoas.JsonApi._
   import secure.Roles._
 
@@ -36,17 +37,15 @@ class Bills @Inject()(bills: BillService,
     }
     else {
       request.body.validate[BillRequest].fold(
-        failures => Future.successful(BadRequest(Json.toJson(
+        _ => Future.successful(BadRequest(Json.toJson(
           ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
         ))),
 
-        spec => {
-          bills.save(spec.toDomain).map(bill =>
-            Accepted(Json.toJson(
-              BillResponse.fromDomain(bill)
-            ))
-          )
-        }
+        spec => bills.save(spec.toDomain).map(bill =>
+          Accepted(Json.toJson(
+            BillResponse.fromDomain(bill)
+          ))
+        )
       )
     }
   }
@@ -87,8 +86,8 @@ class Bills @Inject()(bills: BillService,
   }
 
   def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async { implicit request =>
-    val filters = request.queryString.filterKeys(_.startsWith("filter[")).map { case (k, v) =>
-      k.substring(7, k.length - 1) -> v.mkString
+    val filters = request.queryString.filterKeys(_.startsWith(FilterStartsWith)).map {
+      case (k, v) => k.substring(FilterStartsWith.length, k.length - 1) -> v.mkString
     }
 
     bills.retrieveBillsWithFilters(filters, offset, limit).map(result => {
@@ -110,13 +109,17 @@ class Bills @Inject()(bills: BillService,
             Ok(Json.toJson(BillResponse.fromDomain(bill.get)))
           )
         }
+        else if (affected == -1) {
+          Future.successful(BadRequest(Json.toJson(
+            ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, s"Insufficiently Products for Bill Accepting.")))
+          )))
+        }
         else {
           Future.successful(NotFound(Json.toJson(
             ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $id doesn't exist!")))
           )))
         }
-      }
-      )
+      })
     }
     catch {
       case e: IllegalArgumentException =>
@@ -134,14 +137,14 @@ class Bills @Inject()(bills: BillService,
     }
     else {
       request.body.validate[BillItemRequest].fold(
-        failures => Future.successful(BadRequest(Json.toJson(
+        _ => Future.successful(BadRequest(Json.toJson(
           ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
         ))),
 
         spec => {
           bills.retrieveOne(billId) flatMap {
             case Some(bill) =>
-              drools.calculateBillItemPriceAndDiscounts(spec).flatMap(bonuses =>
+              drools.calculateBillItemPriceAndDiscounts(userId, spec).flatMap(bonuses =>
                 billItems.save(
                   spec.toDomain.copy(
                     price = bonuses.price,
@@ -149,37 +152,38 @@ class Bills @Inject()(bills: BillService,
                     discount = bonuses.discount,
                     discountAmount = bonuses.discountAmount
                   )
-                ).map(billItem => {
+                ).flatMap(billItem => {
                   // Store all retrieved Discounts for Bill Item
                   bonuses.discounts.foreach(d => billItemDiscounts.save(d.toBillItemDiscount(billItem)))
-
-                  // Update total amount of Bill
-                  bills.enlargeAmount(billId, bonuses.amount)
 
                   // Update when Product is bought last time
                   products.boughtNow(billItem.productId)
 
-                  // If item is last on the Bill trigger Bill price and discounts calculating
-                  if (billItem.ordinal == bill.totalItems) {
-                    drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
-                      // Store all retrieved Discounts for Bill
-                      bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
+                  // Update total amount of Bill
+                  bills.enlargeAmount(billId, bonuses.amount)
+                    .flatMap(_ => {
+                      // If item is last on the Bill trigger Bill price and discounts calculating
+                      if (billItem.ordinal == bill.totalItems) {
+                        drools.calculateBillPriceAndDiscounts(userId, billId).map(bonuses => {
+                          // Store all retrieved Discounts for Bill
+                          bonuses.discounts.foreach(d => billDiscounts.save(d.toBillDiscount(bill)))
 
-                      // Update stuffs related to Bill calculated price
-                      bills.updateBillCalculation(
-                        bill.copy(
-                          amount = bonuses.amount,
-                          discount = bonuses.discount,
-                          discountAmount = bonuses.discountAmount,
-                          pointsGained = bonuses.pointsGained
-                        )
-                      )
+                          // Update stuffs related to Bill calculated price
+                          bills.updateBillCalculation(
+                            bill.copy(
+                              amount = bonuses.amount,
+                              discount = bonuses.discount,
+                              discountAmount = bonuses.discountAmount,
+                              pointsGained = bonuses.pointsGained
+                            )
+                          )
+                        })
+                      }
+
+                      Future.successful(Created(Json.toJson(
+                        BillItemResponse.fromDomain(billItem, bill.id.get)
+                      )))
                     })
-                  }
-
-                  Created(Json.toJson(
-                    BillItemResponse.fromDomain(billItem, bill.id.get)
-                  ))
                 })
               )
 
@@ -200,15 +204,14 @@ class Bills @Inject()(bills: BillService,
     }
     else {
       bills.retrieveOne(billId) flatMap {
-        case Some(bill) =>
-          billItems.retrieveByBill(billId, offset, limit).map(result => {
-            val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
-            val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
+        case Some(bill) => billItems.retrieveByBill(billId, offset, limit).map(result => {
+          val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
+          val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 
-            Ok(Json.toJson(
-              BillItemCollectionResponse.fromDomain(result, bill.id.get, CollectionLinks(self = self, next = next))
-            ))
-          })
+          Ok(Json.toJson(
+            BillItemCollectionResponse.fromDomain(result, userId, CollectionLinks(self = self, next = next))
+          ))
+        })
 
         case None => Future.successful(NotFound(Json.toJson(
           ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $billId doesn't exist!")))
@@ -216,5 +219,8 @@ class Bills @Inject()(bills: BillService,
       }
     }
   }
+}
 
+object Bills {
+  val FilterStartsWith = "filter["
 }

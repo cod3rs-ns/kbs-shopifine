@@ -12,7 +12,9 @@ import repositories.{ActionDiscountRepository, ProductCategoryRepository}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ActionDiscounts @Inject()(discounts: ActionDiscountRepository, categories: ProductCategoryRepository, secure: SecuredAuthenticator)
+class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
+                                categories: ProductCategoryRepository,
+                                secure: SecuredAuthenticator)
                                (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -20,17 +22,15 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository, categories:
 
   def create: Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson(
+      _ => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
-      spec => {
-        discounts.save(spec.toDomain).map(discount =>
-          Created(Json.toJson(
-            ActionDiscountResponse.fromDomain(discount)
-          ))
-        )
-      }
+      spec => discounts.save(spec.toDomain).map(discount =>
+        Created(Json.toJson(
+          ActionDiscountResponse.fromDomain(discount)
+        ))
+      )
     )
   }
 
@@ -47,22 +47,20 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository, categories:
 
   def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ActionDiscountRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson(
+      _ => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
-      spec => {
-        discounts.modify(id, spec.toDomain).map(updated =>
-          if (updated > 0) {
-            Ok(Json.toJson(ActionDiscountResponse.fromDomain(spec.toDomain.copy(id = Some(id)))))
-          }
-          else {
-            NotFound(Json.toJson(
-              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
-            ))
-          }
-        )
-      }
+      spec => discounts.modify(id, spec.toDomain).map(updated =>
+        if (updated > 0) {
+          Ok(Json.toJson(ActionDiscountResponse.fromDomain(spec.toDomain.copy(id = Some(id)))))
+        }
+        else {
+          NotFound(Json.toJson(
+            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
+          ))
+        }
+      )
     )
   }
 
@@ -79,12 +77,33 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository, categories:
         ))
       })
 
+      case None => Future.successful(
+        NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product category $id doesn't exist!")))
+        )))
+    }
+  }
+
+  def addProductCategory(id: Long, categoryId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
+    discounts.findOne(id).flatMap {
+      case Some(_) =>
+        categories.findOne(categoryId).flatMap {
+          case Some(_) =>
+            discounts.addProductCategory(id, categoryId).flatMap(result =>
+              discounts.findOne(result.discount).map(discount =>
+                Ok(Json.toJson(ActionDiscountResponse.fromDomain(discount.get))))
+            )
+
+          case None =>
+            Future.successful(NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+            )))
+        }
+
       case None =>
-        Future.successful(
-          NotFound(Json.toJson(
-            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product category $id doesn't exist!")))
-          ))
-        )
+        Future.successful(NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
+        )))
     }
   }
 

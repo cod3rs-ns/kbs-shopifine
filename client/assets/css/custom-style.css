@@ -7,10 +7,81 @@
 }
 
 .product-name {
-    height: 24px !important;
+    height: 32px !important;
     overflow: hidden;
+    margin-bottom: 8px !important;
 }
 
 .margin-top-8 {
     margin-top: 8px;
+}
+
+.add-new-form {
+    width: 100%;
+    background-color: white;
+    padding: 35px;
+    border: 1px solid #e4e4e4;
+}
+
+.single-bill-discounts {
+    color: #b4b4b4;
+    padding-left: 15px;
+}
+.single-bill-discounts li {
+    font-size: 12px;
+    display: list-item;
+    list-style-type: square;
+}
+
+.single-bill-discount {
+    font-size: 16px !important;
+    display: list-item !important;
+    list-style-type: none !important;
+    padding-top: 8px !important;
+}
+
+.shopifine-slider.rzslider .rz-bar {
+    background: #F0F0F0;
+    height: 4px;
+}
+.shopifine-slider.rzslider .rz-selection {
+    background: #0F0F0F;
+}
+
+.shopifine-slider.rzslider .rz-pointer {
+    width: 16px;
+    height: 16px;
+    top: auto; /* to remove the default positioning */
+    bottom: -6px;
+    background-color: #0F0F0F;
+    border-radius: 8px;
+}
+
+.shopifine-slider.rzslider .rz-pointer:after {
+    display: none;
+}
+
+.shopifine-slider.rzslider .rz-bubble {
+    bottom: 14px;
+}
+
+.shopifine-slider.rzslider .rz-limit {
+    display: none;
+}
+
+.shopifine-slider.rzslider .rz-tick {
+    width: 1px;
+    height: 10px;
+    margin-left: 4px;
+    border-radius: 0;
+    background: #ffe4d1;
+    top: -1px;
+}
+
+.shopifine-slider.rzslider .rz-tick.rz-selected {
+    background: orange;
+}
+
+li.subcategory {
+    margin-left: 12px;
 }

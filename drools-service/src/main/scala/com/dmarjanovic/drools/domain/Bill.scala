@@ -24,4 +24,7 @@ case class Bill(id: Option[Long] = None,
   def addBillItem(item: BillItem): Unit =
     items = items :+ item
 
+  def getSortedItems: Seq[BillItem] =
+    items.sortBy(_.amount).reverse
+
 }

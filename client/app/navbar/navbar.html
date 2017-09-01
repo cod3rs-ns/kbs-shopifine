@@ -7,34 +7,48 @@
                 <div class="col-md-6 col-sm-5 hidden-xs">
                     <ul class="list-inline padding-top-10">
                         <li><a href="https://github.com/dmarjanovic94"><i class="fa fa-github"></i></a></li>
-                        <li><a href="https://www.linkedin.com/in/dragutin-marjanovi%C4%87-157631a5/"><i class="fa fa-linkedin"></i></a></li>
+                        <li><a href="https://www.linkedin.com/in/dragutin-marjanovi%C4%87-157631a5/"><i
+                                class="fa fa-linkedin"></i></a></li>
                         <li><a href="https://www.facebook.com/dmarjanovic94"><i class="fa fa-facebook"></i></a></li>
                     </ul>
                 </div>
                 <div class="col-md-6 col-sm-7 col-xs-12">
                     <ul class="list-inline pull-right top-right">
-                        <li class="account-login" ng-if="navbarVm.isGuest();"><span><a ui-sref="login">Log in</a><small>or</small><a ui-sref="register">Create an account</a></span></li>
+                        <li class="account-login" ng-if="navbarVm.isGuest();"><span><a ui-sref="login">Log in</a><small>or</small><a
+                                ui-sref="register">Create an account</a></span></li>
                         <li class="dropdown cart-dropdown" ng-if="navbarVm.isCustomer();">
-                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-shopping-cart"></i>$0</a>
-                            <ul class="dropdown-menu dropdown-menu-right">
+                            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown"><i
+                                    class="fa fa-shopping-cart"></i>{{navbarVm.total() | number : 2}} €</a>
+                            <ul class="dropdown-menu dropdown-menu-right" ng-show="navbarVm.$storage.items.length > 0">
                                 <li>Item(s) in your cart</li>
-                                <li>
+                                <li ng-repeat="item in navbarVm.$storage.items">
                                     <a>
                                         <div class="media">
-                                            <img class="media-left media-object" src="../../assets/img/home/cart-items/cart-item-01.jpg" alt="cart-Image">
-                                            <div class="media-body">
-                                                <h5 class="media-heading">INCIDIDUNT UT <br><span>2 X $199</span></h5>
+                                            <img class="media-left media-object" style="max-width: 64px;"
+                                                 ng-src="{{item.product.preview}}" alt="{{item.product.name}}">
+                                            <div class="media-body" style="max-width: 190px !important;">
+                                                <h5 class="media-heading">
+                                                    {{item.product.name}}<br>
+                                                    <span>{{item.quantity}} X {{item.product.price | number : 2}} €</span>
+                                                </h5>
                                             </div>
                                         </div>
                                     </a>
                                 </li>
                                 <li>
                                     <div class="btn-group" role="group" aria-label="...">
-                                        <button type="button" class="btn btn-default">Shopping Cart</button>
+                                        <button type="button" class="btn btn-default" ui-sref="shopping-cart">Shopping
+                                            Cart
+                                        </button>
                                         <button type="button" class="btn btn-default">Checkout</button>
                                     </div>
                                 </li>
                             </ul>
+                            <ul class="dropdown-menu dropdown-menu-right" ng-hide="navbarVm.$storage.items.length > 0">
+                                <li>You don't have any item in your Cart!</li>
+                            </ul>
+                        </li>
+                        <li class="account-login" ng-if="!navbarVm.isGuest();"><span><a ng-click="navbarVm.logout();">Logout</a></span>
                         </li>
                     </ul>
                 </div>
@@ -59,15 +73,11 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li class="active">
+                    <li>
                         <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="home">Home</a>
                     </li>
-                    <li class="dropdown" ng-if="navbarVm.isCustomer();">
-                        <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li><a>Dashboard</a></li>
-                            <li><a ui-sref="profile">Profile</a></li>
-                        </ul>
+                    <li ng-if="!navbarVm.isGuest();">
+                        <a role="button" aria-haspopup="true" aria-expanded="false" ui-sref="profile">Profile</a>
                     </li>
                 </ul>
             </div>

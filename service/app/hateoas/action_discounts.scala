@@ -3,6 +3,7 @@ package hateoas
 import commons.CollectionLinks
 import domain.ActionDiscount
 import org.joda.time.DateTime
+import relationships.{RelationshipLinks, ResponseRelationshipCollection}
 
 package object action_discounts {
 
@@ -23,7 +24,9 @@ package object action_discounts {
     }
   }
 
-  case class ActionDiscountResponseData(`type`: String, id: Long, attributes: ActionDiscountAttributes)
+  case class ActionDiscountResponseRelationships(categories: ResponseRelationshipCollection)
+
+  case class ActionDiscountResponseData(`type`: String, id: Long, attributes: ActionDiscountAttributes, relationships: ActionDiscountResponseRelationships)
 
   object ActionDiscountResponseData {
     def fromDomain(actionDiscount: ActionDiscount): ActionDiscountResponseData = {
@@ -35,6 +38,13 @@ package object action_discounts {
           from = actionDiscount.from.toString,
           to = actionDiscount.to.toString,
           discount = actionDiscount.discount
+        ),
+        relationships = ActionDiscountResponseRelationships(
+          categories = ResponseRelationshipCollection(
+            links = RelationshipLinks(
+              related = s"/api/action-discounts/${actionDiscount.id.get}/product-categories"
+            )
+          )
         )
       )
     }

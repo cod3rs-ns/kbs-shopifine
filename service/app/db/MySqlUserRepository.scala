@@ -10,7 +10,8 @@ import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
 
-class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends UserRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+  extends UserRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
 
   override def save(user: User): Future[User] = {
     val items = users returning users.map(_.id) into ((item, id) => item.copy(id = Some(id)))
@@ -19,6 +20,18 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
 
   override def retrieve(id: Long): Future[Option[User]] = {
     db.run(users.filter(_.id === id).result.headOption)
+  }
+
+  override def updateUserPoints(id: Long, points: Long): Future[Int] = {
+    val query =
+      sql"""
+           UPDATE
+              users
+           SET
+              points = points + $points
+           WHERE id = $id;
+        """.as[Int].head
+    db.run(query)
   }
 
   override def findByUsernameAndPassword(username: String, password: String): Future[Option[User]] = {

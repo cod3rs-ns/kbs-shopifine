@@ -2,6 +2,7 @@ package com.dmarjanovic.drools.hateoas
 
 import com.dmarjanovic.drools.domain.BillItem
 import com.dmarjanovic.drools.external.{BillsProxy, ProductsProxy}
+import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -13,14 +14,14 @@ case class BillItemRequestRelationships(product: RequestRelationship, bill: Requ
 case class BillItemRequestData(`type`: String, attributes: BillItemRequestAttributes, relationships: BillItemRequestRelationships)
 
 case class BillItemRequest(data: BillItemRequestData) {
-  def toDomain: Future[BillItem] = {
-    BillsProxy.retrieveBill(1, data.relationships.bill.data.id).flatMap(bill =>
+  def toDomain(userId: Long): Future[BillItem] = {
+    BillsProxy.retrieveBill(userId, data.relationships.bill.data.id).flatMap(bill =>
       ProductsProxy.retrieveProduct(data.relationships.product.data.id).map(product =>
         BillItem(
           product = Some(product),
-          bill = Some(bill),
           price = data.attributes.price,
-          quantity = data.attributes.quantity
+          quantity = data.attributes.quantity,
+          billCreatedAt = bill.createdAt
         )
       )
     )
@@ -37,6 +38,27 @@ object BillItemWithDiscountsResponseJson {
       discount = item.discount,
       discountAmount = item.discountAmount,
       discounts = item.discounts.map(DiscountResponseJson.fromDomain)
+    )
+  }
+}
+
+case class BillItemResponseAttributes(ordinal: Int, price: Double, quantity: Int, amount: Double, discount: Double, discountAmount: Double)
+
+case class BillItemResponseRelationships(product: ResponseRelationship, bill: ResponseRelationship, discounts: ResponseRelationshipCollection)
+
+case class BillItemResponseData(`type`: String, id: Long, attributes: BillItemResponseAttributes, relationships: BillItemResponseRelationships)
+
+case class BillItemCollectionResponse(data: Seq[BillItemResponseData], links: CollectionLinks) {
+  def toDomain: Seq[BillItem] = {
+    data.map(item =>
+      BillItem(
+        price = item.attributes.price,
+        quantity = item.attributes.quantity,
+        amount = item.attributes.amount,
+        discount = item.attributes.discount,
+        discountAmount = item.attributes.discountAmount,
+        billCreatedAt = DateTime.now
+      )
     )
   }
 }

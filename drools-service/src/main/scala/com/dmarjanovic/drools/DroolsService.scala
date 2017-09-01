@@ -5,7 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
 import com.dmarjanovic.drools.external.{BillsProxy, ProductsProxy}
-import com.dmarjanovic.drools.hateoas.{BillItemRequest, BillItemWithDiscountsResponseJson, BillWithDiscountsResponseJson, CollectionLinks, ProductCollectionResponseJson}
+import com.dmarjanovic.drools.hateoas._
 import com.typesafe.config.{Config, ConfigFactory}
 
 object DroolsService extends JsonSupport {
@@ -22,22 +22,24 @@ object DroolsService extends JsonSupport {
         path("products") {
           get {
             complete {
-              ProductsProxy.retrieveProducts.map(products => {
+              ProductsProxy.retrieveProducts().map(products => {
                 RulesEngine.determineProductWeNeedToFillStock(products.toList)
                 ProductCollectionResponseJson.fromDomain(products.filter(_.fillStock), links = CollectionLinks(self = "self"))
               })
             }
           }
         } ~
-          pathPrefix("bill-items") {
-            path("discounts") {
-              put {
-                entity(as[BillItemRequest]) { spec =>
-                  complete {
-                    spec.toDomain.map(item => {
-                      RulesEngine.calculateBillItemDiscounts(item)
-                      BillItemWithDiscountsResponseJson.fromDomain(item)
-                    })
+          pathPrefix("users") {
+            path(IntNumber / "bill-items" / "discounts") {
+              userId => {
+                put {
+                  entity(as[BillItemRequest]) { spec =>
+                    complete {
+                      spec.toDomain(userId).map(item => {
+                        RulesEngine.calculateBillItemDiscounts(item)
+                        BillItemWithDiscountsResponseJson.fromDomain(item)
+                      })
+                    }
                   }
                 }
               }

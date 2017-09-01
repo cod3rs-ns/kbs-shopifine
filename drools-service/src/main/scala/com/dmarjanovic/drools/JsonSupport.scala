@@ -23,7 +23,7 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val productCatResData: RootJsonFormat[ProductCategoryResponseData] = jsonFormat4(ProductCategoryResponseData)
   implicit val productCatRes: RootJsonFormat[ProductCategoryResponse] = jsonFormat1(ProductCategoryResponse)
 
-  implicit val productAttr: RootJsonFormat[ProductResponseAttributes] = jsonFormat3(ProductResponseAttributes)
+  implicit val productAttr: RootJsonFormat[ProductResponseAttributes] = jsonFormat4(ProductResponseAttributes)
   implicit val productRel: RootJsonFormat[ProductResponseRelationships] = jsonFormat2(ProductResponseRelationships)
   implicit val productData: RootJsonFormat[ProductResponseData] = jsonFormat4(ProductResponseData)
   implicit val productRes: RootJsonFormat[ProductResponse] = jsonFormat1(ProductResponse)
@@ -38,6 +38,15 @@ trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val billItemReqRels: RootJsonFormat[BillItemRequestRelationships] = jsonFormat2(BillItemRequestRelationships)
   implicit val billItemReqData: RootJsonFormat[BillItemRequestData] = jsonFormat3(BillItemRequestData)
   implicit val billItemReq: RootJsonFormat[BillItemRequest] = jsonFormat1(BillItemRequest)
+  implicit val billItemResAttrs: RootJsonFormat[BillItemResponseAttributes] = jsonFormat6(BillItemResponseAttributes)
+  implicit val billItemResRels: RootJsonFormat[BillItemResponseRelationships] = jsonFormat3(BillItemResponseRelationships)
+  implicit val billItemResData: RootJsonFormat[BillItemResponseData] = jsonFormat4(BillItemResponseData)
+  implicit val billItemCollRes: RootJsonFormat[BillItemCollectionResponse] = jsonFormat2(BillItemCollectionResponse)
+
+  implicit val actionDiscountResAttrs: RootJsonFormat[ActionDiscountAttributes] = jsonFormat4(ActionDiscountAttributes)
+  implicit val actionDiscountResRels: RootJsonFormat[ActionDiscountResponseRelationships] = jsonFormat1(ActionDiscountResponseRelationships)
+  implicit val actionDiscountResData: RootJsonFormat[ActionDiscountResponseData] = jsonFormat4(ActionDiscountResponseData)
+  implicit val actionDiscountCollRes: RootJsonFormat[ActionDiscountCollectionResponse] = jsonFormat2(ActionDiscountCollectionResponse)
 
   implicit val consumptionThresholdsAttrs: RootJsonFormat[ConsumptionThresholdAttributes] = jsonFormat3(ConsumptionThresholdAttributes)
   implicit val consumptionThresholdsRels: RootJsonFormat[ConsumptionThresholdRelationships] = jsonFormat1(ConsumptionThresholdRelationships)
