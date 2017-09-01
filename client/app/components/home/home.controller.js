@@ -73,7 +73,8 @@
                                 $log.error(data);
                             });
 
-                        discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related)
+                        var now = new Date();
+                        discounts.retrieveFrom(CONFIG.SERVICE_BASE_URL + product.relationships.discounts.links.related + '?filter[date]=' + now.toISOString())
                             .then(function (response) {
                                 p.discounts = _.forEach(response.data, function (discount) {
                                     p.discount += discount.attributes.discount;

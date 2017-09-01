@@ -1176,6 +1176,12 @@ GET     /api/action-discounts               controllers.ActionDiscounts.retrieve
 #      type: integer
 #      format: int64
 #      required: true
+#    - name: filter[date]
+#      description: Date we want Action Discounts belongs to
+#      in: query
+#      type: string
+#      default: ''
+#      required: false
 #    - name: page[offset]
 #      description: Identifier of a position to start retrieving items from.
 #      in: query
@@ -1209,7 +1215,7 @@ GET     /api/action-discounts               controllers.ActionDiscounts.retrieve
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/product-categories/:id/action-discounts                controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/product-categories/:id/action-discounts                controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `filter[date]`: String ?= "", `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
 #  summary: Retrieve all product categories by action discount
