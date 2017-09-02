@@ -62,11 +62,18 @@ class BillService @Inject()(repository: BillRepository,
         // Update products quantity
         items.foreach(item => products.fillStock(item.productId, -item.quantity))
 
-        // Update User points
-        users.updateUserPoints(bill.customerId, bill.pointsGained)
+        users.retrieve(bill.customerId).map(_.get).flatMap(user => {
+          // Update User Points
+          if (user.points.get > bill.pointsSpent) {
+            // Update User points
+            users.updateUserPoints(bill.customerId, bill.pointsGained - bill.pointsSpent)
 
-        // Set Bill State
-        repository.setState(billId, BillState.SUCCESSFUL)
+            // Set Bill State
+            repository.setState(billId, BillState.SUCCESSFUL)
+          } else {
+            Future.successful(-2)
+          }
+        })
       } else {
         Future.successful(-1)
       }

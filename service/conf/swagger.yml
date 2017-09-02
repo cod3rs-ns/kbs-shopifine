@@ -756,6 +756,10 @@ definitions:
         type: double
         description: Single discount for Bill item
         example: 6.8
+      ordinal:
+        type: integer
+        description: Bill Item Ordinal
+        example: 1
     required:
       - price
       - quantity

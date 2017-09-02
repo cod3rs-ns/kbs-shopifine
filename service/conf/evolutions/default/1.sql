@@ -116,12 +116,6 @@ ADD CONSTRAINT
   fk_bill_items_bills_id
 FOREIGN KEY (bill_id) REFERENCES bills(id);
 
-CREATE TRIGGER trigger_update_bill_item_ordinal
-  BEFORE INSERT ON bill_items
-FOR EACH ROW BEGIN
-  SET NEW.ordinal = (SELECT COUNT(*) FROM bill_items WHERE bill_id = NEW.bill_id) + 1;;
-END;
-
 CREATE TABLE bill_discounts (
   id              INT NOT NULL AUTO_INCREMENT,
   bill_id         INT NOT NULL,
