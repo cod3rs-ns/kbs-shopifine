@@ -10,6 +10,7 @@
     function productCategories($http, CONFIG) {
         var service = {
             retrieveFrom: retrieveFrom,
+            getOne: getOne,
             getAll: getAll,
             create: create,
             modify: modify
@@ -19,6 +20,16 @@
 
         function retrieveFrom(url) {
             return $http.get(url)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function getOne(id) {
+            return $http.get(CONFIG.SERVICE_URL + '/product-categories/' + id)
                 .then(function success(response) {
                     return response.data;
                 })

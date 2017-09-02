@@ -304,30 +304,53 @@
                         var superCategoryName = "";
                         if (!_.isUndefined(superCategory)) {
                             superCategoryId = superCategory.data.id;
-                            superCategoryName = _.head(_.filter(profileVm.user.productCategories, function (c) {
-                                return _.parseInt(c.id) === _.parseInt(superCategoryId);
-                            })).name;
+                            productCategories.getOne(superCategory.data.id)
+                                .then(function (response) {
+                                    var c = {
+                                        'id': category.id,
+                                        'name': category.attributes.name,
+                                        'isConsumerGoods': category.attributes.isConsumerGoods,
+                                        'maxDiscount': category.attributes.maxDiscount,
+                                        'superCategory': {
+                                            'id': superCategoryId,
+                                            'name': response.data.attributes.name
+                                        },
+                                        'edit': false,
+                                        'edited': {
+                                            'name': category.attributes.name,
+                                            'maxDiscount': category.attributes.maxDiscount,
+                                            'isConsumerGoods': category.attributes.isConsumerGoods,
+                                            'superCategory': superCategoryId
+                                        }
+                                    };
+
+                                    profileVm.user.productCategories.push(c);
+                                })
+                                .catch(function (data) {
+                                    $log.error(data);
+                                });
                         }
-
-                        var c = {
-                            'id': category.id,
-                            'name': category.attributes.name,
-                            'isConsumerGoods': category.attributes.isConsumerGoods,
-                            'maxDiscount': category.attributes.maxDiscount,
-                            'superCategory': {
-                                'id': superCategoryId,
-                                'name': superCategoryName
-                            },
-                            'edit': false,
-                            'edited': {
+                        else {
+                            var c = {
+                                'id': category.id,
                                 'name': category.attributes.name,
-                                'maxDiscount': category.attributes.maxDiscount,
                                 'isConsumerGoods': category.attributes.isConsumerGoods,
-                                'superCategory': superCategoryId
-                            }
-                        };
+                                'maxDiscount': category.attributes.maxDiscount,
+                                'superCategory': {
+                                    'id': superCategoryId,
+                                    'name': superCategoryName
+                                },
+                                'edit': false,
+                                'edited': {
+                                    'name': category.attributes.name,
+                                    'maxDiscount': category.attributes.maxDiscount,
+                                    'isConsumerGoods': category.attributes.isConsumerGoods,
+                                    'superCategory': superCategoryId
+                                }
+                            };
 
-                        profileVm.user.productCategories.push(c);
+                            profileVm.user.productCategories.push(c);
+                        }
                     });
 
                     profileVm.actionDiscount.new.actionDiscountProductCategory = _.head(profileVm.user.productCategories);
