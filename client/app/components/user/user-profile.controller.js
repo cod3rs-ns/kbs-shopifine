@@ -42,6 +42,7 @@
         profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
+        profileVm.addProductCategoryToActionDiscount = addProductCategoryToActionDiscount;
 
         // Salesman Products and Bills
         profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
@@ -511,6 +512,7 @@
                             'from': discount.attributes.from,
                             'to': discount.attributes.to,
                             'discount': discount.attributes.discount,
+                            'actionDiscountProductCategory': undefined,
                             'categories': [],
                             'edit': false,
                             'edited': {
@@ -643,6 +645,23 @@
                             discount.edit = false;
                         }
                     })
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function addProductCategoryToActionDiscount(discount, category) {
+            discounts.addProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.success({
+                        content: 'Added Product Category to Action Discount.'
+                    });
+
+                    discount.categories.push({
+                        'id': category.id,
+                        'name': category.name
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
