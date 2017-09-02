@@ -109,12 +109,15 @@
                 .then(function (response) {
                     homeVm.data.categories = _.concat(homeVm.data.categories, _.reduce(response.data, function (init, category) {
                         if (_.isUndefined(category.relationships.superCategory)) {
-                            init.push({
+                            var c = {
                                 'id': category.id,
                                 'name': category.attributes.name,
                                 'subcategoriesUrl': category.relationships.subcategories.links.related,
                                 'subcategories': []
-                            });
+                            };
+
+                            homeVm.retrieveSubcategoriesFor(c);
+                            init.push(c);
                         }
 
                         return init;
@@ -128,10 +131,6 @@
                 .catch(function (data) {
                     $log.error(data);
                 });
-
-            _.forEach(homeVm.data.categories, function (category) {
-                homeVm.retrieveSubcategoriesFor(category);
-            });
         }
 
         function retrieveSubcategoriesFor(category) {
@@ -147,8 +146,8 @@
                     });
 
                     _.forEach(category.subcategories, function (c) {
-                        retrieveSubcategoriesFor(c);
-                    })
+                        homeVm.retrieveSubcategoriesFor(c);
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);
@@ -173,11 +172,25 @@
                 }
             });
 
+            homeVm.filters['price-range-from'] = 0;
+            homeVm.filters['price-range-to'] = 10000;
+
             applyFilters();
         }
 
-        function searchByCategory(id) {
-            homeVm.filters['category'] = id;
+        function searchByCategory(category) {
+            var categories = "";
+
+            function getCategories(category) {
+                categories += "," + category.id;
+                _.forEach(category.subcategories, function (c) {
+                    getCategories(c);
+                });
+            }
+
+            getCategories(category);
+
+            homeVm.filters['category'] = categories.substring(1);
             applyFilters();
         }
 
