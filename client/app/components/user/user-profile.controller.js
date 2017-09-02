@@ -43,6 +43,7 @@
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
         profileVm.addProductCategoryToActionDiscount = addProductCategoryToActionDiscount;
+        profileVm.removeProductCategoryFromActionDiscount = removeProductCategoryFromActionDiscount;
 
         // Salesman Products and Bills
         profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
@@ -661,6 +662,22 @@
                     discount.categories.push({
                         'id': category.id,
                         'name': category.name
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function removeProductCategoryFromActionDiscount(discount, category) {
+            discounts.removeProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.danger({
+                        content: 'Successfully removed category!'
+                    });
+
+                    _.remove(discount.categories, function(c) {
+                        return category.id === c.id;
                     });
                 })
                 .catch(function (data) {

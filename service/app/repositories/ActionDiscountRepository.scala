@@ -18,4 +18,6 @@ trait ActionDiscountRepository {
 
   def addProductCategory(id: Long, categoryId: Long): Future[ActionDiscountProductCategory]
 
+  def removeProductCategory(id: Long, categoryId: Long): Future[Int]
+
 }

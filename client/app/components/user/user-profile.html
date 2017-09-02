@@ -354,7 +354,13 @@
                                 </td>
                                 <td>
                                     <ul class="single-bill-discounts" ng-repeat="c in actionDiscount.categories">
-                                        <li>{{c.name}}</li>
+                                        <li>
+                                            {{c.name}}
+                                            <button class="pull-right" ng-show="actionDiscount.edit"
+                                                    ng-click="profileVm.removeProductCategoryFromActionDiscount(actionDiscount, c);">
+                                                <i class="fa fa-remove" aria-hidden="true"></i>
+                                            </button>
+                                        </li>
                                     </ul>
 
                                     <span ng-show="actionDiscount.edit">
