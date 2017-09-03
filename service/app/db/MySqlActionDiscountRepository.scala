@@ -39,4 +39,8 @@ class MySqlActionDiscountRepository @Inject()(protected val dbConfigProvider: Da
     val items = actionDiscountsProductCategories returning actionDiscountsProductCategories.map(_.id) into ((item, id) => item.copy(id = Some(id)))
     db.run(items += ActionDiscountProductCategory(discount = id, category = categoryId))
   }
+
+  override def removeProductCategory(id: Long, categoryId: Long): Future[Int] = {
+    db.run(actionDiscountsProductCategories.filter(adpc => adpc.discount === id && adpc.category === categoryId).delete)
+  }
 }

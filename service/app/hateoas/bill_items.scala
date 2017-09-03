@@ -6,7 +6,7 @@ import relationships._
 
 package object bill_items {
 
-  case class BillItemRequestAttributes(price: Double, quantity: Int, discount: Double)
+  case class BillItemRequestAttributes(price: Double, quantity: Int, discount: Double, ordinal: Int)
 
   case class BillItemRequestRelationships(product: RequestRelationship, bill: RequestRelationship)
 
@@ -19,7 +19,7 @@ package object bill_items {
       val amount = attributes.price * attributes.quantity
 
       BillItem(
-        ordinal = 0,
+        ordinal = attributes.ordinal,
         productId = relationships.product.data.id,
         billId = relationships.bill.data.id,
         price = attributes.price,

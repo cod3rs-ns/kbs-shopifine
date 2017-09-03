@@ -26,7 +26,7 @@ class ProductService @Inject()(repository: ProductRepository)
           val value = filters(name)
           name match {
             case Name => product.name.toLowerCase.contains(value.toLowerCase)
-            case Category => product.categoryId == value.toLong
+            case Category => value.split(",").map(_.toLong).contains(product.categoryId)
             case PriceMin => product.price >= value.toDouble
             case PriceMax => product.price <= value.toDouble
             case IsActive => product.status == ProductStatus.valueOf(value.toUpperCase)

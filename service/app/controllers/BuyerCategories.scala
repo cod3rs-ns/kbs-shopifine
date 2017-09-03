@@ -110,7 +110,11 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository,
           case Some(category) =>
             val threshold = spec.toDomain
             thresholds.retrieveByBuyerCategory(category.id.get).flatMap(saved => {
-              if (saved.forall(t => !isValueBetween(threshold.from, t.from, t.to) && !isValueBetween(threshold.to, t.from, t.to) && !isValueBetween(t.from, threshold.to, t.to))) {
+              if (saved.forall(t =>
+                !isValueBetween(threshold.from, t.from, t.to) &&
+                  !isValueBetween(threshold.to, t.from, t.to) &&
+                  !(isValueBetween(t.to, threshold.from, threshold.to) && isValueBetween(t.from, threshold.from, threshold.to))
+              )) {
                 thresholds.save(threshold).map(threshold =>
                   Created(Json.toJson(
                     ConsumptionThresholdResponse.fromDomain(threshold)

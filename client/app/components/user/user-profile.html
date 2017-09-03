@@ -321,9 +321,10 @@
                             <thead>
                             <tr>
                                 <th>Discount Name</th>
-                                <th>Date when discount begins</th>
-                                <th>Date when discount ends</th>
+                                <th>From</th>
+                                <th>To</th>
                                 <th>Discount</th>
+                                <th>Categories</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -350,6 +351,33 @@
                                           style="width: 60px !important;">-{{actionDiscount.discount}}%</span>
                                     <input type="number" min="1" max="99" ng-show="actionDiscount.edit"
                                            ng-model="actionDiscount.edited.discount"/>
+                                </td>
+                                <td>
+                                    <ul class="single-bill-discounts" ng-repeat="c in actionDiscount.categories">
+                                        <li>
+                                            {{c.name}}
+                                            <button class="pull-right" ng-show="actionDiscount.edit"
+                                                    ng-click="profileVm.removeProductCategoryFromActionDiscount(actionDiscount, c);">
+                                                <i class="fa fa-remove" aria-hidden="true"></i>
+                                            </button>
+                                        </li>
+                                    </ul>
+
+                                    <span ng-show="actionDiscount.edit">
+                                        <div class="row">
+                                            <select id="action-discount-modify-product-category" class="col-md-8 custom-select"
+                                                    ng-model="actionDiscount.actionDiscountProductCategory">
+                                                <option ng-repeat="category in profileVm.user.productCategories"
+                                                        ng-value="category">
+                                                    {{category.name}}
+                                                </option>
+                                            </select>
+                                            <button class="btn btn-xs btn-primary-filled col-md-3"
+                                                    ng-click="profileVm.addProductCategoryToActionDiscount(actionDiscount, actionDiscount.actionDiscountProductCategory);">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </span>
                                 </td>
                                 <td>
                                     <button class="btn btn-xs btn-primary" ng-click="actionDiscount.edit = true;"

@@ -87,7 +87,7 @@
                                 <li>Total without Discounts:
                                     <span>{{billVm.bill.amountWithoutDiscounts | number : 2}} €</span></li>
                                 <li>Discount: <span>{{billVm.bill.discount}}%</span></li>
-                                <li>Discount Amount: <span>{{billVm.bill.discountAmount}} €</span></li>
+                                <li>Discount Amount: <span>{{billVm.bill.discountAmount | number : 2}} €</span></li>
                                 <li>Total: <span>{{billVm.bill.amount | number : 2}} €</span></li>
                             </ul>
                         </div>

@@ -5,6 +5,7 @@ import javax.inject.Singleton
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import hateoas.action_discounts.{ActionDiscountCollectionResponse, ActionDiscountRequest, ActionDiscountResponse}
+import org.joda.time.DateTime
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{ActionDiscountRepository, ProductCategoryRepository}
@@ -64,13 +65,15 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
     )
   }
 
-  def retrieveAllByCategory(id: Long, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+  def retrieveAllByCategory(id: Long, date: String, offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
     categories.findOne(id).flatMap {
       case Some(_) => discounts.retrieveByProductCategory(id).map(result => {
-        val discounts = for ((discount, _) <- result) yield discount
 
-        val self = routes.ActionDiscounts.retrieveAllByCategory(id, offset, limit).absoluteURL()
-        val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAllByCategory(id, offset + limit, limit).absoluteURL()) else None
+        val parsed: Option[DateTime] = if ("" != date) Some(DateTime.parse(date)) else None
+        val discounts = (for ((discount, _) <- result) yield discount).filter(d => isBetween(parsed, d.from, d.to))
+
+        val self = routes.ActionDiscounts.retrieveAllByCategory(id, date, offset, limit).absoluteURL()
+        val next = if (limit == discounts.length) Some(routes.ActionDiscounts.retrieveAllByCategory(id, date, offset + limit, limit).absoluteURL()) else None
 
         Ok(Json.toJson(
           ActionDiscountCollectionResponse.fromDomain(discounts, CollectionLinks(self = self, next = next))
@@ -106,5 +109,35 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
         )))
     }
   }
+
+  def removeProductCategory(id: Long, categoryId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
+    discounts.findOne(id).flatMap {
+      case Some(_) =>
+        categories.findOne(categoryId).flatMap {
+          case Some(_) =>
+            discounts.removeProductCategory(id, categoryId).map(affected =>
+              if (affected > 0)
+                NoContent
+              else
+                NotFound(Json.toJson(
+                  ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+                ))
+            )
+
+          case None =>
+            Future.successful(NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+            )))
+        }
+
+      case None =>
+        Future.successful(NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
+        )))
+    }
+  }
+
+  private def isBetween(date: Option[DateTime], from: DateTime, to: DateTime): Boolean =
+    date.fold(true)(d => d.isAfter(from) && d.isBefore(to))
 
 }

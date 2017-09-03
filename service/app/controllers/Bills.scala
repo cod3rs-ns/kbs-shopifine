@@ -103,23 +103,27 @@ class Bills @Inject()(bills: BillService,
   def changeState(id: Long, state: String): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async {
     try {
       val toState = BillState.valueOf(state.toUpperCase)
-      bills.setState(id, toState).flatMap(affected => {
-        if (affected > 0) {
+      bills.setState(id, toState).flatMap {
+        case 1 =>
           bills.retrieveOne(id).map(bill =>
             Ok(Json.toJson(BillResponse.fromDomain(bill.get)))
           )
-        }
-        else if (affected == -1) {
+
+        case -1 =>
           Future.successful(BadRequest(Json.toJson(
             ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, s"Insufficiently Products for Bill Accepting.")))
           )))
-        }
-        else {
+
+        case -2 =>
+          Future.successful(BadRequest(Json.toJson(
+            ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, s"Customer doesn't have enough points.")))
+          )))
+
+        case _ =>
           Future.successful(NotFound(Json.toJson(
             ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Bill $id doesn't exist!")))
           )))
-        }
-      })
+      }
     }
     catch {
       case e: IllegalArgumentException =>
@@ -204,7 +208,7 @@ class Bills @Inject()(bills: BillService,
     }
     else {
       bills.retrieveOne(billId) flatMap {
-        case Some(bill) => billItems.retrieveByBill(billId, offset, limit).map(result => {
+        case Some(_) => billItems.retrieveByBill(billId, offset, limit).map(result => {
           val self = routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()
           val next = if (result.size == limit) Some(routes.Bills.retrieveBillItems(userId, billId, offset, limit).absoluteURL()) else None
 

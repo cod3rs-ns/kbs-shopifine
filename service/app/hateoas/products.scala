@@ -27,7 +27,6 @@ package object products {
       val attributes = data.attributes
       val categoryRel = data.relationships.category.data
 
-      // TODO Fix if `fillStock` and `status` is defined
       Product(
         name = attributes.name,
         imageUrl = attributes.imageUrl,

@@ -84,7 +84,7 @@ class ProductCategories @Inject()(productCategories: ProductCategoryRepository, 
 
   def update(id: Long): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) { implicit request =>
     request.body.validate[ProductCategoryRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson(
+      _ => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 

@@ -40,13 +40,14 @@
             bills.create($localStorage.user.id, bill)
                 .then(function (response) {
                     var billId = response.data.id;
-                    _.forEach(cartVm.$storage.items, function (item) {
+                    _.forEach(cartVm.$storage.items, function (item, ordinal) {
                         var billItem = {
                             'data': {
                                 'type': 'bill-items',
                                 'attributes': {
                                     'price': item.product.price,
                                     'quantity': _.parseInt(item.quantity),
+                                    'ordinal': ordinal + 1,
                                     'discount': 0
                                 },
                                 'relationships': {

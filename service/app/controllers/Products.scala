@@ -23,7 +23,7 @@ class Products @Inject()(products: ProductService,
 
   def add(): Action[JsValue] = secure.AuthWith(Seq(Salesman)).async(parse.json) { implicit request =>
     request.body.validate[ProductRequest].fold(
-      failures => Future.successful(BadRequest(Json.toJson(
+      _ => Future.successful(BadRequest(Json.toJson(
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 

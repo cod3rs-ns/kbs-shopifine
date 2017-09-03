@@ -1,6 +1,6 @@
 <script type="text/ng-template" id="subcategories.html">
     <a href="javascript:;" data-toggle="collapse"
-       data-target="{{'#category-' + data.id}}" ng-click="homeVm.searchByCategory(data.id);">
+       data-target="{{'#category-' + data.id}}" ng-click="homeVm.searchByCategory(data);">
         <i class="fa fa-caret-right" aria-hidden="true"></i>
         {{data.name}} <span class="pull-right" ng-show="data.subcategories.length > 0;">({{data.subcategories.length}})</span>
     </a>
@@ -27,7 +27,7 @@
                             <ul class="nav navbar-nav side-nav">
                                 <li ng-repeat="category in homeVm.data.categories">
                                     <a href="javascript:;" data-toggle="collapse"
-                                       data-target="{{'#category-' + category.id}}" ng-click="homeVm.searchByCategory(category.id);">
+                                       data-target="{{'#category-' + category.id}}" ng-click="homeVm.searchByCategory(category);">
                                         {{category.name}}
                                         <i ng-show="category.subcategories.length > 0;" class="fa fa-plus"></i></a>
                                     <ul id="{{'category-' + category.id}}" class="collapse collapseItem">

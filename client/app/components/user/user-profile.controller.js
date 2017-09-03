@@ -6,6 +6,7 @@
         .controller('UserProfileController', UserProfileController);
 
     UserProfileController.$inject = [
+        'CONFIG',
         '$log',
         '$localStorage',
         'ngToast',
@@ -17,7 +18,7 @@
         'productService'
     ];
 
-    function UserProfileController($log, $localStorage, ngToast, users, bills, buyerCategories, productCategories, discounts, productService) {
+    function UserProfileController(CONFIG, $log, $localStorage, ngToast, users, bills, buyerCategories, productCategories, discounts, productService) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -41,6 +42,8 @@
         profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
+        profileVm.addProductCategoryToActionDiscount = addProductCategoryToActionDiscount;
+        profileVm.removeProductCategoryFromActionDiscount = removeProductCategoryFromActionDiscount;
 
         // Salesman Products and Bills
         profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
@@ -304,30 +307,53 @@
                         var superCategoryName = "";
                         if (!_.isUndefined(superCategory)) {
                             superCategoryId = superCategory.data.id;
-                            superCategoryName = _.head(_.filter(profileVm.user.productCategories, function (c) {
-                                return _.parseInt(c.id) === _.parseInt(superCategoryId);
-                            })).name;
+                            productCategories.getOne(superCategory.data.id)
+                                .then(function (response) {
+                                    var c = {
+                                        'id': category.id,
+                                        'name': category.attributes.name,
+                                        'isConsumerGoods': category.attributes.isConsumerGoods,
+                                        'maxDiscount': category.attributes.maxDiscount,
+                                        'superCategory': {
+                                            'id': superCategoryId,
+                                            'name': response.data.attributes.name
+                                        },
+                                        'edit': false,
+                                        'edited': {
+                                            'name': category.attributes.name,
+                                            'maxDiscount': category.attributes.maxDiscount,
+                                            'isConsumerGoods': category.attributes.isConsumerGoods,
+                                            'superCategory': superCategoryId
+                                        }
+                                    };
+
+                                    profileVm.user.productCategories.push(c);
+                                })
+                                .catch(function (data) {
+                                    $log.error(data);
+                                });
                         }
-
-                        var c = {
-                            'id': category.id,
-                            'name': category.attributes.name,
-                            'isConsumerGoods': category.attributes.isConsumerGoods,
-                            'maxDiscount': category.attributes.maxDiscount,
-                            'superCategory': {
-                                'id': superCategoryId,
-                                'name': superCategoryName
-                            },
-                            'edit': false,
-                            'edited': {
+                        else {
+                            var c = {
+                                'id': category.id,
                                 'name': category.attributes.name,
-                                'maxDiscount': category.attributes.maxDiscount,
                                 'isConsumerGoods': category.attributes.isConsumerGoods,
-                                'superCategory': superCategoryId
-                            }
-                        };
+                                'maxDiscount': category.attributes.maxDiscount,
+                                'superCategory': {
+                                    'id': superCategoryId,
+                                    'name': superCategoryName
+                                },
+                                'edit': false,
+                                'edited': {
+                                    'name': category.attributes.name,
+                                    'maxDiscount': category.attributes.maxDiscount,
+                                    'isConsumerGoods': category.attributes.isConsumerGoods,
+                                    'superCategory': superCategoryId
+                                }
+                            };
 
-                        profileVm.user.productCategories.push(c);
+                            profileVm.user.productCategories.push(c);
+                        }
                     });
 
                     profileVm.actionDiscount.new.actionDiscountProductCategory = _.head(profileVm.user.productCategories);
@@ -481,12 +507,14 @@
             discounts.getAll()
                 .then(function (response) {
                     _.forEach(response.data, function (discount) {
-                        profileVm.user.actionDiscounts.push({
+                        var ad = {
                             'id': discount.id,
                             'name': discount.attributes.name,
                             'from': discount.attributes.from,
                             'to': discount.attributes.to,
                             'discount': discount.attributes.discount,
+                            'actionDiscountProductCategory': undefined,
+                            'categories': [],
                             'edit': false,
                             'edited': {
                                 'name': discount.attributes.name,
@@ -494,7 +522,23 @@
                                 'to': new Date(discount.attributes.to),
                                 'discount': discount.attributes.discount
                             }
-                        });
+                        };
+
+                        productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + discount.relationships.categories.links.related)
+                            .then(function (response) {
+                                _.forEach(response.data, function (category) {
+                                    ad.categories.push({
+                                        'id': category.id,
+                                        'name': category.attributes.name
+                                    });
+                                });
+
+                                profileVm.user.actionDiscounts.push(ad);
+                            })
+                            .catch(function (data) {
+                               $log.error(data);
+                            });
+
                     });
                 })
                 .catch(function (data) {
@@ -602,6 +646,39 @@
                             discount.edit = false;
                         }
                     })
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function addProductCategoryToActionDiscount(discount, category) {
+            discounts.addProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.success({
+                        content: 'Added Product Category to Action Discount.'
+                    });
+
+                    discount.categories.push({
+                        'id': category.id,
+                        'name': category.name
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function removeProductCategoryFromActionDiscount(discount, category) {
+            discounts.removeProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.danger({
+                        content: 'Successfully removed category!'
+                    });
+
+                    _.remove(discount.categories, function(c) {
+                        return category.id === c.id;
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);

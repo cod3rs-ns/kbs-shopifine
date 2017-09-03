@@ -54,6 +54,6 @@ rule "Determine final Bill discount and price"
     then
         $bill.discount_$eq($total);
         final double discountAmount = $total * $price / 100.0;
-        $bill.amount_$eq($price - discountAmount);
+        $bill.amount_$eq($price - discountAmount - $bill.pointsSpent());
         $bill.discountAmount_$eq(discountAmount);
 end
