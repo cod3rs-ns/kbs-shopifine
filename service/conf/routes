@@ -87,7 +87,7 @@ GET     /api/products           controllers.Products.retrieveAll(`page[offset]`:
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfStock(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfStock(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieves a product
@@ -393,7 +393,7 @@ PUT     /api/buyer-categories/:id                       controllers.BuyerCategor
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/buyer-categories                           controllers.BuyerCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/buyer-categories                           controllers.BuyerCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all buyer categories thresholds
@@ -436,7 +436,7 @@ GET     /api/buyer-categories                           controllers.BuyerCategor
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/buyer-categories/:id/thresholds            controllers.BuyerCategories.retrieveThresholds(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/buyer-categories/:id/thresholds            controllers.BuyerCategories.retrieveThresholds(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Create new threshold for buyer category
@@ -574,7 +574,7 @@ POST    /api/users/:userId/bills                        controllers.Bills.create
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/users/:userId/bills                        controllers.Bills.retrieveAllByUser(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/users/:userId/bills                        controllers.Bills.retrieveAllByUser(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve bill for specific user
@@ -661,7 +661,7 @@ GET     /api/users/:userId/bills/:billId                controllers.Bills.retrie
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.retrieveBillDiscounts(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.retrieveBillDiscounts(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all bills
@@ -695,7 +695,7 @@ GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.re
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/bills                                      controllers.Bills.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/bills                                      controllers.Bills.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Modify bill state
@@ -846,7 +846,7 @@ POST    /api/users/:userId/bills/:billId/bill-items     controllers.Bills.addBil
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrieveBillItems(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrieveBillItems(userId: Long, billId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all bill item discounts
@@ -909,7 +909,7 @@ GET     /api/users/:userId/bills/:billId/bill-items     controllers.Bills.retrie
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/users/:userId/bills/:billId/bill-items/:billItemId/discounts     controllers.Discounts.retrieveBillItemDiscounts(userId: Long, billId: Long, billItemId: Long,  `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/users/:userId/bills/:billId/bill-items/:billItemId/discounts     controllers.Discounts.retrieveBillItemDiscounts(userId: Long, billId: Long, billItemId: Long,  `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Create new product category
@@ -968,7 +968,7 @@ POST    /api/product-categories             controllers.ProductCategories.create
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/product-categories             controllers.ProductCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/product-categories             controllers.ProductCategories.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all subcategories of specified product category
@@ -1011,7 +1011,7 @@ GET     /api/product-categories             controllers.ProductCategories.retrie
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/product-categories/:id/subcategories           controllers.ProductCategories.retrieveAllSubcategories(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/product-categories/:id/subcategories           controllers.ProductCategories.retrieveAllSubcategories(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Modifies product category
@@ -1169,7 +1169,7 @@ PUT     /api/action-discounts/:id           controllers.ActionDiscounts.update(i
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/action-discounts               controllers.ActionDiscounts.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/action-discounts               controllers.ActionDiscounts.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all action discounts by product category
@@ -1219,7 +1219,7 @@ GET     /api/action-discounts               controllers.ActionDiscounts.retrieve
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/product-categories/:id/action-discounts                controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `filter[date]`: String ?= "", `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/product-categories/:id/action-discounts                controllers.ActionDiscounts.retrieveAllByCategory(id: Long, `filter[date]`: String ?= "", `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Retrieve all product categories by action discount
@@ -1263,7 +1263,7 @@ GET     /api/product-categories/:id/action-discounts                controllers.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/action-discounts/:id/product-categories                controllers.ProductCategories.retrieveAllByActionDiscount(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/action-discounts/:id/product-categories                controllers.ProductCategories.retrieveAllByActionDiscount(id: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
 
 ###
 #  summary: Add product category to action discount
