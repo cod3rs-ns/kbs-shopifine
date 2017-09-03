@@ -64,7 +64,7 @@ class BillService @Inject()(repository: BillRepository,
 
         users.retrieve(bill.customerId).map(_.get).flatMap(user => {
           // Update User Points
-          if (user.points.get > bill.pointsSpent) {
+          if (user.points.get >= bill.pointsSpent) {
             // Update User points
             users.updateUserPoints(bill.customerId, bill.pointsGained - bill.pointsSpent)
 
