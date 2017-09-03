@@ -426,7 +426,7 @@
                     profileVm.productCategory.new = {
                         'name': '',
                         'maxDiscount': '',
-                        'superCategory': 0,
+                        'superCategory': '0',
                         'isConsumerGoods': false
                     }
                 })
@@ -564,11 +564,30 @@
 
             discounts.create(request)
                 .then(function (response) {
+                    var ad = {
+                        'id': response.data.id,
+                        'name': response.data.attributes.name,
+                        'from': response.data.attributes.from,
+                        'to': response.data.attributes.to,
+                        'discount': response.data.attributes.discount,
+                        'categories': [],
+                        'edit': false,
+                        'edited': {
+                            'name': response.data.attributes.name,
+                            'from': new Date(response.data.attributes.from),
+                            'to': new Date(response.data.attributes.to),
+                            'discount': response.data.attributes.discount
+                        }
+                    };
+
                     _.forEach(profileVm.actionDiscount.new.categories, function (category) {
                         var discountId = response.data.id;
                         discounts.addProductCategory(discountId, category.id)
                             .then(function () {
-                                $log.info("Added Product Category " + category.name + ".");
+                                ad.categories.push({
+                                    'id': category.id,
+                                    'name': category.name
+                                });
                             })
                             .catch(function (data) {
                                 $log.error(data);
@@ -579,20 +598,7 @@
                         content: 'Action Discount successfully created.'
                     });
 
-                    profileVm.user.actionDiscounts.push({
-                        'id': response.data.id,
-                        'name': response.data.attributes.name,
-                        'from': response.data.attributes.from,
-                        'to': response.data.attributes.to,
-                        'discount': response.data.attributes.discount,
-                        'edit': false,
-                        'edited': {
-                            'name': response.data.attributes.name,
-                            'from': new Date(response.data.attributes.from),
-                            'to': new Date(response.data.attributes.to),
-                            'discount': response.data.attributes.discount
-                        }
-                    });
+                    profileVm.user.actionDiscounts.push(ad);
 
                     profileVm.actionDiscount.new = {
                         'name': '',
@@ -893,8 +899,6 @@
                 });
                 return false;
             }
-
-            $log.info(new Date(discount.from));
 
             if (_.isNull(discount.from) || _.isUndefined(discount.from)) {
                 ngToast.danger({
