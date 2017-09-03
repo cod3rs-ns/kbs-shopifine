@@ -6,6 +6,7 @@
         .controller('UserProfileController', UserProfileController);
 
     UserProfileController.$inject = [
+        'CONFIG',
         '$log',
         '$localStorage',
         'ngToast',
@@ -17,7 +18,7 @@
         'productService'
     ];
 
-    function UserProfileController($log, $localStorage, ngToast, users, bills, buyerCategories, productCategories, discounts, productService) {
+    function UserProfileController(CONFIG, $log, $localStorage, ngToast, users, bills, buyerCategories, productCategories, discounts, productService) {
         var profileVm = this;
 
         profileVm.user = undefined;
@@ -41,6 +42,8 @@
         profileVm.retrieveActionDiscounts = retrieveActionDiscounts;
         profileVm.addActionDiscount = addActionDiscount;
         profileVm.modifyActionDiscount = modifyActionDiscount;
+        profileVm.addProductCategoryToActionDiscount = addProductCategoryToActionDiscount;
+        profileVm.removeProductCategoryFromActionDiscount = removeProductCategoryFromActionDiscount;
 
         // Salesman Products and Bills
         profileVm.retrieveOutOfStockProducts = retrieveOutOfStockProducts;
@@ -504,12 +507,14 @@
             discounts.getAll()
                 .then(function (response) {
                     _.forEach(response.data, function (discount) {
-                        profileVm.user.actionDiscounts.push({
+                        var ad = {
                             'id': discount.id,
                             'name': discount.attributes.name,
                             'from': discount.attributes.from,
                             'to': discount.attributes.to,
                             'discount': discount.attributes.discount,
+                            'actionDiscountProductCategory': undefined,
+                            'categories': [],
                             'edit': false,
                             'edited': {
                                 'name': discount.attributes.name,
@@ -517,7 +522,23 @@
                                 'to': new Date(discount.attributes.to),
                                 'discount': discount.attributes.discount
                             }
-                        });
+                        };
+
+                        productCategories.retrieveFrom(CONFIG.SERVICE_BASE_URL + discount.relationships.categories.links.related)
+                            .then(function (response) {
+                                _.forEach(response.data, function (category) {
+                                    ad.categories.push({
+                                        'id': category.id,
+                                        'name': category.attributes.name
+                                    });
+                                });
+
+                                profileVm.user.actionDiscounts.push(ad);
+                            })
+                            .catch(function (data) {
+                               $log.error(data);
+                            });
+
                     });
                 })
                 .catch(function (data) {
@@ -625,6 +646,39 @@
                             discount.edit = false;
                         }
                     })
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function addProductCategoryToActionDiscount(discount, category) {
+            discounts.addProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.success({
+                        content: 'Added Product Category to Action Discount.'
+                    });
+
+                    discount.categories.push({
+                        'id': category.id,
+                        'name': category.name
+                    });
+                })
+                .catch(function (data) {
+                    $log.error(data);
+                });
+        }
+
+        function removeProductCategoryFromActionDiscount(discount, category) {
+            discounts.removeProductCategory(discount.id, category.id)
+                .then(function () {
+                    ngToast.danger({
+                        content: 'Successfully removed category!'
+                    });
+
+                    _.remove(discount.categories, function(c) {
+                        return category.id === c.id;
+                    });
                 })
                 .catch(function (data) {
                     $log.error(data);

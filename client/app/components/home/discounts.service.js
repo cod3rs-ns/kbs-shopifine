@@ -13,7 +13,8 @@
             getAll: getAll,
             create: create,
             modify: modify,
-            addProductCategory: addProductCategoryToActionDiscount
+            addProductCategory: addProductCategoryToActionDiscount,
+            removeProductCategory: removeProductCategoryFromActionDiscount
         };
 
         return service;
@@ -60,6 +61,16 @@
 
         function addProductCategoryToActionDiscount(discountId, categoryId) {
             return $http.post(CONFIG.SERVICE_URL + '/action-discounts/' + discountId + '/product-categories/' + categoryId)
+                .then(function success(response) {
+                    return response.data;
+                })
+                .catch(function error(response) {
+                    throw response.data;
+                });
+        }
+
+        function removeProductCategoryFromActionDiscount(discountId, categoryId) {
+            return $http.delete(CONFIG.SERVICE_URL + '/action-discounts/' + discountId + '/product-categories/' + categoryId)
                 .then(function success(response) {
                     return response.data;
                 })

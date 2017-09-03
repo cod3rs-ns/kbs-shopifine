@@ -109,7 +109,6 @@ class BuyerCategories @Inject()(buyerCategories: BuyerCategoryRepository,
         buyerCategories.retrieveOne(id) flatMap {
           case Some(category) =>
             val threshold = spec.toDomain
-            println(threshold)
             thresholds.retrieveByBuyerCategory(category.id.get).flatMap(saved => {
               if (saved.forall(t =>
                 !isValueBetween(threshold.from, t.from, t.to) &&

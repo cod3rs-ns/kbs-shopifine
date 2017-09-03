@@ -85,3 +85,9 @@
 li.subcategory {
     margin-left: 12px;
 }
+
+.custom-select {
+    border-radius: 0;
+    -webkit-appearance: none;
+    height: 29px !important;
+}

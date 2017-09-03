@@ -110,6 +110,33 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
     }
   }
 
+  def removeProductCategory(id: Long, categoryId: Long): Action[AnyContent] = secure.AuthWith(Seq(SalesManager)).async { implicit request =>
+    discounts.findOne(id).flatMap {
+      case Some(_) =>
+        categories.findOne(categoryId).flatMap {
+          case Some(_) =>
+            discounts.removeProductCategory(id, categoryId).map(affected =>
+              if (affected > 0)
+                NoContent
+              else
+                NotFound(Json.toJson(
+                  ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+                ))
+            )
+
+          case None =>
+            Future.successful(NotFound(Json.toJson(
+              ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"ProductCategory $categoryId doesn't exist!")))
+            )))
+        }
+
+      case None =>
+        Future.successful(NotFound(Json.toJson(
+          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Action Discount $id doesn't exist!")))
+        )))
+    }
+  }
+
   private def isBetween(date: Option[DateTime], from: DateTime, to: DateTime): Boolean =
     date.fold(true)(d => d.isAfter(from) && d.isBefore(to))
 

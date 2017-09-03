@@ -1307,6 +1307,46 @@ GET     /api/action-discounts/:id/product-categories                controllers.
 ###
 POST    /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.addProductCategory(id: Long, categoryId: Long)
 
+###
+#  summary: Remove product category from action discount
+#  parameters:
+#    - name: id
+#      description: Identifier of action discount.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: categoryId
+#      description: Identifier of product category.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  tags:
+#    - Action Discounts
+#    - Product Categories
+#  responses:
+#    204:
+#      description: Successfully removed category.
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Action Discount doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Product Category doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.removeProductCategory(id: Long, categoryId: Long)
+
 ### NoDocs ###
 GET     /assets/*file       controllers.Assets.versioned(path = "/public", file: Asset)
 
