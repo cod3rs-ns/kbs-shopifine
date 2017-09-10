@@ -16,7 +16,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(discount = 10.0, `type` = DiscountType.BASIC)
+        item.discounts must contain only BillItemDiscount(name = "Based on quantity for non-consumer goods category.", discount = 10.0, `type` = DiscountType.BASIC)
       }
 
       "create only discount based on quantity and category name" in new BillItemsFixture with ProductsFixture with ProductCategoriesFixture {
@@ -28,7 +28,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(discount = 5.0, `type` = DiscountType.BASIC)
+        item.discounts must contain only BillItemDiscount(name = "Discount for computers.", discount = 5.0, `type` = DiscountType.BASIC)
       }
 
       "choose bigger discount when Bill Item achieves more discounts" in new BillItemsFixture with ProductsFixture with ProductCategoriesFixture {
@@ -40,7 +40,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(discount = 10.0, `type` = DiscountType.BASIC)
+        item.discounts must contain only BillItemDiscount("Based on quantity for non-consumer goods category.", discount = 10.0, `type` = DiscountType.BASIC)
       }
 
       "choose discount based on price because it's bigger than category name" in new BillItemsFixture with ProductsFixture with ProductCategoriesFixture {
@@ -51,7 +51,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(discount = 7.0, `type` = DiscountType.BASIC)
+        item.discounts must contain only BillItemDiscount("Based on price for consumer goods category.", discount = 7.0, `type` = DiscountType.BASIC)
       }
     }
 
@@ -65,7 +65,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(discount = 2.0, `type` = DiscountType.PRO)
+        item.discounts must contain only BillItemDiscount("Based on product last time bought.", discount = 2.0, `type` = DiscountType.PRO)
       }
 
       "return discount based on Product last time bought along with calculated basic discount" in new BillItemsFixture with ProductsFixture with ProductCategoriesFixture {
@@ -77,8 +77,8 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
         RulesEngine.calculateBillItemDiscounts(item)
 
         item.discounts must contain allOf(
-          BillItemDiscount(discount = 7.0, `type` = DiscountType.BASIC),
-          BillItemDiscount(discount = 2.0, `type` = DiscountType.PRO)
+          BillItemDiscount("Based on price for consumer goods category.", discount = 7.0, `type` = DiscountType.BASIC),
+          BillItemDiscount("Based on product last time bought.", discount = 2.0, `type` = DiscountType.PRO)
         )
       }
 
@@ -97,8 +97,8 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
         RulesEngine.calculateBillItemDiscounts(item)
 
         item.discounts must contain allOf(
-          BillItemDiscount(discount = 2.0, `type` = DiscountType.PRO),
-          BillItemDiscount(discount = 1.0, `type` = DiscountType.PRO)
+          BillItemDiscount("Based on product last time bought.", discount = 2.0, `type` = DiscountType.PRO),
+          BillItemDiscount("Based on product category last time bought.", discount = 1.0, `type` = DiscountType.PRO)
         )
       }
 
@@ -117,8 +117,8 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
         RulesEngine.calculateBillItemDiscounts(item)
 
         item.discounts must contain allOf(
-          BillItemDiscount(discount = 7.0, `type` = DiscountType.BASIC),
-          BillItemDiscount(discount = 1.0, `type` = DiscountType.PRO)
+          BillItemDiscount("Based on price for consumer goods category.", discount = 7.0, `type` = DiscountType.BASIC),
+          BillItemDiscount("Based on product category last time bought.", discount = 1.0, `type` = DiscountType.PRO)
         )
       }
 
@@ -161,7 +161,7 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillItemDiscounts(item)
 
-        item.discounts must contain only BillItemDiscount(8.0, DiscountType.PRO)
+        item.discounts must contain only BillItemDiscount("Based on test-action-discount action discount.", 8.0, DiscountType.PRO)
       }
 
       "return more Action Discounts based on Bill created at time" in new BillItemsFixture with ProductsFixture with ProductCategoriesFixture with ActionDiscountsFixture {
@@ -187,8 +187,8 @@ class BillItemsRuleEngineSpec extends WordSpecLike with MustMatchers {
         RulesEngine.calculateBillItemDiscounts(item)
 
         item.discounts must contain allOf(
-          BillItemDiscount(23.0, DiscountType.PRO),
-          BillItemDiscount(18.0, DiscountType.PRO)
+          BillItemDiscount("Based on test-action-discount action discount.", 23.0, DiscountType.PRO),
+          BillItemDiscount("Based on test-action-discount action discount.", 18.0, DiscountType.PRO)
         )
       }
 

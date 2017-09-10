@@ -75,6 +75,7 @@ package object drools {
   trait BillItemDiscountsFixture {
     def createBillItemDiscount(discount: Double, `type`: DiscountType): BillItemDiscount =
       BillItemDiscount(
+        name = "test-discount",
         discount = discount,
         `type` = `type`
       )
@@ -96,6 +97,7 @@ package object drools {
   trait ActionDiscountsFixture {
     def createActionDiscount(from: DateTime, to: DateTime, discount: Double): ActionDiscount =
       ActionDiscount(
+        name = "test-action-discount",
         from = from,
         to = to,
         discount = discount

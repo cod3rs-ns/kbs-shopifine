@@ -6,9 +6,10 @@ import relationships.{ResponseRelationship, ResponseRelationshipCollection}
 
 package object drools_service {
 
-  case class DiscountResponse(`type`: String, discount: Double) {
+  case class DiscountResponse(name: String, `type`: String, discount: Double) {
     def toBillDiscount(bill: Bill): BillDiscount =
       BillDiscount(
+        name = name,
         `type` = DiscountType.valueOf(`type`.toUpperCase),
         discount = discount,
         billId = bill.id.get
@@ -16,6 +17,7 @@ package object drools_service {
 
     def toBillItemDiscount(item: BillItem): BillItemDiscount =
       BillItemDiscount(
+        name = name,
         `type` = DiscountType.valueOf(`type`.toUpperCase),
         discount = discount,
         itemId = item.id.get
