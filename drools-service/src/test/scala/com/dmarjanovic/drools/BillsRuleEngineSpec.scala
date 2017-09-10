@@ -13,7 +13,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 5, `type` = DiscountType.BASIC)
+        bill.discounts must contain only BillDiscount(name = "Based on total amount.", discount = 5, `type` = DiscountType.BASIC)
       }
 
       "not create any 'BASIC' discount" in new BillsFixture {
@@ -31,7 +31,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
+        bill.discounts must contain only BillDiscount(name = "Based on user loyalty.", discount = 1, `type` = DiscountType.PRO)
       }
 
       "create 'PRO' discount based only on Customer category" in new BillsFixture {
@@ -39,7 +39,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
+        bill.discounts must contain only BillDiscount(name = "Based on user category.", discount = 1, `type` = DiscountType.PRO)
       }
 
       "create 'PRO' discount both based on Customer membership and category" in new BillsFixture {
@@ -47,8 +47,10 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
-        bill.discounts.length must be(2)
+        bill.discounts must contain allOf(
+          BillDiscount(name = "Based on user loyalty.", discount = 1, `type` = DiscountType.PRO),
+          BillDiscount(name = "Based on user category.", discount = 1, `type` = DiscountType.PRO)
+        )
       }
 
       "create all 'PRO' discounts" in new BillsFixture {
@@ -56,8 +58,10 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 1, `type` = DiscountType.PRO)
-        bill.discounts.length must be(2)
+        bill.discounts must contain allOf(
+          BillDiscount(name = "Based on user loyalty.", discount = 1, `type` = DiscountType.PRO),
+          BillDiscount(name = "Based on user category.", discount = 1, `type` = DiscountType.PRO)
+        )
       }
 
       "create 'PRO' discount based on amount and Products" in new BillsFixture with BillItemsFixture {
@@ -73,7 +77,7 @@ class BillsRuleEngineSpec extends WordSpecLike with MustMatchers {
 
         RulesEngine.calculateBillDiscounts(bill)
 
-        bill.discounts must contain only BillDiscount(discount = 3, `type` = DiscountType.PRO)
+        bill.discounts must contain only BillDiscount(name = "Based on top 10 items amount.", discount = 3, `type` = DiscountType.PRO)
       }
 
       "not create 'PRO' discount based on amount and Products" in new BillsFixture with BillItemsFixture {

@@ -13,6 +13,7 @@ case class ActionDiscountCollectionResponse(data: Seq[ActionDiscountResponseData
   def toDomain: Seq[ActionDiscount] = {
     data.map(discount =>
       ActionDiscount(
+        name = discount.attributes.name,
         from = DateTime.parse(discount.attributes.from),
         to = DateTime.parse(discount.attributes.to),
         discount = discount.attributes.discount

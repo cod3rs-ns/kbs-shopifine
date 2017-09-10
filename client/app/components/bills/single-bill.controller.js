@@ -44,6 +44,7 @@
                         .then(function (response) {
                             _.forEach(response.data, function (discount) {
                                 billVm.bill.discounts.push({
+                                    'name': discount.attributes.name,
                                     'type': discount.attributes.type,
                                     'discount': discount.attributes.discount
                                 });
@@ -81,6 +82,7 @@
                                     .then(function (response) {
                                         _.forEach(response.data, function (discount) {
                                             billItem.discounts.push({
+                                                'name': discount.attributes.name,
                                                 'type': discount.attributes.type,
                                                 'discount': discount.attributes.discount
                                             });

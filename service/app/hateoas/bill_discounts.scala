@@ -6,7 +6,7 @@ import relationships.{RelationshipData, RelationshipLinks, ResponseRelationship}
 
 package object bill_discounts {
 
-  case class BillDiscountAttributes(discount: Double, `type`: String)
+  case class BillDiscountAttributes(name: String, discount: Double, `type`: String)
 
   case class BillDiscountRelationships(bill: ResponseRelationship)
 
@@ -18,6 +18,7 @@ package object bill_discounts {
         `type` = BillDiscountsType,
         id = discount.id.get,
         attributes = BillDiscountAttributes(
+          name = discount.name,
           discount = discount.discount,
           `type` = discount.`type`.toString
         ),

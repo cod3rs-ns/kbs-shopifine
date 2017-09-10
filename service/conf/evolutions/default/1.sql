@@ -119,6 +119,7 @@ FOREIGN KEY (bill_id) REFERENCES bills(id);
 CREATE TABLE bill_discounts (
   id              INT NOT NULL AUTO_INCREMENT,
   bill_id         INT NOT NULL,
+  name            VARCHAR(255) NOT NULL,
   discount        DOUBLE NOT NULL,
   discount_type   VARCHAR(15) NOT NULL,
 
@@ -134,6 +135,7 @@ FOREIGN KEY (bill_id) REFERENCES bills(id);
 CREATE TABLE item_discounts (
   id              INT NOT NULL AUTO_INCREMENT,
   item_id         INT NOT NULL,
+  name            VARCHAR(255) NOT NULL,
   discount        DOUBLE NOT NULL,
   discount_type   VARCHAR(15) NOT NULL,
 
