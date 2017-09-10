@@ -11,7 +11,7 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Consu
     when
         $item: BillItem(quantity > 20 && product.category.consumerGoods == false)
     then
-        final BillItemDiscount discount = new BillItemDiscount(10, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount("Based on quantity for non-consumer goods category.", 10, DiscountType.BASIC);
         $item.addDiscount(discount);
 end
 
@@ -21,7 +21,7 @@ rule "Determine if Bill Item achieves Basic Discount based on item price and Con
     when
         $item: BillItem(quantity * price > 5000 && product.category.consumerGoods == true)
     then
-        final BillItemDiscount discount = new BillItemDiscount(7, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount("Based on price for consumer goods category.", 7, DiscountType.BASIC);
         if (0 == $item.discounts().size()) {
             $item.addDiscount(discount);
         }
@@ -33,7 +33,7 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Categ
     when
         $item: BillItem(quantity > 5 && "TVs".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount("Discount for TVs.", 5, DiscountType.BASIC);
         if (0 == $item.discounts().size()) {
             $item.addDiscount(discount);
         }
@@ -45,7 +45,7 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Categ
     when
         $item: BillItem(quantity > 5 && "Computers".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount("Discount for computers.", 5, DiscountType.BASIC);
         if (0 == $item.discounts().size()) {
             $item.addDiscount(discount);
         }
@@ -57,7 +57,7 @@ rule "Determine if Bill Item achieves Basic Discount based on Quantity and Categ
     when
         $item: BillItem(quantity > 5 && "Monitors".equalsIgnoreCase(product.category.name))
     then
-        final BillItemDiscount discount = new BillItemDiscount(5, DiscountType.BASIC);
+        final BillItemDiscount discount = new BillItemDiscount("Discount for monitors.", 5, DiscountType.BASIC);
         if (0 == $item.discounts().size()) {
             $item.addDiscount(discount);
         }
@@ -69,7 +69,7 @@ rule "Determine if Bill Item achieves Pro Discount based on Last Time Bought"
     when
         $item: BillItem(product.lastBoughtAt().isAfter(DateTime.now().minusDays(15)))
     then
-        final BillItemDiscount discount = new BillItemDiscount(2, DiscountType.PRO);
+        final BillItemDiscount discount = new BillItemDiscount("Based on product last time bought.", 2, DiscountType.PRO);
         $item.addDiscount(discount);
 end
 
@@ -82,7 +82,7 @@ rule "Determine if Bill Item achieves Pro Discount based on Category Products La
         final List<Product> products = JavaConversions.seqAsJavaList($products);
         for (final Product product: products) {
             if (product.lastBoughtAt().isAfter(DateTime.now().minusDays(30)) && product.id().get() != $item.getProduct().id().get()) {
-                final BillItemDiscount discount = new BillItemDiscount(1, DiscountType.PRO);
+                final BillItemDiscount discount = new BillItemDiscount("Based on product category last time bought.", 1, DiscountType.PRO);
                 $item.addDiscount(discount);
                 break;
             }
@@ -98,7 +98,7 @@ rule "Determine Discounts based on Action Discounts"
         final List<ActionDiscount> discounts = JavaConversions.seqAsJavaList($discounts);
         for (final ActionDiscount d: discounts) {
             if ($item.billCreatedAt().isAfter(d.from()) && $item.billCreatedAt().isBefore(d.to())) {
-                final BillItemDiscount discount = new BillItemDiscount(d.discount(), DiscountType.PRO);
+                final BillItemDiscount discount = new BillItemDiscount("Based on " + d.name() + " action discount.", d.discount(), DiscountType.PRO);
                 $item.addDiscount(discount);
             }
         }

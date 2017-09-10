@@ -206,7 +206,7 @@ trait DatabaseSchema {
 
   class BillDiscounts(tag: Tag) extends Table[BillDiscount](tag, "bill_discounts") {
     def * : ProvenShape[BillDiscount] = {
-      val props = (id.?, bill, discount, `type`)
+      val props = (id.?, bill, name, discount, `type`)
 
       props <> (BillDiscount.tupled, BillDiscount.unapply)
     }
@@ -219,6 +219,8 @@ trait DatabaseSchema {
       bill.id, onDelete = ForeignKeyAction.Cascade
     )
 
+    def name: Rep[String] = column[String]("name")
+
     def discount: Rep[Double] = column[Double]("discount")
 
     def `type`: Rep[DiscountType] = column[DiscountType]("discount_type")
@@ -226,7 +228,7 @@ trait DatabaseSchema {
 
   class ItemDiscounts(tag: Tag) extends Table[BillItemDiscount](tag, "item_discounts") {
     def * : ProvenShape[BillItemDiscount] = {
-      val props = (id.?, item, discount, `type`)
+      val props = (id.?, item, name, discount, `type`)
 
       props <> (BillItemDiscount.tupled, BillItemDiscount.unapply)
     }
@@ -238,6 +240,8 @@ trait DatabaseSchema {
     def itemFK: ForeignKeyQuery[BillItems, BillItem] = foreignKey("fk_item_discounts_items_id", item, billItems)(item =>
       item.id, ForeignKeyAction.Cascade
     )
+
+    def name: Rep[String] = column[String]("name")
 
     def discount: Rep[Double] = column[Double]("discount")
 

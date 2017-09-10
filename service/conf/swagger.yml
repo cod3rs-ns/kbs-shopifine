@@ -698,6 +698,10 @@ definitions:
   BillDiscountAttributes:
     type: object
     properties:
+      name:
+        type: string
+        description: Desctiption of gained discount
+        example: Based on user category.
       discount:
         type: double
         description: Value of bill discount
@@ -709,6 +713,7 @@ definitions:
           - BASIC
           - PRO
     required:
+      - name
       - discount
       - type
   BillDiscountRelationships:
@@ -893,6 +898,10 @@ definitions:
   BillItemDiscountAttributes:
     type: object
     properties:
+      name:
+        type: string
+        description: Desctiption of gained discount
+        example: Based on quantity.
       discount:
         type: double
         description: Value of bill item discount
@@ -904,6 +913,7 @@ definitions:
           - BASIC
           - PRO
     required:
+      - name
       - discount
       - type
   BillItemDiscountRelationships:
