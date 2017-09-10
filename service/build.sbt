@@ -4,7 +4,7 @@ import sbt.Keys._
 lazy val buildSettings = Seq(
   name := "Shopifine Core Service",
   organization := "com.dmarjanovic",
-  version := "1.4.1",
+  version := "1.5.0",
   scalaVersion := "2.11.11"
 )
 
