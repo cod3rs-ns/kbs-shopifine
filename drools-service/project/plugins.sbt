@@ -10,3 +10,5 @@ addSbtPlugin("me.lessis" % "bintray-sbt" % "0.1.1")
 resolvers += Classpaths.sbtPluginReleases
 
 addSbtPlugin("au.com.onegeek" %% "sbt-dotenv" % "1.1.36")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.3.2")
