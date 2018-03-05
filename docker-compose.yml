@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  shopifine-core:
+    image: dmarjanovic/shopifine-core:latest
+    container_name: shopifine-core
+    external_links:
+      - shopifine-mysql:mysql
+    environment:
+      APP_SECRET: JsReYUNSPY
+      MYSQL_URL: jdbc:mysql://0.0.0.0:3306/shopfine?useSSL=false
+      MYSQL_USER: admin
+      MYSQL_PASS: admin
+      JWT_SECRET_KEY: 0q1nRhrQ0c
+      JWT_ALGORITHM: HS256
+      DROOLS_SERVICE_URL: http://shopifine-drools:9001
+      DROOLS_SERVICE_TOKEN: NdQn6DteMO
+    ports:
+      - "9000:9000"
+
+  shopifine-drools:
+    image: dmarjanovic/shopifine-drools:latest
+    container_name: shopifine-drools
+    environment:
+      DROOLS_SERVICE_PORT: 9000
+      CORE_SERVICE_URL: http://shopifine-core:9000
+      CORE_SERVICE_TOKEN: NdQn6DteMO
+    ports:
+      - "9001:9000"
