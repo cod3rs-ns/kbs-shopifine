@@ -74,7 +74,7 @@ trait DatabaseSchema {
     def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
 
     def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_users_buyer_categories_id", buyerCategory, buyerCategories)(category =>
-      category.id, onDelete = ForeignKeyAction.Cascade
+      category.id.?, onDelete = ForeignKeyAction.Cascade
     )
 
     def points: Rep[Option[Long]] = column[Option[Long]]("points")
@@ -98,7 +98,7 @@ trait DatabaseSchema {
     def superCategory: Rep[Option[Long]] = column[Option[Long]]("super_category_id")
 
     def superCategoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_product_categories_product_categories_id", superCategory, productCategories)(
-      category => category.id, onDelete = ForeignKeyAction.Cascade
+      category => category.id.?, onDelete = ForeignKeyAction.Cascade
     )
 
     def maxDiscount: Rep[Double] = column[Double]("max_discount")
