@@ -1351,6 +1351,9 @@ POST    /api/action-discounts/:id/product-categories/:categoryId    controllers.
 DELETE  /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.removeProductCategory(id: Long, categoryId: Long)
 
 ### NoDocs ###
+GET     /ws                 controllers.WebSockets.ws
+
+### NoDocs ###
 GET     /assets/*file       controllers.Assets.versioned(path = "/public", file: Asset)
 
 ### NoDocs ###
