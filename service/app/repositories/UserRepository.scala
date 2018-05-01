@@ -16,4 +16,6 @@ trait UserRepository {
 
   def findByUsername(username: String): Future[Option[User]]
 
+  def findByGoogleId(id: String): Future[Option[User]]
+
 }

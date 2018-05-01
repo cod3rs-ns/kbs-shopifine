@@ -245,6 +245,9 @@ POST    /api/users              controllers.Users.registerUser()
 ###
 POST    /api/users/auth         controllers.Users.auth()
 
+
+POST    /api/auth/google        controllers.Users.googleAuth()
+
 ###
 #  summary: Retrieves an user
 #  parameters:

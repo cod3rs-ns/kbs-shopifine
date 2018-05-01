@@ -11,4 +11,5 @@ case class User(id: Option[Long] = None,
                 address: Option[String],
                 buyerCategoryId: Option[Long] = None,
                 points: Option[Long],
-                registeredAt: DateTime)
+                registeredAt: DateTime,
+                googleAccountId: Option[String] = None)
