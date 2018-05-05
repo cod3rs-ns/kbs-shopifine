@@ -2,6 +2,7 @@ import com.google.inject.AbstractModule
 import db._
 import play.api.libs.concurrent.AkkaGuiceSupport
 import repositories._
+import services.GoogleAuthService
 
 class Module extends AbstractModule with AkkaGuiceSupport {
   def configure(): Unit = {
@@ -15,5 +16,7 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[BillItemRepository]).to(classOf[MySqlBillItemRepository])
     bind(classOf[BillItemDiscountRepository]).to(classOf[MySqlBillItemDiscountRepository])
     bind(classOf[ActionDiscountRepository]).to(classOf[MySqlActionDiscountRepository])
+
+    bind(classOf[GoogleAuthService]).asEagerSingleton()
   }
 }

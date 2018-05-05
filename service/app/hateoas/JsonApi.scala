@@ -2,6 +2,7 @@ package hateoas
 
 import bills._
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
+import google_auth.{GoogleAuthRequest, GoogleAuthResponse}
 import hateoas.action_discounts._
 import hateoas.bill_discounts._
 import hateoas.bill_item_discounts._
@@ -120,6 +121,8 @@ object JsonApi {
   implicit val jwtPayload: OFormat[JwtPayload] = Json.format[JwtPayload]
   implicit val userAuthReq: OFormat[UserAuthRequest] = Json.format[UserAuthRequest]
   implicit val userAuthRes: OFormat[UserAuthResponse] = Json.format[UserAuthResponse]
+  implicit val googleAuthReq: OFormat[GoogleAuthRequest] = Json.format[GoogleAuthRequest]
+  implicit val googleAuthRes: OFormat[GoogleAuthResponse] = Json.format[GoogleAuthResponse]
 
   // Drools Service responses
   implicit val droolsDiscountRes: OFormat[DiscountResponse] = Json.format[DiscountResponse]
