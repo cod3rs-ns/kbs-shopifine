@@ -1,6 +1,11 @@
 import domain.{User, UserRole}
 import org.joda.time.DateTime
-import relationships.{RelationshipData, RelationshipLinks, RequestRelationship, ResponseRelationship}
+import relationships.{
+  RelationshipData,
+  RelationshipLinks,
+  RequestRelationship,
+  ResponseRelationship
+}
 
 package object users {
 
@@ -21,9 +26,9 @@ package object users {
 
   case class UserRequest(data: UserRequestData) {
     def toDomain: User = {
-      val attributes = data.attributes
+      val attributes    = data.attributes
       val relationships = data.relationships
-      val isCustomer = relationships.isDefined && attributes.role.toUpperCase == UserRole.CUSTOMER.name.toUpperCase
+      val isCustomer    = relationships.isDefined && attributes.role.toUpperCase == UserRole.CUSTOMER.name.toUpperCase
 
       User(
         username = attributes.username,
@@ -69,13 +74,14 @@ package object users {
 
       val relationships =
         if (user.role == UserRole.CUSTOMER)
-          Some(UserResponseRelationships(
-            buyerCategory = ResponseRelationship(
-              links = RelationshipLinks(
-                related = s"/api/users/${user.id.get}/categories/${user.buyerCategoryId}"
-              ),
-              data = RelationshipData(BuyerCategoriesType, user.buyerCategoryId.get)
-            )))
+          Some(
+            UserResponseRelationships(
+              buyerCategory = ResponseRelationship(
+                links = RelationshipLinks(
+                  related = s"/api/users/${user.id.get}/categories/${user.buyerCategoryId.get}"
+                ),
+                data = RelationshipData(BuyerCategoriesType, user.buyerCategoryId.get)
+              )))
         else None
 
       UserResponseData(
@@ -91,7 +97,8 @@ package object users {
   case class UserResponse(data: UserResponseData)
 
   object UserResponse {
-    def fromDomain(user: User): UserResponse = UserResponse(data = UserResponseData.fromDomain(user))
+    def fromDomain(user: User): UserResponse =
+      UserResponse(data = UserResponseData.fromDomain(user))
   }
 
 }
