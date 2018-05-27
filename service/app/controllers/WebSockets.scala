@@ -9,6 +9,7 @@ import commons.{Error, ErrorResponse}
 import controllers.WebSockets._
 import hateoas.JsonApi._
 import org.apache.http.HttpHeaders
+import play.api.http.Status.UNAUTHORIZED
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.{Controller, RequestHeader, WebSocket}
@@ -19,11 +20,10 @@ import ws.{Connector, NotificationBus}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class WebSockets @Inject()(users: UserRepository,
-                           notifications: NotificationBus,
-                           jwt: JwtUtil)(implicit ec: ExecutionContext,
-                                         ас: ActorSystem,
-                                         mat: Materializer)
+class WebSockets @Inject()(users: UserRepository, notifications: NotificationBus, jwt: JwtUtil)(
+    implicit ec: ExecutionContext,
+    ас: ActorSystem,
+    mat: Materializer)
     extends Controller {
 
   def ws: WebSocket = WebSocket.acceptOrResult[String, String] { rh =>
@@ -52,7 +52,7 @@ class WebSockets @Inject()(users: UserRepository,
 
 object WebSockets {
 
-  val UnauthorizedRes: JsValue = Json.toJson(
-    ErrorResponse(errors = Seq(Error("401", "Invalid credentials."))))
+  val UnauthorizedRes: JsValue =
+    Json.toJson(ErrorResponse(errors = Seq(Error(UNAUTHORIZED.toString, "Invalid credentials."))))
 
 }

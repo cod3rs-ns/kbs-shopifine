@@ -12,6 +12,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{BillDiscountRepository, BillItemDiscountRepository, BillItemRepository}
 import services.{BillService, ProductService}
+import ws.NotificationPublisher
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -22,7 +23,8 @@ class Bills @Inject()(bills: BillService,
                       billItemDiscounts: BillItemDiscountRepository,
                       products: ProductService,
                       drools: DroolsProxy,
-                      secure: SecuredAuthenticator)
+                      secure: SecuredAuthenticator,
+                      notificationPublisher: NotificationPublisher)
                      (implicit val ec: ExecutionContext) extends Controller {
 
   import Bills.FilterStartsWith
@@ -105,9 +107,10 @@ class Bills @Inject()(bills: BillService,
       val toState = BillState.valueOf(state.toUpperCase)
       bills.setState(id, toState).flatMap {
         case 1 =>
-          bills.retrieveOne(id).map(bill =>
+          bills.retrieveOne(id).map { bill =>
+            bill.foreach(notificationPublisher.orderStatusChanged)
             Ok(Json.toJson(BillResponse.fromDomain(bill.get)))
-          )
+          }
 
         case -1 =>
           Future.successful(BadRequest(Json.toJson(

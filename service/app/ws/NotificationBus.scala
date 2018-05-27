@@ -18,7 +18,7 @@ class NotificationBus @Inject()(implicit system: ActorSystem)
     extends ActorEventBus
     with LookupClassification {
 
-  type Event = Notification
+  type Event      = Notification
   type Classifier = Long
 
   protected def mapSize(): Int = 128
