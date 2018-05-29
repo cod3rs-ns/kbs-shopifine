@@ -9,13 +9,15 @@ import org.joda.time.DateTime
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{ActionDiscountRepository, ProductCategoryRepository}
+import ws.NotificationPublisher
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
                                 categories: ProductCategoryRepository,
-                                secure: SecuredAuthenticator)
+                                secure: SecuredAuthenticator,
+                                notificationPublisher: NotificationPublisher)
                                (implicit val ec: ExecutionContext) extends Controller {
 
   import hateoas.JsonApi._
@@ -27,11 +29,12 @@ class ActionDiscounts @Inject()(discounts: ActionDiscountRepository,
         ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
       ))),
 
-      spec => discounts.save(spec.toDomain).map(discount =>
+      spec => discounts.save(spec.toDomain).map { discount =>
+        notificationPublisher.actionDiscountCreated(discount)
         Created(Json.toJson(
           ActionDiscountResponse.fromDomain(discount)
         ))
-      )
+      }
     )
   }
 
