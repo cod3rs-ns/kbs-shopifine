@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/dmarjanovic94/kbs-shopifine/tree/dev.svg?style=svg&circle-token=19db9cb126a9397de48fa0cfe86311a01163f89d)](https://circleci.com/gh/dmarjanovic94/kbs-shopifine/tree/dev)
 
-# Shopifine 1.5.0
+# Shopifine 1.6.0
 Project for course "Sistemi bazirani na znanju"
 
 ### Core Service
