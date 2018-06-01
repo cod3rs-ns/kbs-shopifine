@@ -52,7 +52,7 @@ trait DatabaseSchema {
 
   class Users(tag: Tag) extends Table[User](tag, "users") {
     def * : ProvenShape[User] = {
-      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategory, points, registeredAt)
+      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategory, points, registeredAt, googleAccountId)
 
       props <> (User.tupled, User.unapply)
     }
@@ -74,12 +74,14 @@ trait DatabaseSchema {
     def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
 
     def buyerCategoryFK: ForeignKeyQuery[BuyerCategories, BuyerCategory] = foreignKey("fk_users_buyer_categories_id", buyerCategory, buyerCategories)(category =>
-      category.id, onDelete = ForeignKeyAction.Cascade
+      category.id.?, onDelete = ForeignKeyAction.Cascade
     )
 
     def points: Rep[Option[Long]] = column[Option[Long]]("points")
 
     def registeredAt: Rep[DateTime] = column[DateTime]("registered_at")
+
+    def googleAccountId: Rep[Option[String]] = column[Option[String]]("google_account_id")
   }
 
   class ProductCategories(tag: Tag) extends Table[ProductCategory](tag, "product_categories") {
@@ -96,7 +98,7 @@ trait DatabaseSchema {
     def superCategory: Rep[Option[Long]] = column[Option[Long]]("super_category_id")
 
     def superCategoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_product_categories_product_categories_id", superCategory, productCategories)(
-      category => category.id, onDelete = ForeignKeyAction.Cascade
+      category => category.id.?, onDelete = ForeignKeyAction.Cascade
     )
 
     def maxDiscount: Rep[Double] = column[Double]("max_discount")

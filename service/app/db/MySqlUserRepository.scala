@@ -2,6 +2,8 @@ package db
 
 import javax.inject.Inject
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import domain.User
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.UserRepository
@@ -11,7 +13,9 @@ import slick.driver.MySQLDriver.api._
 import scala.concurrent.Future
 
 class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends UserRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+    extends UserRepository
+    with HasDatabaseConfigProvider[JdbcProfile]
+    with DatabaseSchema {
 
   override def save(user: User): Future[User] = {
     val items = users returning users.map(_.id) into ((item, id) => item.copy(id = Some(id)))
@@ -34,12 +38,20 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
     db.run(query)
   }
 
-  override def findByUsernameAndPassword(username: String, password: String): Future[Option[User]] = {
+  override def findByUsernameAndPassword(username: String, password: String): Future[Option[User]] =
     db.run(users.filter(u => u.username === username && u.password === password).result.headOption)
-  }
 
-  override def findByUsername(username: String): Future[Option[User]] = {
+  override def findByUsername(username: String): Future[Option[User]] =
     db.run(users.filter(_.username === username).result.headOption)
-  }
 
+  override def findByGoogleId(id: String): Future[Option[User]] =
+    db.run(users.filter(_.googleAccountId === id).result.headOption)
+
+  def getUserIds: Source[Long, NotUsed] = {
+    val action = (for (u <- users) yield u.id).result
+
+    val databasePublisher = db stream action
+
+    Source fromPublisher databasePublisher
+  }
 }
