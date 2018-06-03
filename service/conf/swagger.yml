@@ -742,6 +742,18 @@ definitions:
         format: int64
         description: Total spent points in shopping
         example: 10
+      address:
+        type: string
+        description: Address of the current order location
+        example: Pozorišni trg 6
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
     required:
       - createdAt
       - state
