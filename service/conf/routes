@@ -188,7 +188,7 @@ POST    /api/products           controllers.Products.add()
 #      description: JSON document containing a User specification
 #      in: body
 #      schema:
-#        $ref: '#/definitions/UserRequest'
+#        $ref: '#/definitions/UpdateUserRequest'
 #  tags:
 #    - Users
 #  responses:
@@ -209,7 +209,7 @@ POST    /api/products           controllers.Products.add()
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-POST    /api/users              controllers.Users.registerUser()
+POST    /api/users               controllers.Users.registerUser()
 
 ###
 #  summary: Authenticate user
@@ -275,6 +275,32 @@ POST    /api/auth/google        controllers.Users.googleAuth()
 #        $ref: '#/definitions/ErrorResponse'
 ###
 GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
+
+###
+#  summary: Update a customer
+#  parameters:
+#    - name: userSpec
+#      description: JSON document containing a Customer specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateUserRequest'
+#  tags:
+#    - Users
+#  responses:
+#    200:
+#      description: Customer updated.
+#      schema:
+#        $ref: '#/definitions/UserResponse'
+#    404:
+#      description: A user with provided id doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT     /api/users          controllers.Users.updateCustomer()
 
 ###
 #  summary: Create new buyer category

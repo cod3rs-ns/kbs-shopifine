@@ -10,6 +10,8 @@ trait UserRepository {
 
   def save(user: User): Future[User]
 
+  def update(user: User): Future[User]
+
   def retrieve(id: Long): Future[Option[User]]
 
   def updateUserPoints(id: Long, points: Long): Future[Int]

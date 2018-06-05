@@ -305,6 +305,14 @@ definitions:
         type: string
         description: Address of the resident
         example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
     required:
       - username
       - firstName
@@ -325,6 +333,55 @@ definitions:
         type: string
         description: Time when User is stored
         example: '2017-08-06T01:56:10.000+02:00'
+  UpdateUserRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateUserRequestData'
+    required:
+      - data
+  UpdateUserRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - users
+        description: Type of requsted User
+      attributes:
+        $ref: '#/definitions/UpdateUserRequestAttributes'
+    required:
+      - type
+      - attributes
+  UpdateUserRequestAttributes:
+    type: object
+    properties:
+      firstName:
+        type: string
+        description: User first name
+        example: Dragutin
+      lastName:
+        type: string
+        description: User last name
+        example: Marjanovic
+      address:
+        type: string
+        description: Address of the resident
+        example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
+    required:
+      - firstName
+      - lastName
+      - address
+      - longitude
+      - latitude
   BuyerCategoryRequest:
     type: object
     properties:
