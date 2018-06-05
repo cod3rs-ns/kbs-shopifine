@@ -52,7 +52,7 @@ trait DatabaseSchema {
 
   class Users(tag: Tag) extends Table[User](tag, "users") {
     def * : ProvenShape[User] = {
-      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategory, points, registeredAt, googleAccountId)
+      val props = (id.?, username, password, firstName, lastName, role, address, longitude, latitude, buyerCategory, points, registeredAt, googleAccountId)
 
       props <> (User.tupled, User.unapply)
     }
@@ -70,6 +70,10 @@ trait DatabaseSchema {
     def role: Rep[UserRole] = column[UserRole]("role")
 
     def address: Rep[Option[String]] = column[Option[String]]("address")
+
+    def longitude: Rep[Option[Double]] = column[Option[Double]]("longitude")
+
+    def latitude: Rep[Option[Double]] = column[Option[Double]]("latitude")
 
     def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
 

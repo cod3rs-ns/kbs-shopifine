@@ -32,8 +32,6 @@ class GoogleAuthService @Inject()(ws: WSClient,
             firstName = res.given_name,
             lastName = res.family_name,
             role = UserRole.CUSTOMER,
-            address = None,
-            points = None,
             buyerCategoryId = Some(SilverBuyerCategoryId),
             registeredAt = DateTime.now,
             googleAccountId = Option(res.sub)

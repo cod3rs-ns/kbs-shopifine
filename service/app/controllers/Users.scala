@@ -16,7 +16,7 @@ import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.UserRepository
 import services.GoogleAuthService
 import user_auth.{UserAuthRequest, UserAuthResponse}
-import users.{UserRequest, UserResponse}
+import users.{UpdateUserRequest, UserRequest, UserResponse}
 import util.{JwtPayload, JwtUtil}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +29,7 @@ class Users @Inject()(ws: WSClient,
                       googleAuthService: GoogleAuthService)(implicit val ec: ExecutionContext)
     extends Controller {
 
-  import secure.Roles.PermitAll
+  import secure.Roles._
 
   def registerUser(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body
@@ -103,6 +103,41 @@ class Users @Inject()(ws: WSClient,
                   ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, ex.getMessage))))))
           }
       )
+  }
+
+  def updateCustomer(): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
+    if (request.user.isEmpty || request.user.get.id.isEmpty) {
+      Future.successful(Forbidden(Json.toJson(
+        ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
+      )))
+    }
+    else {
+      request.body.validate[UpdateUserRequest].fold(
+        _ => Future.successful(BadRequest(Json.toJson(
+          ErrorResponse(errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+        ))),
+
+        spec => {
+          val userId = request.user.get.id.get
+          users.retrieve(userId).flatMap {
+            case Some(user) =>
+              users.update(spec.toDomain(user)).map(user =>
+                Ok(Json.toJson(
+                  UserResponse.fromDomain(user)
+                )))
+            case None =>
+              Future.successful(NotFound(
+                Json.toJson(
+                  ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"User $userId doesn't exist!"))))))
+          }.recover {
+            case _: IllegalArgumentException =>
+              NotFound(
+                Json.toJson(
+                  ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"User $userId doesn't exist!")))))
+          }
+        }
+      )
+    }
   }
 
   private def createToken(user: User) = {
