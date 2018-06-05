@@ -548,6 +548,11 @@ POST    /api/users/:userId/bills                        controllers.Bills.create
 #      type: integer
 #      format: int64
 #      required: true
+#    - name: filter[status]
+#      description: Value for filtering bills by status.
+#      in: query
+#      type: string
+#      required: false
 #    - name: page[offset]
 #      description: Identifier of a position to start retrieving items from.
 #      in: query

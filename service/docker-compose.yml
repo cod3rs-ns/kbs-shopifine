@@ -8,7 +8,7 @@ services:
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: shopfine
+      MYSQL_DATABASE: shopifine
     ports:
       - "3306:3306"
-    command: mysqld --lower_case_table_names=1 --skip-ssl
+    command: mysqld --lower_case_table_names=1 --skip-ssl --character-set-server=utf8 --collation-server=utf8_general_ci

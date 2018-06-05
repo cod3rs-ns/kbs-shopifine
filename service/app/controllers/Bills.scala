@@ -1,7 +1,6 @@
 package controllers
 
 import javax.inject.Singleton
-
 import bills.{BillCollectionResponse, BillRequest, BillResponse}
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
@@ -59,7 +58,11 @@ class Bills @Inject()(bills: BillService,
       )))
     }
     else {
-      bills.retrieveByUser(userId, offset, limit).map(result => {
+      val filters = request.queryString.filterKeys(_.startsWith(FilterStartsWith)).map {
+        case (k, v) => k.substring(FilterStartsWith.length, k.length - 1) -> v.mkString
+      }
+
+      bills.retrieveByUserWithFilters(userId, filters, offset, limit).map(result => {
         val self = routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()
         val next = if (result.size == limit) Some(routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()) else None
 

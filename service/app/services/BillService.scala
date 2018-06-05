@@ -10,8 +10,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 class BillService @Inject()(repository: BillRepository,
                             billItems: BillItemRepository,
                             products: ProductRepository,
-                            users: UserRepository)
-                           (implicit ec: ExecutionContext) {
+                            users: UserRepository)(implicit ec: ExecutionContext) {
 
   import BillService.Status
 
@@ -21,28 +20,51 @@ class BillService @Inject()(repository: BillRepository,
   def retrieveOne(id: Long): Future[Option[Bill]] =
     repository.retrieveOne(id)
 
-  def retrieveBillsWithFilters(filters: Map[String, String], offset: Int, limit: Int): Future[Seq[Bill]] = {
-    repository.retrieveAll(offset, limit).map(bills =>
-      bills.filter(bill => {
-        filters.keys.forall(name => {
-          val value = filters(name)
-          name match {
-            case Status => bill.state.toString.toUpperCase == value.toUpperCase
-            case _ => true
+  def retrieveBillsWithFilters(filters: Map[String, String],
+                               offset: Int,
+                               limit: Int): Future[Seq[Bill]] = {
+    repository
+      .retrieveAll(offset, limit)
+      .map {
+        _.filter { bill =>
+          filters.keys.forall { name =>
+            val value = filters(name)
+            name match {
+              case Status =>
+                bill.state.toString.toUpperCase == value.toUpperCase
+              case _ => true
+            }
           }
-        })
-      }).slice(offset, offset + limit)
-    )
+        }.slice(offset, offset + limit)
+      }
   }
 
   def retrieveByUser(userId: Long, offset: Int, limit: Int): Future[Seq[Bill]] =
     repository.retrieveByUser(userId, offset, limit)
 
+  def retrieveByUserWithFilters(userId: Long,
+                                filters: Map[String, String],
+                                offset: Int,
+                                limit: Int): Future[Seq[Bill]] = {
+    repository
+      .retrieveByUser(userId, offset, limit)
+      .map {
+        _.filter { bill =>
+          filters.keys.forall { name =>
+            val value = filters(name)
+            name match {
+              case Status =>
+                bill.state.toString.toUpperCase == value.toUpperCase
+              case _ => true
+            }
+          }
+        }.slice(offset, offset + limit)
+      }
+  }
+
   def setState(id: Long, state: BillState): Future[Int] = {
     if (BillState.SUCCESSFUL == state) {
-      retrieveOne(id).flatMap(bill =>
-        setBillToSuccessful(bill.get)
-      )
+      retrieveOne(id).flatMap(bill => setBillToSuccessful(bill.get))
     } else {
       repository.setState(id, state)
     }
@@ -57,36 +79,41 @@ class BillService @Inject()(repository: BillRepository,
   private def setBillToSuccessful(bill: Bill): Future[Int] = {
     val billId = bill.id.get
 
-    billItems.retrieveByBill(billId, 0, Int.MaxValue).flatMap(items =>
-      if (hasBillItems(items)) {
-        // Update products quantity
-        items.foreach(item => products.fillStock(item.productId, -item.quantity))
+    billItems
+      .retrieveByBill(billId, 0, Int.MaxValue)
+      .flatMap { items =>
+        if (hasBillItems(items)) {
+          // Update products quantity
+          items.foreach(item => products.fillStock(item.productId, -item.quantity))
 
-        users.retrieve(bill.customerId).map(_.get).flatMap(user => {
-          // Update User Points
-          if (user.points.get >= bill.pointsSpent) {
-            // Update User points
-            users.updateUserPoints(bill.customerId, bill.pointsGained - bill.pointsSpent)
-
-            // Set Bill State
-            repository.setState(billId, BillState.SUCCESSFUL)
-          } else {
-            Future.successful(-2)
-          }
-        })
-      } else {
-        Future.successful(-1)
+          users
+            .retrieve(bill.customerId)
+            .map(_.get)
+            .flatMap { user =>
+              // Update User Points
+              if (user.points.get >= bill.pointsSpent) {
+                // Update User points
+                users.updateUserPoints(bill.customerId, bill.pointsGained - bill.pointsSpent)
+                // Set Bill State
+                repository.setState(billId, BillState.SUCCESSFUL)
+              } else {
+                Future.successful(-2)
+              }
+            }
+        } else {
+          Future.successful(-1)
+        }
       }
-    )
   }
 
-  private def hasBillItems(items: Seq[BillItem]): Boolean = {
-    items.forall(i => {
-      Await.result(products.retrieve(i.productId).map(_.get).map(p => {
-        p.quantity >= i.quantity
-      }), 3.seconds)
-    })
-  }
+  private def hasBillItems(items: Seq[BillItem]): Boolean =
+    items.forall { i =>
+      Await.result(products
+                     .retrieve(i.productId)
+                     .map(_.get)
+                     .map(_.quantity >= i.quantity),
+                   3.seconds)
+    }
 
 }
 
