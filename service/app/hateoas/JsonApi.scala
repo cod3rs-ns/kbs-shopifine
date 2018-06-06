@@ -1,7 +1,6 @@
 package hateoas
 
 import bills._
-import com.fasterxml.jackson.annotation.JsonFormat
 import commons.{CollectionLinks, Error, ErrorResponse, Meta}
 import google_auth.{GoogleAuthRequest, GoogleAuthResponse}
 import hateoas.action_discounts._
@@ -11,12 +10,12 @@ import hateoas.bill_items._
 import hateoas.buyer_categories._
 import hateoas.drools_service._
 import hateoas.product_categories._
-import play.api.libs.json._
+import play.api.libs.json.{OFormat, Json, Reads, OWrites, JsObject}
 import products._
 import relationships._
 import user_auth.{UserAuthRequest, UserAuthResponse}
 import users._
-import _root_.util.JwtPayload
+import util.JwtPayload
 import wishlist._
 
 object JsonApi {

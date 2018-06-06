@@ -12,4 +12,6 @@ trait WishlistItemsRepository {
   def retrieveAll(userId: Long): Future[Seq[WishlistItem]]
 
   def delete(id: Long): Future[Int]
+
+  def count(userId: Long, productId: Long): Future[Int]
 }

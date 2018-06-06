@@ -1469,6 +1469,10 @@ GET     /api/users/:userId/wishlist                                 controllers.
 #      description: Malformed request specified.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
+#    400:
+#      description: Product already on wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
 #    404:
 #      description: Product doesn't exist.
 #      schema:

@@ -1175,10 +1175,10 @@ definitions:
         $ref: '#/definitions/WishlistItemRequestAttributes'
       relationships:
         $ref: '#/definitions/WishlistItemRequestRelationships'
-      required:
-        - type
-        - attributes
-        - relationships
+    required:
+      - type
+      - attributes
+      - relationships
   WishlistItemResponseData:
     type: object
     properties:
@@ -1187,14 +1187,19 @@ definitions:
         enum:
           - wishlist-items
         description: Type of requested Wihslist Item
+      id:
+        type: integer
+        description: Unique identifier of Wishlist Item
+        example: 1
       attributes:
         $ref: '#/definitions/WishlistItemResponseAttributes'
       relationships:
         $ref: '#/definitions/WishlistItemResponseRelationships'
-      required:
-        - type
-        - attributes
-        - relationships
+    required:
+      - id
+      - type
+      - attributes
+      - relationships
   WishlistItemRequestAttributes:
     type: object
   WishlistItemResponseAttributes:
@@ -1232,7 +1237,7 @@ definitions:
         minItems: 0
         uniqueItems: true
         items:
-          $ref: '#/definitions/WishlistItemResponse'
+          $ref: '#/definitions/WishlistItemResponseData'
       links:
         $ref: '#/definitions/CollectionLinks'
     required:

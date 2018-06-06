@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import javax.inject.Singleton
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, Controller}
+import play.api.mvc.{Action, AnyContent, Controller, Result}
 import repositories.{ProductRepository, WishlistItemsRepository}
 import wishlist.{WishlistItemCollectionResponse, WishlistItemRequest, WishlistItemResponse}
 
@@ -78,11 +78,22 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
               val item = spec.toDomain
               products.retrieve(item.productId).flatMap {
                 case Some(_) =>
-                  wishlists.save(spec.toDomain).map { wi =>
-                    Accepted(Json.toJson(
-                      WishlistItemResponse.fromDomain(wi)
-                    ))
+                  wishlists.count(userId, item.productId).flatMap { count =>
+                    if (count > 0) {
+                      Future.successful(
+                        BadRequest(Json.toJson(
+                          ErrorResponse(
+                            errors = Seq(Error(BAD_REQUEST.toString, "Product already on wishlist.")))
+                        )))
+                    } else {
+                      wishlists.save(spec.toDomain).map { wi =>
+                        Created(Json.toJson(
+                          WishlistItemResponse.fromDomain(wi)
+                        ))
+                      }
+                    }
                   }
+
                 case None =>
                   Future.successful(
                     NotFound(Json.toJson(

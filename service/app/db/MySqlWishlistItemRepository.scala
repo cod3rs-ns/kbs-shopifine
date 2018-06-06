@@ -15,7 +15,9 @@ class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: Data
     with DatabaseSchema {
 
   override def save(wishlistItem: WishlistItem): Future[WishlistItem] = {
-    val items = wishlistItems returning wishlistItems.map(_.id) into ((item, id) => item.copy(id = Some(id)))
+    val items = wishlistItems returning wishlistItems.map(_.id) into ((item,
+                                                                       id) =>
+                                                                        item.copy(id = Some(id)))
     db.run(items += wishlistItem)
   }
 
@@ -27,4 +29,12 @@ class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: Data
 
   override def retrieveAll(userId: Long): Future[Seq[WishlistItem]] =
     db.run(wishlistItems.filter(_.customerId === userId).result)
+
+  override def count(userId: Long, productId: Long): Future[Int] =
+    db.run(
+      wishlistItems
+        .filter(_.customerId === userId)
+        .filter(_.productId === productId)
+        .countDistinct
+        .result)
 }
