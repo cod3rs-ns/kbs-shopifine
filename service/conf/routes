@@ -786,7 +786,7 @@ GET     /api/bills                                      controllers.Bills.retrie
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-PUT     /api/bills                                  controllers.Bills.changeState()
+PUT     /api/bills                                  controllers.Bills.updateAddress()
 
 ###
 #  summary: Modify bill state

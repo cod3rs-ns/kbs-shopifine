@@ -32,6 +32,12 @@ object Messages {
       longitude: Double
   ) extends BaseNotification
 
+  case class OrderInRadius(
+      override val `type`: NotificationType = NotificationType.ORDER_IN_RADIUS,
+      orderId: Long,
+      distance: Double
+  ) extends BaseNotification
+
   case class ProductPriceChanged(
       override val `type`: NotificationType = NotificationType.PRODUCT_PRICE_CHANGED,
       productId: Long,

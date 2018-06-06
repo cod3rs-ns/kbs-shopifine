@@ -61,8 +61,7 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
       longitude: Double,
       latitude: Double
   ): Future[Int] = {
-    // TODO: change appropriate fields
-    val q = for { b <- bills if b.id === billId } yield (b.amount, b.discount)
-    db.run(q.update((-4, -5)))
+    val q = for { b <- bills if b.id === billId } yield (b.address, b.longitude, b.latitude)
+    db.run(q.update((Option(address), Option(longitude), Option(latitude))))
   }
 }

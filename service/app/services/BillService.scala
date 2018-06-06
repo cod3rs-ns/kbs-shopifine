@@ -3,16 +3,20 @@ package services
 import com.google.inject.Inject
 import domain.{Bill, BillItem, BillState}
 import repositories.{BillItemRepository, BillRepository, ProductRepository, UserRepository}
+import util.DistanceCalculator._
+import ws.NotificationPublisher
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class BillService @Inject()(repository: BillRepository,
-                            billItems: BillItemRepository,
-                            products: ProductRepository,
-                            users: UserRepository)(implicit ec: ExecutionContext) {
+class BillService @Inject()(
+    repository: BillRepository,
+    billItems: BillItemRepository,
+    products: ProductRepository,
+    users: UserRepository,
+    notificationPublisher: NotificationPublisher)(implicit ec: ExecutionContext) {
 
-  import BillService.Status
+  import BillService._
 
   def save(bill: Bill): Future[Bill] =
     repository.save(bill)
@@ -78,15 +82,32 @@ class BillService @Inject()(repository: BillRepository,
 
   def updateAddress(billId: Long,
                     address: String,
-                    latitude: Double,
-                    longitude: Double): Future[Option[Bill]] =
+                    longitude: Double,
+                    latitude: Double): Future[Option[Bill]] =
     retrieveOne(billId).flatMap {
       case Some(bill) =>
-        repository.updateAddress(billId, address, latitude, longitude).map {
+        repository.updateAddress(billId, address, longitude, latitude).flatMap {
           case 1 =>
-            // TODO: Do copy
-            Some(bill)
-          case _ => None
+            users.retrieve(bill.customerId).map {
+              _.map { customer =>
+                if (customer.latitude.isDefined && customer.longitude.isDefined) {
+                  val customerLocation = Location(customer.longitude.get, customer.latitude.get)
+                  val orderLocation    = Location(longitude, latitude)
+
+                  val distance = calculateDistanceInKilometer(customerLocation, orderLocation)
+                  if (distance < OrderRadiusInKm) {
+                    notificationPublisher.orderInRadius(bill, distance)
+                  } else {
+                    notificationPublisher.orderAddressChanged(bill, address, longitude, latitude)
+                  }
+                }
+
+                bill.copy(address = Option(address),
+                          latitude = Option(latitude),
+                          longitude = Option(longitude))
+              }
+            }
+          case _ => Future.successful(None)
         }
       case None => Future.successful(None)
     }
@@ -133,5 +154,6 @@ class BillService @Inject()(repository: BillRepository,
 }
 
 object BillService {
-  val Status: String = "status"
+  val Status: String  = "status"
+  val OrderRadiusInKm = 20
 }
