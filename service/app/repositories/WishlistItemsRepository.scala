@@ -9,7 +9,7 @@ trait WishlistItemsRepository {
 
   def retrieve(id: Long): Future[Option[WishlistItem]]
 
-  def retrieveAll(): Future[Seq[WishlistItem]]
+  def retrieveAll(userId: Long): Future[Seq[WishlistItem]]
 
   def delete(id: Long): Future[Int]
 }

@@ -1404,6 +1404,10 @@ POST    /api/action-discounts/:id/product-categories/:categoryId    controllers.
 ###
 DELETE  /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.removeProductCategory(id: Long, categoryId: Long)
 
+GET     /api/users/:userId/wishlist                                 controllers.Wishlist.retrieve(userId: Long)
+POST    /api/users/:userId/wishlist                                 controllers.Wishlist.addProduct(userId: Long)
+DELETE  /api/users/:userId/wishlist/:id                             controllers.Wishlist.removeProduct(userId: Long, id: Long)
+
 ### NoDocs ###
 GET     /ws                 controllers.WebSockets.ws
 
