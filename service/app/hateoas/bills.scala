@@ -48,6 +48,16 @@ package object bills {
       latitude: Option[Double]
   )
 
+  case class UpdateBillAddressRequestAttributes(address: String,
+                                                latitude: Double,
+                                                longitude: Double)
+
+  case class UpdateBillAddressRequestData(`type`: String,
+                                          id: Long,
+                                          attributes: UpdateBillAddressRequestAttributes)
+
+  case class UpdateBillAddressRequest(data: UpdateBillAddressRequestData)
+
   case class BillResponseRelationships(customer: ResponseRelationship,
                                        items: ResponseRelationshipCollection,
                                        discounts: ResponseRelationshipCollection)

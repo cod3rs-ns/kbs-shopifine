@@ -10,9 +10,10 @@ import slick.driver.MySQLDriver.api._
 
 import scala.concurrent.Future
 
-
 class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends BillRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+    extends BillRepository
+    with HasDatabaseConfigProvider[JdbcProfile]
+    with DatabaseSchema {
 
   override def save(bill: Bill): Future[Bill] = {
     val items = bills returning bills.map(_.id) into ((item, id) => item.copy(id = Some(id)))
@@ -32,7 +33,7 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   }
 
   override def setState(id: Long, state: BillState): Future[Int] = {
-    val q = for {bill <- bills if bill.id === id} yield bill.state
+    val q = for { bill <- bills if bill.id === id } yield bill.state
     db.run(q.update(state))
   }
 
@@ -49,8 +50,19 @@ class MySqlBillRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   }
 
   override def modify(id: Long, bill: Bill): Future[Int] = {
-    val q = for {b <- bills if b.id === id} yield (b.amount, b.discount, b.discountAmount, b.pointsGained)
+    val q = for { b <- bills if b.id === id } yield
+      (b.amount, b.discount, b.discountAmount, b.pointsGained)
     db.run(q.update((bill.amount, bill.discount, bill.discountAmount, bill.pointsGained)))
   }
 
+  override def updateAddress(
+      billId: Long,
+      address: String,
+      longitude: Double,
+      latitude: Double
+  ): Future[Int] = {
+    // TODO: change appropriate fields
+    val q = for { b <- bills if b.id === billId } yield (b.amount, b.discount)
+    db.run(q.update((-4, -5)))
+  }
 }

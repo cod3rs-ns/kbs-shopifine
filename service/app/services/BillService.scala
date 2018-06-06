@@ -76,6 +76,21 @@ class BillService @Inject()(repository: BillRepository,
   def updateBillCalculation(bill: Bill): Future[Int] =
     repository.modify(bill.id.get, bill)
 
+  def updateAddress(billId: Long,
+                    address: String,
+                    latitude: Double,
+                    longitude: Double): Future[Option[Bill]] =
+    retrieveOne(billId).flatMap {
+      case Some(bill) =>
+        repository.updateAddress(billId, address, latitude, longitude).map {
+          case 1 =>
+            // TODO: Do copy
+            Some(bill)
+          case _ => None
+        }
+      case None => Future.successful(None)
+    }
+
   private def setBillToSuccessful(bill: Bill): Future[Int] = {
     val billId = bill.id.get
 
