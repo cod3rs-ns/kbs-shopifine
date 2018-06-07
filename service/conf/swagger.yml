@@ -382,6 +382,44 @@ definitions:
       - address
       - longitude
       - latitude
+  GoogleAuthRequest:
+    type: object
+    properties:
+      idToken:
+        type: string
+        description: Google token obtained from personal address
+    required:
+      - idToken
+  GoogleAuthResponse:
+    type: object
+    properties:
+      aud:
+        type: string
+      sub:
+        type: string
+      email:
+        type: string
+        description: User's Google email
+      email_verified:
+        type: string
+        description: Whether is email verified or not
+      picture:
+        type: string
+        description: Picture used on Google's account
+      given_name:
+        type: string
+        description: Given name of the user
+      family_name:
+        type: string
+        description: Family name of the user
+    required:
+      - aud
+      - sub
+      - email
+      - email_verified
+      - picture
+      - given_name
+      - family_name
   BuyerCategoryRequest:
     type: object
     properties:
@@ -704,6 +742,18 @@ definitions:
         format: int64
         description: Total spent points in shopping
         example: 10
+      address:
+        type: string
+        description: Address of the current order location
+        example: Pozorišni trg 6
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
     required:
       - createdAt
       - state

@@ -11,11 +11,13 @@ package object bills {
 
   case class BillRequestRelationships(customer: RequestRelationship)
 
-  case class BillRequestData(`type`: String, attributes: BillRequestAttributes, relationships: BillRequestRelationships)
+  case class BillRequestData(`type`: String,
+                             attributes: BillRequestAttributes,
+                             relationships: BillRequestRelationships)
 
   case class BillRequest(data: BillRequestData) {
     def toDomain: Bill = {
-      val attributes = data.attributes
+      val attributes    = data.attributes
       val relationships = data.relationships
 
       Bill(
@@ -32,18 +34,28 @@ package object bills {
     }
   }
 
-  case class BillResponseAttributes(createdAt: String,
-                                    state: String,
-                                    totalItems: Long,
-                                    amount: Double,
-                                    discount: Double,
-                                    discountAmount: Double,
-                                    pointsGained: Long,
-                                    pointsSpent: Long)
+  case class BillResponseAttributes(
+      createdAt: String,
+      state: String,
+      totalItems: Long,
+      amount: Double,
+      discount: Double,
+      discountAmount: Double,
+      pointsGained: Long,
+      pointsSpent: Long,
+      address: Option[String],
+      longitude: Option[Double],
+      latitude: Option[Double]
+  )
 
-  case class BillResponseRelationships(customer: ResponseRelationship, items: ResponseRelationshipCollection, discounts: ResponseRelationshipCollection)
+  case class BillResponseRelationships(customer: ResponseRelationship,
+                                       items: ResponseRelationshipCollection,
+                                       discounts: ResponseRelationshipCollection)
 
-  case class BillResponseData(`type`: String, id: Long, attributes: BillResponseAttributes, relationships: BillResponseRelationships)
+  case class BillResponseData(`type`: String,
+                              id: Long,
+                              attributes: BillResponseAttributes,
+                              relationships: BillResponseRelationships)
 
   object BillResponseData {
     def fromDomain(bill: Bill): BillResponseData = {
@@ -55,18 +67,20 @@ package object bills {
         discount = bill.discount,
         discountAmount = bill.discountAmount,
         pointsGained = bill.pointsGained,
-        pointsSpent = bill.pointsSpent
+        pointsSpent = bill.pointsSpent,
+        address = bill.address,
+        longitude = bill.longitude,
+        latitude = bill.latitude
       )
 
       val relationships = BillResponseRelationships(
-        customer = ResponseRelationship(
-          links = RelationshipLinks(
-            related = s"/api/users/${bill.customerId}"
-          ),
-          data = RelationshipData(
-            `type` = UsersType,
-            id = bill.customerId
-          )),
+        customer = ResponseRelationship(links = RelationshipLinks(
+                                          related = s"/api/users/${bill.customerId}"
+                                        ),
+                                        data = RelationshipData(
+                                          `type` = UsersType,
+                                          id = bill.customerId
+                                        )),
         items = ResponseRelationshipCollection(
           links = RelationshipLinks(
             related = s"/api/users/${bill.customerId}/bills/${bill.id.get}/bill-items"
@@ -91,7 +105,8 @@ package object bills {
   case class BillResponse(data: BillResponseData)
 
   object BillResponse {
-    def fromDomain(bill: Bill): BillResponse = BillResponse(data = BillResponseData.fromDomain(bill))
+    def fromDomain(bill: Bill): BillResponse =
+      BillResponse(data = BillResponseData.fromDomain(bill))
   }
 
   case class BillCollectionResponse(data: Seq[BillResponseData], links: CollectionLinks)

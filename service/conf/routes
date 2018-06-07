@@ -245,7 +245,30 @@ POST    /api/users               controllers.Users.registerUser()
 ###
 POST    /api/users/auth         controllers.Users.auth()
 
-
+###
+#  summary: Authenticate user via Google
+#  parameters:
+#    - name: googleAuthSpec
+#      description: JSON document containing a GoogleAuth specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/GoogleAuthRequest'
+#  tags:
+#    - Users
+#  responses:
+#    200:
+#      description: Successfully retrieved Google's response.
+#      schema:
+#        $ref: '#/definitions/GoogleAuthResponse'
+#    400:
+#      description: Malformed JSON specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
 POST    /api/auth/google        controllers.Users.googleAuth()
 
 ###
