@@ -7,7 +7,7 @@ import util.DistanceCalculator._
 import ws.NotificationPublisher
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 
 class BillService @Inject()(
     repository: BillRepository,
@@ -124,7 +124,11 @@ class BillService @Inject()(
       .flatMap { items =>
         if (hasBillItems(items)) {
           // Update products quantity
-          items.foreach(item => products.fillStock(item.productId, -item.quantity))
+          items.foreach { item =>
+            products
+              .fillStock(item.productId, -item.quantity)
+              .foreach(_.foreach(q => handleOneProductLeft(item.productId, q)))
+          }
 
           users
             .retrieve(bill.customerId)
@@ -155,9 +159,20 @@ class BillService @Inject()(
                    3.seconds)
     }
 
+  private def handleOneProductLeft(productId: Long, productQuantity: Int) =
+    Future {
+      blocking {
+        if (OneProductLeftTrigger == productQuantity) {
+          products.retrieve(productId).foreach {
+            _.foreach(p => notificationPublisher.oneProductLeft(p))
+          }
+        }
+      }
+    }
 }
 
 object BillService {
-  val Status: String  = "status"
-  val OrderRadiusInKm = 20
+  val Status: String        = "status"
+  val OrderRadiusInKm       = 20
+  val OneProductLeftTrigger = 1
 }
