@@ -18,4 +18,5 @@ trait ProductRepository {
 
   def updateFillStock(id: Long): Future[Int]
 
+  def updatePrice(id: Long, price: Double): Future[Int]
 }

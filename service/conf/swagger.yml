@@ -71,6 +71,40 @@ definitions:
       - price
       - quantity
       - minQuantity
+  UpdateProductRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateProductRequestData'
+    required:
+      - data
+  UpdateProductRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - products
+        description: Type of requested Product
+      id:
+        type: integer
+        description: Unique identifier of Product
+        example: 1
+      attributes:
+        $ref: '#/definitions/ProductRequestAttributes'
+    required:
+      - type
+      - attributes
+      - id
+  ProductRequestAttributes:
+    type: object
+    properties:
+      price:
+        type: double
+        description: Product price
+        example: 1999.99
+    required:
+      - price
   ProductRequestRelationships:
     type: object
     properties:

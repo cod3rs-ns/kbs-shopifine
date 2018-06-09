@@ -4,12 +4,14 @@ import akka.stream.Materializer
 import com.google.inject.Inject
 import domain.{ActionDiscount, Bill, Product}
 import play.api.libs.json.Json
-import repositories.UserRepository
+import repositories.{UserRepository, WishlistItemsRepository}
 import ws.MessageFormat._
 import ws.NotificationBus.Notification
 
-class NotificationPublisher @Inject()(notificationBus: NotificationBus,
-                                      userRepository: UserRepository)(implicit mat: Materializer) {
+class NotificationPublisher @Inject()(
+    notificationBus: NotificationBus,
+    userRepository: UserRepository,
+    whishlistItemsRepository: WishlistItemsRepository)(implicit mat: Materializer) {
 
   import ws.Messages._
 
@@ -107,9 +109,9 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ))
       .toString
 
-    // TODO: only send to user who has that product in his wishlist
-    userRepository.getUserIds.runForeach(userId =>
-      notificationBus.publish(Notification(userId, message)))
+    whishlistItemsRepository
+      .findUsersWithProductInWishlist(product.id.get)
+      .runForeach(userId => notificationBus.publish(Notification(userId, message)))
   }
 
   def oneProductLeft(product: Product): Unit = {
@@ -124,8 +126,8 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ))
       .toString
 
-    // TODO: only send to user who has that product in his wishlist
-    userRepository.getUserIds.runForeach(userId =>
-      notificationBus.publish(Notification(userId, message)))
+    whishlistItemsRepository
+      .findUsersWithProductInWishlist(product.id.get)
+      .runForeach(userId => notificationBus.publish(Notification(userId, message)))
   }
 }

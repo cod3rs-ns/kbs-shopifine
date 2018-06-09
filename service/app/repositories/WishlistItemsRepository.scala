@@ -1,5 +1,7 @@
 package repositories
 
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import domain.{User, WishlistItem}
 
 import scala.concurrent.Future
@@ -17,5 +19,5 @@ trait WishlistItemsRepository {
 
   def count(userId: Long, productId: Long): Future[Int]
 
-  def findUsersWithProductInWishlist(productId: Long): Future[Seq[User]]
+  def findUsersWithProductInWishlist(productId: Long): Source[Long, NotUsed]
 }

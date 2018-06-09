@@ -145,7 +145,7 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
-#      description: A project with provided id doesn't exist.
+#      description: A product with provided id doesn't exist.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    500:
@@ -154,6 +154,36 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #        $ref: '#/definitions/ErrorResponse'
 ###
 PUT     /api/products/:id       controllers.Products.fillStock(id: Long, quantity: Int)
+
+###
+#  summary: Modifies product price
+#  parameters:
+#    - name: productSpec
+#      description: JSON document containing a Product specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateProductRequest'
+#  tags:
+#    - Products
+#  responses:
+#    200:
+#      description: Product successfully modified.
+#      schema:
+#        $ref: '#/definitions/ProductResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: A product with provided id doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT  /api/products       controllers.Products.updatePrice()
 
 ###
 #  summary: Create new product

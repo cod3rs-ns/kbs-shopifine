@@ -86,8 +86,8 @@ class BillService @Inject()(
                     latitude: Double): Future[Option[Bill]] =
     retrieveOne(billId).flatMap {
       case Some(bill) =>
-        repository.updateAddress(billId, address, longitude, latitude).flatMap {
-          case 1 =>
+        repository.updateAddress(billId, address, longitude, latitude).flatMap { aff =>
+          if (aff == RowsAffected) {
             users.retrieve(bill.customerId).map {
               _.map { customer =>
                 val updatedBill = bill.copy(
@@ -111,7 +111,9 @@ class BillService @Inject()(
                 updatedBill
               }
             }
-          case _ => Future.successful(None)
+          } else {
+            Future.successful(None)
+          }
         }
       case None => Future.successful(None)
     }
@@ -175,4 +177,5 @@ object BillService {
   val Status: String        = "status"
   val OrderRadiusInKm       = 20
   val OneProductLeftTrigger = 1
+  val RowsAffected          = 1
 }
