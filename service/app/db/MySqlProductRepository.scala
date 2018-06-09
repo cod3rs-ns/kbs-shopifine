@@ -9,10 +9,13 @@ import repositories.ProductRepository
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
-  extends ProductRepository with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(
+    implicit ec: ExecutionContext)
+    extends ProductRepository
+    with HasDatabaseConfigProvider[JdbcProfile]
+    with DatabaseSchema {
 
   override def save(product: Product): Future[Product] = {
     val items = products returning products.map(_.id) into ((item, id) => item.copy(id = Some(id)))
@@ -27,27 +30,35 @@ class MySqlProductRepository @Inject()(protected val dbConfigProvider: DatabaseC
     db.run(products.result)
   }
 
-  override def fillStock(id: Long, quantity: Long): Future[Int] = {
-    val query =
+  override def fillStock(id: Long, quantity: Long): Future[Option[Int]] = {
+    val updateAction =
       sql"""
            UPDATE
               products,
               (SELECT COUNT(*) AS result FROM products WHERE id = $id AND quantity + $quantity > min_quantity) stock
            SET
-              quantity = quantity + $quantity,
+              quantity = @quantity := quantity + $quantity,
               fill_stock = !stock.result
            WHERE id = $id;
         """.as[Int].head
-    db.run(query)
+
+    val selectAction = sql"""SELECT @quantity""".as[Int].head
+
+    val composedAction = for {
+      updateRes <- updateAction
+      selectRes <- selectAction
+    } yield if (updateRes == 1) Some(selectRes) else None
+
+    db.run(composedAction.transactionally)
   }
 
   override def updateLastBoughtDateTime(id: Long): Future[Int] = {
-    val q = for {product <- products if product.id === id} yield product.lastBoughtAt
+    val q = for { product <- products if product.id === id } yield product.lastBoughtAt
     db.run(q.update(DateTime.now))
   }
 
   override def updateFillStock(id: Long): Future[Int] = {
-    val q = for {product <- products if product.id === id} yield product.fillStock
+    val q = for { product <- products if product.id === id } yield product.fillStock
     db.run(q.update(true))
   }
 

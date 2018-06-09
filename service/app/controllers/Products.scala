@@ -74,24 +74,24 @@ class Products @Inject()(products: ProductService,
     }
   }
 
-  def fillStock(id: Long, quantity: Int): Action[AnyContent] = secure.AuthWith(Seq(Salesman)).async {
-    products.fillStock(id, quantity).flatMap(updated => {
-      if (updated > 0) {
-        products.retrieveOne(id) map {
-          case Some(product) =>
-            Ok(Json.toJson(ProductResponse.fromDomain(product)))
-
-          case None =>
+  def fillStock(id: Long, quantity: Int): Action[AnyContent] =
+    secure.AuthWith(Seq(Salesman)).async {
+      products.fillStock(id, quantity).flatMap {
+        case None =>
+          Future.successful(
             NotFound(Json.toJson(
               ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Project $id doesn't exist!")))
-            ))
-        }
+            )))
+        case Some(_) =>
+          products.retrieveOne(id) map {
+            case Some(product) => Ok(Json.toJson(ProductResponse.fromDomain(product)))
+            case None =>
+              NotFound(
+                Json.toJson(
+                  ErrorResponse(
+                    errors = Seq(Error(NOT_FOUND.toString, s"Project $id doesn't exist!")))
+                ))
+          }
       }
-      else
-        Future.successful(NotFound(Json.toJson(
-          ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Project $id doesn't exist!")))
-        )))
-    })
-  }
-
+    }
 }

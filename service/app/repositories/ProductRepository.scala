@@ -12,7 +12,7 @@ trait ProductRepository {
 
   def retrieveAll(): Future[Seq[Product]]
 
-  def fillStock(id: Long, quantity: Long): Future[Int]
+  def fillStock(id: Long, quantity: Long): Future[Option[Int]]
 
   def updateLastBoughtDateTime(id: Long): Future[Int]
 
