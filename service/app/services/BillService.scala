@@ -90,21 +90,25 @@ class BillService @Inject()(
           case 1 =>
             users.retrieve(bill.customerId).map {
               _.map { customer =>
+                val updatedBill = bill.copy(
+                  address = Option(address),
+                  latitude = Option(latitude),
+                  longitude = Option(longitude)
+                )
+
                 if (customer.latitude.isDefined && customer.longitude.isDefined) {
                   val customerLocation = Location(customer.longitude.get, customer.latitude.get)
                   val orderLocation    = Location(longitude, latitude)
 
                   val distance = calculateDistanceInKilometer(customerLocation, orderLocation)
                   if (distance < OrderRadiusInKm) {
-                    notificationPublisher.orderInRadius(bill, distance)
+                    notificationPublisher.orderInRadius(updatedBill, distance)
                   } else {
-                    notificationPublisher.orderAddressChanged(bill, address, longitude, latitude)
+                    notificationPublisher.orderAddressChanged(updatedBill)
                   }
                 }
 
-                bill.copy(address = Option(address),
-                          latitude = Option(latitude),
-                          longitude = Option(longitude))
+                updatedBill
               }
             }
           case _ => Future.successful(None)

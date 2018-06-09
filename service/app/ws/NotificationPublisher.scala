@@ -15,7 +15,20 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
 
   def orderStatusChanged(bill: Bill): Unit = {
     val message = Json
-      .toJson(OrderStateChanged(billId = bill.customerId, state = bill.state))
+      .toJson(
+        OrderStateChanged(
+          orderId = bill.id.get,
+          state = bill.state,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
+        ))
       .toString
 
     notificationBus.publish(Notification(bill.customerId, message))
@@ -27,8 +40,8 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ActionDiscountCreated(
           discountId = actionDiscount.id.get,
           name = actionDiscount.name,
-          from = actionDiscount.from,
-          to = actionDiscount.to,
+          from = actionDiscount.from.toString,
+          to = actionDiscount.to.toString,
           discount = actionDiscount.discount
         ))
       .toString
@@ -38,14 +51,21 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
     }
   }
 
-  def orderAddressChanged(bill: Bill, address: String, longitude: Double, latitude: Double): Unit = {
+  def orderAddressChanged(bill: Bill): Unit = {
     val message = Json
       .toJson(
         OrderAddressChanged(
           orderId = bill.id.get,
-          address = address,
-          latitude = latitude,
-          longitude = longitude
+          state = bill.state,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
         ))
       .toString
 
@@ -54,7 +74,21 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
 
   def orderInRadius(bill: Bill, distance: Double): Unit = {
     val message = Json
-      .toJson(OrderInRadius(orderId = bill.id.get, distance = distance))
+      .toJson(
+        OrderInRadius(
+          orderId = bill.id.get,
+          state = bill.state,
+          distance = distance,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
+        ))
       .toString
 
     notificationBus.publish(Notification(bill.customerId, message))

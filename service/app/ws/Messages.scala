@@ -1,7 +1,6 @@
 package ws
 
 import domain.BillState
-import org.joda.time.DateTime
 
 object Messages {
 
@@ -11,31 +10,56 @@ object Messages {
 
   case class OrderStateChanged(
       override val `type`: NotificationType = NotificationType.ORDER_STATUS_CHANGED,
-      billId: Long,
-      state: BillState
+      orderId: Long,
+      state: BillState,
+      createdAt: String,
+      pointsGained: Long,
+      pointsSpent: Long,
+      amount: Double,
+      discount: Double,
+      totalItems: Long,
+      address: String,
+      latitude: Double,
+      longitude: Double
   ) extends BaseNotification
 
   case class ActionDiscountCreated(
       override val `type`: NotificationType = NotificationType.ACTION_DISCOUNT_CREATED,
       discountId: Long,
       name: String,
-      from: DateTime,
-      to: DateTime,
+      from: String,
+      to: String,
       discount: Double
   ) extends BaseNotification
 
   case class OrderAddressChanged(
       override val `type`: NotificationType = NotificationType.ORDER_ADDRESS_CHANGED,
       orderId: Long,
+      state: BillState,
       address: String,
       latitude: Double,
-      longitude: Double
-  ) extends BaseNotification
+      longitude: Double,
+      createdAt: String,
+      pointsGained: Long,
+      pointsSpent: Long,
+      amount: Double,
+      discount: Double,
+      totalItems: Long) extends BaseNotification
 
   case class OrderInRadius(
       override val `type`: NotificationType = NotificationType.ORDER_IN_RADIUS,
       orderId: Long,
-      distance: Double
+      state: BillState,
+      distance: Double,
+      address: String,
+      latitude: Double,
+      longitude: Double,
+      createdAt: String,
+      pointsGained: Long,
+      pointsSpent: Long,
+      amount: Double,
+      discount: Double,
+      totalItems: Long
   ) extends BaseNotification
 
   case class ProductPriceChanged(
