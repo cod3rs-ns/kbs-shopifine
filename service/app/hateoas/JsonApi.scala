@@ -10,12 +10,13 @@ import hateoas.bill_items._
 import hateoas.buyer_categories._
 import hateoas.drools_service._
 import hateoas.product_categories._
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{OFormat, Json, Reads, OWrites, JsObject}
 import products._
 import relationships._
 import user_auth.{UserAuthRequest, UserAuthResponse}
 import users._
 import util.JwtPayload
+import wishlist._
 
 object JsonApi {
 
@@ -119,6 +120,17 @@ object JsonApi {
   implicit val actionDiscResData: OFormat[ActionDiscountResponseData] = Json.format[ActionDiscountResponseData]
   implicit val actionDiscRes: OFormat[ActionDiscountResponse] = Json.format[ActionDiscountResponse]
   implicit val actionDiscResCollection: OFormat[ActionDiscountCollectionResponse] = Json.format[ActionDiscountCollectionResponse]
+
+  implicit val wishlistReqAttrsReads: Reads[WishlistItemRequestAttributes] = Reads[WishlistItemRequestAttributes](json => json.validate[JsObject].filter(_.values.isEmpty).map(_ => WishlistItemRequestAttributes()))
+  implicit val wishlistReqAttrsWrites: OWrites[WishlistItemRequestAttributes] = OWrites[WishlistItemRequestAttributes](_ => Json.obj())
+  implicit val wishlistReqRels: OFormat[WishlistItemRequestRelationships] = Json.format[WishlistItemRequestRelationships]
+  implicit val wishlistReqData: OFormat[WishlistItemRequestData] = Json.format[WishlistItemRequestData]
+  implicit val wishlistReq: OFormat[WishlistItemRequest] = Json.format[WishlistItemRequest]
+  implicit val wishlistResRels: OFormat[WishlistItemResponseRelationships] = Json.format[WishlistItemResponseRelationships]
+  implicit val wishlistResAttrs: OFormat[WishlistItemResponseAttributes] = Json.format[WishlistItemResponseAttributes]
+  implicit val wishlistResData: OFormat[WishlistItemResponseData] = Json.format[WishlistItemResponseData]
+  implicit val wishlistRes: OFormat[WishlistItemResponse] = Json.format[WishlistItemResponse]
+  implicit val wishlistResCollection: OFormat[WishlistItemCollectionResponse] = Json.format[WishlistItemCollectionResponse]
 
   // Auth based classes
   implicit val jwtPayload: OFormat[JwtPayload] = Json.format[JwtPayload]

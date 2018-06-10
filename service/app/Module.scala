@@ -16,6 +16,7 @@ class Module extends AbstractModule with AkkaGuiceSupport {
     bind(classOf[BillItemRepository]).to(classOf[MySqlBillItemRepository])
     bind(classOf[BillItemDiscountRepository]).to(classOf[MySqlBillItemDiscountRepository])
     bind(classOf[ActionDiscountRepository]).to(classOf[MySqlActionDiscountRepository])
+    bind(classOf[WishlistItemsRepository]).to(classOf[MySqlWishlistItemRepository])
 
     bind(classOf[GoogleAuthService]).asEagerSingleton()
   }

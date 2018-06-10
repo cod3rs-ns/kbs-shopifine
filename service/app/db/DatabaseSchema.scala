@@ -25,6 +25,8 @@ trait DatabaseSchema {
   val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
   val actionDiscountsProductCategories: TableQuery[ActionDiscountsProductCategories] = TableQuery[ActionDiscountsProductCategories]
 
+  val wishlistItems: TableQuery[WishlistItems] = TableQuery[WishlistItems]
+
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
     ts => new DateTime(ts.getTime)
@@ -320,6 +322,31 @@ trait DatabaseSchema {
     def categoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_action_discounts_product_categories_product_categories_id", category, productCategories)(category =>
       category.id, onDelete = ForeignKeyAction.Cascade
     )
+  }
+
+  class WishlistItems(tag: Tag) extends Table[WishlistItem](tag, "wishlist_items") {
+    def * : ProvenShape[WishlistItem] = {
+      val props = (id.?, productId, customerId, createdAt)
+
+      props <> (WishlistItem.tupled, WishlistItem.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def createdAt: Rep[DateTime] = column[DateTime]("created_at")
+
+    def customerId: Rep[Long] = column[Long]("customer_id")
+
+    def productId: Rep[Long] = column[Long]("product_id")
+
+    def customerFK: ForeignKeyQuery[Users, User] = foreignKey("fk_wishlist_items_customer_id", customerId, users)(user =>
+      user.id, onDelete = ForeignKeyAction.Cascade
+    )
+
+    def productFK: ForeignKeyQuery[Products, Product] = foreignKey("fk_wishlist_items_product_id", productId, products)(user =>
+      user.id, onDelete = ForeignKeyAction.Cascade
+    )
+
   }
 
 }

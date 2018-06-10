@@ -250,6 +250,10 @@ POST    /api/users/auth         controllers.Users.auth()
 #  parameters:
 #    - name: googleAuthSpec
 #      description: JSON document containing a GoogleAuth specification
+#  summary: Google Auth
+#  parameters:
+#    - name: googleAuthSpec
+#      description: JSON document containing a Google Auth specification
 #      in: body
 #      schema:
 #        $ref: '#/definitions/GoogleAuthRequest'
@@ -257,11 +261,11 @@ POST    /api/users/auth         controllers.Users.auth()
 #    - Users
 #  responses:
 #    200:
-#      description: Successfully retrieved Google's response.
+#      description: Successfull Google Auth.
 #      schema:
 #        $ref: '#/definitions/GoogleAuthResponse'
 #    400:
-#      description: Malformed JSON specified.
+#      description: Invalid token.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    500:
@@ -1403,6 +1407,162 @@ POST    /api/action-discounts/:id/product-categories/:categoryId    controllers.
 #        $ref: '#/definitions/ErrorResponse'
 ###
 DELETE  /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.removeProductCategory(id: Long, categoryId: Long)
+
+###
+#  summary: Retrieve all items on the wishlist.
+#  parameters:
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    200:
+#      description: Wishlist successfully retrieved.
+#      schema:
+#        $ref: '#/definitions/WishlistItemCollectionResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: User doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/users/:userId/wishlist                                 controllers.Wishlist.retrieve(userId: Long)
+
+###
+#  summary: Add product to wishlist.
+#  parameters:
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: wishlistItemSpec
+#      description: JSON document containing WishlistItem specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/WishlistItemRequest'
+#  required:
+#    - userId
+#    - wishlistItemSpec
+#  tags:
+#    - Wishlist
+#  responses:
+#    200:
+#      description: Product successfully added to wishlist.
+#      schema:
+#        $ref: '#/definitions/WishlistItemResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    400:
+#      description: Product already on wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Product doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: User doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+POST    /api/users/:userId/wishlist                                 controllers.Wishlist.addProduct(userId: Long)
+
+###
+#  summary: Remove item from user wishlist
+#  parameters:
+#    - name: id
+#      description: Identifier of the Item.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - id
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    204:
+#      description: Successfully removed wishlist item (product).
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Item not on Wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/users/:userId/wishlist/:id                             controllers.Wishlist.removeItem(userId: Long, id: Long)
+
+###
+#  summary: Remove product from user wishlist
+#  parameters:
+#    - name: productId
+#      description: Identifier of product.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - productId
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    204:
+#      description: Successfully removed wishlist item (product).
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Item not on Wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/users/:userId/wishlist/products/:productId                             controllers.Wishlist.removeProduct(userId: Long, productId: Long)
 
 ### NoDocs ###
 GET     /ws                 controllers.WebSockets.ws
