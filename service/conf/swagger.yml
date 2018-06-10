@@ -185,6 +185,9 @@ definitions:
       fillStock:
         type: boolean
         description: Indicate if Product available on stock
+      isInWishlist:
+        type: boolean
+        description: Indicate if Product is in User's Wishlist
       status:
         type: string
         description: Current status of Product
