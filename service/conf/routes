@@ -145,7 +145,7 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
-#      description: A project with provided id doesn't exist.
+#      description: A product with provided id doesn't exist.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    500:
@@ -154,6 +154,36 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #        $ref: '#/definitions/ErrorResponse'
 ###
 PUT     /api/products/:id       controllers.Products.fillStock(id: Long, quantity: Int)
+
+###
+#  summary: Modifies product price
+#  parameters:
+#    - name: productSpec
+#      description: JSON document containing a Product specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateProductRequest'
+#  tags:
+#    - Products
+#  responses:
+#    200:
+#      description: Product successfully modified.
+#      schema:
+#        $ref: '#/definitions/ProductResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: A product with provided id doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT  /api/products       controllers.Products.updatePrice()
 
 ###
 #  summary: Create new product
@@ -757,6 +787,36 @@ GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.re
 #        $ref: '#/definitions/ErrorResponse'
 ###
 GET     /api/bills                                      controllers.Bills.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
+
+###
+#  summary: Modify order address
+#  parameters:
+#    - name: OrderSpec
+#      description: JSON document containing Order address specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateBillAddressRequest'
+#  tags:
+#    - Bills
+#  responses:
+#    200:
+#      description: Order address updated.
+#      schema:
+#        $ref: '#/definitions/BillResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Bill doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT     /api/bills                                  controllers.Bills.updateAddress()
 
 ###
 #  summary: Modify bill state

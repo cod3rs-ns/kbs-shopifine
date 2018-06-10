@@ -71,6 +71,40 @@ definitions:
       - price
       - quantity
       - minQuantity
+  UpdateProductRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateProductRequestData'
+    required:
+      - data
+  UpdateProductRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - products
+        description: Type of requested Product
+      id:
+        type: integer
+        description: Unique identifier of Product
+        example: 1
+      attributes:
+        $ref: '#/definitions/ProductRequestAttributes'
+    required:
+      - type
+      - attributes
+      - id
+  ProductRequestAttributes:
+    type: object
+    properties:
+      price:
+        type: double
+        description: Product price
+        example: 1999.99
+    required:
+      - price
   ProductRequestRelationships:
     type: object
     properties:
@@ -1032,6 +1066,50 @@ definitions:
         $ref: '#/definitions/ResponseRelationship'
     required:
       - billItem
+  UpdateBillAddressRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateBillRequestData'
+    required:
+      - data
+  UpdateBillAddressRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bills
+        description: Type of requested Bill
+      id:
+        type: integer
+        description: Unique identifier of Bill
+        example: 1
+      attributes:
+        $ref: '#/definitions/BillRequestAttributes'
+    required:
+      - type
+      - id
+      - attributes
+  UpdateBillAddressRequestAttributes:
+    type: object
+    properties:
+      address:
+        type: string
+        description: Order address
+        example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
+    required:
+      - address
+      - longitude
+      - latitude
   ProductCategoryRequest:
     type: object
     properties:

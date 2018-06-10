@@ -2,6 +2,9 @@ package db
 
 import domain.{User, WishlistItem}
 import javax.inject.Inject
+
+import akka.NotUsed
+import akka.stream.scaladsl.Source
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.WishlistItemsRepository
 import slick.driver.JdbcProfile
@@ -38,16 +41,19 @@ class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: Data
         .countDistinct
         .result)
 
-  override def findUsersWithProductInWishlist(productId: Long): Future[Seq[User]] =
-    db.run(
+  override def findUsersWithProductInWishlist(productId: Long): Source[Long, NotUsed] = {
+    val action =
       wishlistItems
         .join(users)
         .on(_.customerId === _.id)
         .filter(_._1.productId === productId)
-        .map(_._2)
+        .map(_._2.id)
         .distinct
         .result
-    )
+
+    val databasePublisher = db stream action
+    Source fromPublisher databasePublisher
+  }
 
   override def deleteProduct(productId: Long): Future[Int] =
     db.run(wishlistItems.filter(_.productId === productId).delete)

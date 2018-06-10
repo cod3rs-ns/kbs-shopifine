@@ -3,16 +3,20 @@ package services
 import com.google.inject.Inject
 import domain.{Bill, BillItem, BillState}
 import repositories.{BillItemRepository, BillRepository, ProductRepository, UserRepository}
+import util.DistanceCalculator._
+import ws.NotificationPublisher
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future, blocking}
 
-class BillService @Inject()(repository: BillRepository,
-                            billItems: BillItemRepository,
-                            products: ProductRepository,
-                            users: UserRepository)(implicit ec: ExecutionContext) {
+class BillService @Inject()(
+    repository: BillRepository,
+    billItems: BillItemRepository,
+    products: ProductRepository,
+    users: UserRepository,
+    notificationPublisher: NotificationPublisher)(implicit ec: ExecutionContext) {
 
-  import BillService.Status
+  import BillService._
 
   def save(bill: Bill): Future[Bill] =
     repository.save(bill)
@@ -76,6 +80,44 @@ class BillService @Inject()(repository: BillRepository,
   def updateBillCalculation(bill: Bill): Future[Int] =
     repository.modify(bill.id.get, bill)
 
+  def updateAddress(billId: Long,
+                    address: String,
+                    longitude: Double,
+                    latitude: Double): Future[Option[Bill]] =
+    retrieveOne(billId).flatMap {
+      case Some(bill) =>
+        repository.updateAddress(billId, address, longitude, latitude).flatMap { aff =>
+          if (aff == RowsAffected) {
+            users.retrieve(bill.customerId).map {
+              _.map { customer =>
+                val updatedBill = bill.copy(
+                  address = Option(address),
+                  latitude = Option(latitude),
+                  longitude = Option(longitude)
+                )
+
+                if (customer.latitude.isDefined && customer.longitude.isDefined) {
+                  val customerLocation = Location(customer.longitude.get, customer.latitude.get)
+                  val orderLocation    = Location(longitude, latitude)
+
+                  val distance = calculateDistanceInKilometer(customerLocation, orderLocation)
+                  if (distance < OrderRadiusInKm) {
+                    notificationPublisher.orderInRadius(updatedBill, distance)
+                  } else {
+                    notificationPublisher.orderAddressChanged(updatedBill)
+                  }
+                }
+
+                updatedBill
+              }
+            }
+          } else {
+            Future.successful(None)
+          }
+        }
+      case None => Future.successful(None)
+    }
+
   private def setBillToSuccessful(bill: Bill): Future[Int] = {
     val billId = bill.id.get
 
@@ -84,7 +126,11 @@ class BillService @Inject()(repository: BillRepository,
       .flatMap { items =>
         if (hasBillItems(items)) {
           // Update products quantity
-          items.foreach(item => products.fillStock(item.productId, -item.quantity))
+          items.foreach { item =>
+            products
+              .fillStock(item.productId, -item.quantity)
+              .foreach(_.foreach(q => handleOneProductLeft(item.productId, q)))
+          }
 
           users
             .retrieve(bill.customerId)
@@ -115,8 +161,21 @@ class BillService @Inject()(repository: BillRepository,
                    3.seconds)
     }
 
+  private def handleOneProductLeft(productId: Long, productQuantity: Int) =
+    Future {
+      blocking {
+        if (OneProductLeftTrigger == productQuantity) {
+          products.retrieve(productId).foreach {
+            _.foreach(p => notificationPublisher.oneProductLeft(p))
+          }
+        }
+      }
+    }
 }
 
 object BillService {
-  val Status: String = "status"
+  val Status: String        = "status"
+  val OrderRadiusInKm       = 20
+  val OneProductLeftTrigger = 1
+  val RowsAffected          = 1
 }

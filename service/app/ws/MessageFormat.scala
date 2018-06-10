@@ -18,6 +18,7 @@ object MessageFormat {
   implicit val discountCreatedF: Writes[ActionDiscountCreated] = Json.writes[ActionDiscountCreated]
   implicit val priceChangedF: Writes[ProductPriceChanged]      = Json.writes[ProductPriceChanged]
   implicit val addressChangedF: Writes[OrderAddressChanged]    = Json.writes[OrderAddressChanged]
+  implicit val orderInRadiusF: Writes[OrderInRadius]           = Json.writes[OrderInRadius]
   implicit val oneProductLeftF: Writes[OneProductLeft]         = Json.writes[OneProductLeft]
 
 }

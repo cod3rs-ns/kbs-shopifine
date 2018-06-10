@@ -24,7 +24,7 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
 
   override def update(user: User): Future[User] = {
     val action = users.filter(_.id === user.id.get).update(user).map {
-      case 0 => throw new IllegalArgumentException(s"User with id $user.id.get does not exists.")
+      case 0 => throw new IllegalArgumentException(s"User with id ${user.id.get} does not exists.")
       case _ => user
     }
     db.run(action)

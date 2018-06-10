@@ -4,18 +4,33 @@ import akka.stream.Materializer
 import com.google.inject.Inject
 import domain.{ActionDiscount, Bill, Product}
 import play.api.libs.json.Json
-import repositories.UserRepository
+import repositories.{UserRepository, WishlistItemsRepository}
 import ws.MessageFormat._
 import ws.NotificationBus.Notification
 
-class NotificationPublisher @Inject()(notificationBus: NotificationBus,
-                                      userRepository: UserRepository)(implicit mat: Materializer) {
+class NotificationPublisher @Inject()(
+    notificationBus: NotificationBus,
+    userRepository: UserRepository,
+    whishlistItemsRepository: WishlistItemsRepository)(implicit mat: Materializer) {
 
   import ws.Messages._
 
   def orderStatusChanged(bill: Bill): Unit = {
     val message = Json
-      .toJson(OrderStateChanged(billId = bill.customerId, state = bill.state))
+      .toJson(
+        OrderStateChanged(
+          orderId = bill.id.get,
+          state = bill.state,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
+        ))
       .toString
 
     notificationBus.publish(Notification(bill.customerId, message))
@@ -27,8 +42,8 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ActionDiscountCreated(
           discountId = actionDiscount.id.get,
           name = actionDiscount.name,
-          from = actionDiscount.from,
-          to = actionDiscount.to,
+          from = actionDiscount.from.toString,
+          to = actionDiscount.to.toString,
           discount = actionDiscount.discount
         ))
       .toString
@@ -38,14 +53,43 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
     }
   }
 
-  def orderAddressChanged(bill: Bill, address: String, latitude: Double, longitude: Long): Unit = {
+  def orderAddressChanged(bill: Bill): Unit = {
     val message = Json
       .toJson(
         OrderAddressChanged(
           orderId = bill.id.get,
-          address = address,
-          latitude = latitude,
-          longitude = longitude
+          state = bill.state,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
+        ))
+      .toString
+
+    notificationBus.publish(Notification(bill.customerId, message))
+  }
+
+  def orderInRadius(bill: Bill, distance: Double): Unit = {
+    val message = Json
+      .toJson(
+        OrderInRadius(
+          orderId = bill.id.get,
+          state = bill.state,
+          distance = distance,
+          createdAt = bill.createdAt.toString,
+          pointsGained = bill.pointsGained,
+          pointsSpent = bill.pointsSpent,
+          amount = bill.amount,
+          discount = bill.discount,
+          totalItems = bill.totalItems,
+          address = bill.address.get,
+          latitude = bill.latitude.get,
+          longitude = bill.longitude.get
         ))
       .toString
 
@@ -65,9 +109,9 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ))
       .toString
 
-    // TODO: only send to user who has that product in his wishlist
-    userRepository.getUserIds.runForeach(userId =>
-      notificationBus.publish(Notification(userId, message)))
+    whishlistItemsRepository
+      .findUsersWithProductInWishlist(product.id.get)
+      .runForeach(userId => notificationBus.publish(Notification(userId, message)))
   }
 
   def oneProductLeft(product: Product): Unit = {
@@ -82,8 +126,8 @@ class NotificationPublisher @Inject()(notificationBus: NotificationBus,
         ))
       .toString
 
-    // TODO: only send to user who has that product in his wishlist
-    userRepository.getUserIds.runForeach(userId =>
-      notificationBus.publish(Notification(userId, message)))
+    whishlistItemsRepository
+      .findUsersWithProductInWishlist(product.id.get)
+      .runForeach(userId => notificationBus.publish(Notification(userId, message)))
   }
 }

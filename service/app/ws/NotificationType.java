@@ -5,6 +5,7 @@ public enum NotificationType {
     ORDER_STATUS_CHANGED("OrderStatusChanged"),
     ACTION_DISCOUNT_CREATED("ActionDiscountCreated"),
     ORDER_ADDRESS_CHANGED("OrderAddressChanged"),
+    ORDER_IN_RADIUS("OrderInRadius"),
     PRODUCT_PRICE_CHANGED("ProductPriceChanged"),
     ONE_PRODUCT_LEFT("OneProductLeft");
 

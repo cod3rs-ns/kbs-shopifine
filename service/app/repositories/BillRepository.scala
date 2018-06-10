@@ -20,4 +20,5 @@ trait BillRepository {
 
   def modify(id: Long, bill: Bill): Future[Int]
 
+  def updateAddress(billId: Long, address: String, longitude: Double, latitude: Double): Future[Int]
 }

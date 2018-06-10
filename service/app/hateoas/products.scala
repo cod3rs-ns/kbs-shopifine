@@ -24,7 +24,7 @@ package object products {
   case class ProductRequest(data: ProductRequestData) {
 
     def toDomain: Product = {
-      val attributes = data.attributes
+      val attributes  = data.attributes
       val categoryRel = data.relationships.category.data
 
       Product(
@@ -39,6 +39,12 @@ package object products {
     }
   }
 
+  case class UpdateProductRequestAttributes(price: Double)
+
+  case class UpdateProductRequestData(`type`: String, id: Long, attributes: UpdateProductRequestAttributes)
+
+  case class UpdateProductRequest(data: UpdateProductRequestData)
+
   case class ProductResponseAttributes(name: String,
                                        imageUrl: String,
                                        price: Double,
@@ -49,7 +55,8 @@ package object products {
                                        status: String,
                                        minQuantity: Long)
 
-  case class ProductResponseRelationships(category: ResponseRelationship, discounts: ResponseRelationshipCollection)
+  case class ProductResponseRelationships(category: ResponseRelationship,
+                                          discounts: ResponseRelationshipCollection)
 
   case class ProductResponseData(`type`: String,
                                  id: Long,
@@ -64,7 +71,8 @@ package object products {
         price = product.price,
         quantity = product.quantity,
         createdAt = product.createdAt.toString,
-        lastBoughtAt = if (product.lastBoughtAt.isDefined) product.lastBoughtAt.get.toString else "Never",
+        lastBoughtAt =
+          if (product.lastBoughtAt.isDefined) product.lastBoughtAt.get.toString else "Never",
         fillStock = product.fillStock,
         status = product.status.name,
         minQuantity = product.minQuantity
@@ -96,7 +104,8 @@ package object products {
   case class ProductResponse(data: ProductResponseData)
 
   object ProductResponse {
-    def fromDomain(product: Product): ProductResponse = ProductResponse(data = ProductResponseData.fromDomain(product))
+    def fromDomain(product: Product): ProductResponse =
+      ProductResponse(data = ProductResponseData.fromDomain(product))
   }
 
   case class ProductCollectionResponse(data: Seq[ProductResponseData], links: CollectionLinks)
