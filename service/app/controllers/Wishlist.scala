@@ -57,7 +57,7 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
 
   def removeProduct(userId: Long, productId: Long): Action[AnyContent] =
     secure.AuthWith(Seq(Customer)).async { implicit request =>
-      wishlists.retrieve(productId).flatMap {
+      wishlists.retrieveByProduct(productId).flatMap {
         case Some(_) =>
           wishlists.deleteProduct(productId).map(_ => NoContent)
 
@@ -95,7 +95,6 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
               products.retrieve(item.productId).flatMap {
                 case Some(_) =>
                   wishlists.count(userId, item.productId).flatMap { count =>
-                    println(userId, item.productId)
                     if (count > 0) {
                       Future.successful(
                         BadRequest(

@@ -58,4 +58,7 @@ class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: Data
   override def deleteProduct(productId: Long): Future[Int] =
     db.run(wishlistItems.filter(_.productId === productId).delete)
 
+  override def retrieveByProduct(productId: Long): Future[Option[WishlistItem]] =
+    db.run(wishlistItems.filter(_.productId === productId).result.headOption)
+
 }

@@ -53,7 +53,8 @@ package object products {
                                        lastBoughtAt: String,
                                        fillStock: Boolean,
                                        status: String,
-                                       minQuantity: Long)
+                                       minQuantity: Long,
+                                       isInWishlist: Boolean)
 
   case class ProductResponseRelationships(category: ResponseRelationship,
                                           discounts: ResponseRelationshipCollection)
@@ -75,7 +76,8 @@ package object products {
           if (product.lastBoughtAt.isDefined) product.lastBoughtAt.get.toString else "Never",
         fillStock = product.fillStock,
         status = product.status.name,
-        minQuantity = product.minQuantity
+        minQuantity = product.minQuantity,
+        isInWishlist = product.isInWishlist
       )
 
       val relationships = ProductResponseRelationships(

@@ -1,6 +1,12 @@
 ###
 #  summary: Retrieve all products in the store
 #  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
 #    - name: filter[name]
 #      description: Value for filtering products by name.
 #      in: query
@@ -54,7 +60,7 @@
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/products           controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/:userId/products           controllers.Products.retrieveAll(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
 #  summary: Retrieve all products needs to be filled in stock
@@ -92,6 +98,12 @@ GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfSto
 ###
 #  summary: Retrieves a product
 #  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
 #    - name: id
 #      description: Unique identifier of Product to retrieve
 #      in: path
@@ -115,7 +127,7 @@ GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfSto
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
+GET     /api/:userId/products/:id       controllers.Products.retrieveOne(userId: Long, id: Long)
 
 ###
 #  summary: Modifies product quantity in the stock
