@@ -1,12 +1,12 @@
 package db
 
-import domain.WishlistItem
+import domain.{User, WishlistItem}
 import javax.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import repositories.WishlistItemsRepository
 import slick.driver.JdbcProfile
-
 import slick.driver.MySQLDriver.api._
+
 import scala.concurrent.Future
 
 class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
@@ -37,4 +37,19 @@ class MySqlWishlistItemRepository @Inject()(protected val dbConfigProvider: Data
         .filter(_.productId === productId)
         .countDistinct
         .result)
+
+  override def findUsersWithProductInWishlist(productId: Long): Future[Seq[User]] =
+    db.run(
+      wishlistItems
+        .join(users)
+        .on(_.customerId === _.id)
+        .filter(_._1.productId === productId)
+        .map(_._2)
+        .distinct
+        .result
+    )
+
+  override def deleteProduct(productId: Long): Future[Int] =
+    db.run(wishlistItems.filter(_.productId === productId).delete)
+
 }

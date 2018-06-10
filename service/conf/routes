@@ -1489,10 +1489,10 @@ GET     /api/users/:userId/wishlist                                 controllers.
 POST    /api/users/:userId/wishlist                                 controllers.Wishlist.addProduct(userId: Long)
 
 ###
-#  summary: Remove product from user wishlist
+#  summary: Remove item from user wishlist
 #  parameters:
 #    - name: id
-#      description: Identifier of product.
+#      description: Identifier of the Item.
 #      in: path
 #      type: integer
 #      format: int64
@@ -1524,7 +1524,45 @@ POST    /api/users/:userId/wishlist                                 controllers.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-DELETE  /api/users/:userId/wishlist/:id                             controllers.Wishlist.removeProduct(userId: Long, id: Long)
+DELETE  /api/users/:userId/wishlist/:id                             controllers.Wishlist.removeItem(userId: Long, id: Long)
+
+###
+#  summary: Remove product from user wishlist
+#  parameters:
+#    - name: productId
+#      description: Identifier of product.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - productId
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    204:
+#      description: Successfully removed wishlist item (product).
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Item not on Wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/users/:userId/wishlist/products/:productId                             controllers.Wishlist.removeProduct(userId: Long, productId: Long)
 
 ### NoDocs ###
 GET     /ws                 controllers.WebSockets.ws

@@ -25,7 +25,7 @@ trait DatabaseSchema {
   val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
   val actionDiscountsProductCategories: TableQuery[ActionDiscountsProductCategories] = TableQuery[ActionDiscountsProductCategories]
 
-  val wishlistItems: TableQuery[WIshlistItems] = TableQuery[WIshlistItems]
+  val wishlistItems: TableQuery[WishlistItems] = TableQuery[WishlistItems]
 
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
@@ -324,7 +324,7 @@ trait DatabaseSchema {
     )
   }
 
-  class WIshlistItems(tag: Tag) extends Table[WishlistItem](tag, "wishlist_items") {
+  class WishlistItems(tag: Tag) extends Table[WishlistItem](tag, "wishlist_items") {
     def * : ProvenShape[WishlistItem] = {
       val props = (id.?, productId, customerId, createdAt)
 

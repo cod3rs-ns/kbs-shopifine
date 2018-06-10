@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import javax.inject.Singleton
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{Action, AnyContent, Controller, Result}
+import play.api.mvc.{Action, AnyContent, Controller}
 import repositories.{ProductRepository, WishlistItemsRepository}
 import wishlist.{WishlistItemCollectionResponse, WishlistItemRequest, WishlistItemResponse}
 
@@ -39,7 +39,7 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
       }
   }
 
-  def removeProduct(userId: Long, id: Long): Action[AnyContent] =
+  def removeItem(userId: Long, id: Long): Action[AnyContent] =
     secure.AuthWith(Seq(Customer)).async { implicit request =>
       wishlists.retrieve(id).flatMap {
         case Some(_) =>
@@ -51,6 +51,22 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
               Json.toJson(
                 ErrorResponse(
                   errors = Seq(Error(NOT_FOUND.toString, s"Wishlist Item $id doesn't exist!")))
+              )))
+      }
+    }
+
+  def removeProduct(userId: Long, productId: Long): Action[AnyContent] =
+    secure.AuthWith(Seq(Customer)).async { implicit request =>
+      wishlists.retrieve(productId).flatMap {
+        case Some(_) =>
+          wishlists.deleteProduct(productId).map(_ => NoContent)
+
+        case None =>
+          Future.successful(
+            NotFound(
+              Json.toJson(
+                ErrorResponse(
+                  errors = Seq(Error(NOT_FOUND.toString, s"Product $productId is not part of Wishlist!")))
               )))
       }
     }
@@ -79,12 +95,14 @@ class Wishlist @Inject()(wishlists: WishlistItemsRepository,
               products.retrieve(item.productId).flatMap {
                 case Some(_) =>
                   wishlists.count(userId, item.productId).flatMap { count =>
+                    println(userId, item.productId)
                     if (count > 0) {
                       Future.successful(
-                        BadRequest(Json.toJson(
-                          ErrorResponse(
-                            errors = Seq(Error(BAD_REQUEST.toString, "Product already on wishlist.")))
-                        )))
+                        BadRequest(
+                          Json.toJson(
+                            ErrorResponse(errors =
+                              Seq(Error(BAD_REQUEST.toString, "Product already on wishlist.")))
+                          )))
                     } else {
                       wishlists.save(spec.toDomain).map { wi =>
                         Created(Json.toJson(

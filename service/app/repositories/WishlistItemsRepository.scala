@@ -1,6 +1,6 @@
 package repositories
 
-import domain.WishlistItem
+import domain.{User, WishlistItem}
 
 import scala.concurrent.Future
 
@@ -13,5 +13,9 @@ trait WishlistItemsRepository {
 
   def delete(id: Long): Future[Int]
 
+  def deleteProduct(productId: Long): Future[Int]
+
   def count(userId: Long, productId: Long): Future[Int]
+
+  def findUsersWithProductInWishlist(productId: Long): Future[Seq[User]]
 }
