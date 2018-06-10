@@ -635,6 +635,7 @@ definitions:
         description: Bill state
         enum:
           - ORDERED
+          - DISPATCHED
           - CANCELLED
           - SUCCESSFUL
       totalItems:
@@ -713,6 +714,7 @@ definitions:
         description: Bill state
         enum:
           - ORDERED
+          - DISPATCHED
           - CANCELLED
           - SUCCESSFUL
       totalItems:
