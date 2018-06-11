@@ -1073,7 +1073,7 @@ definitions:
     type: object
     properties:
       data:
-        $ref: '#/definitions/UpdateBillRequestData'
+        $ref: '#/definitions/UpdateBillAddressRequestData'
     required:
       - data
   UpdateBillAddressRequestData:
@@ -1089,7 +1089,7 @@ definitions:
         description: Unique identifier of Bill
         example: 1
       attributes:
-        $ref: '#/definitions/BillRequestAttributes'
+        $ref: '#/definitions/UpdateBillAddressRequestAttributes'
     required:
       - type
       - id
