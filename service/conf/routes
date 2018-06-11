@@ -803,7 +803,7 @@ GET     /api/bills                                      controllers.Bills.retrie
 ###
 #  summary: Modify order address
 #  parameters:
-#    - name: OrderSpec
+#    - name: UpdateOrderAddressSpec
 #      description: JSON document containing Order address specification
 #      in: body
 #      schema:
