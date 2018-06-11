@@ -60,7 +60,8 @@
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/:userId/products           controllers.Products.retrieveAll(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/:userId/products           controllers.Products.retrieveAllByUser(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/products                   controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
 #  summary: Retrieve all products needs to be filled in stock
@@ -127,7 +128,8 @@ GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfSto
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/:userId/products/:id       controllers.Products.retrieveOne(userId: Long, id: Long)
+GET     /api/:userId/products/:id       controllers.Products.retrieveOneByUser(userId: Long, id: Long)
+GET     /api/products/:id               controllers.Products.retrieveOne(id: Long)
 
 ###
 #  summary: Modifies product quantity in the stock

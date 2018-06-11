@@ -43,7 +43,7 @@ class Products @Inject()(products: ProductService,
         )
   }
 
-  def retrieveAll(userId: Long, offset: Int, limit: Int): Action[AnyContent] =
+  def retrieveAllByUser(userId: Long, offset: Int, limit: Int): Action[AnyContent] =
     secure.AuthWith(Seq(Customer, Salesman, SalesManager)).async { implicit request =>
       if (request.user.isDefined && request.user.get.id.get != userId) {
         Future.successful(
@@ -80,8 +80,29 @@ class Products @Inject()(products: ProductService,
 
         }
       }
-
     }
+
+  def retrieveAll(offset: Int, limit: Int): Action[AnyContent] = Action.async { implicit request =>
+    val filters = request.queryString.filterKeys(_.startsWith("filter[")).map {
+      case (k, v) =>
+        k.substring(7, k.length - 1) -> v.mkString
+    }
+
+    products.retrieveProductsWithFilters(filters, offset, limit).map { products =>
+      val prev =
+        if (offset > 0) Some(routes.Products.retrieveAll(offset - limit, limit).absoluteURL())
+        else None
+      val self = routes.Products.retrieveAll(offset, limit).absoluteURL()
+      val next =
+        if (limit == products.length)
+          Some(routes.Products.retrieveAll(offset + limit, limit).absoluteURL())
+        else None
+
+      Ok(
+        Json.toJson(
+          ProductCollectionResponse.fromDomain(products, CollectionLinks(prev, self, next))))
+    }
+  }
 
   def retrieveAllOutOfStock(offset: Int, limit: Int): Action[AnyContent] = Action.async {
     drools.productsOutOfStock.flatMap(response =>
@@ -96,7 +117,7 @@ class Products @Inject()(products: ProductService,
     })
   }
 
-  def retrieveOne(userId: Long, id: Long): Action[AnyContent] =
+  def retrieveOneByUser(userId: Long, id: Long): Action[AnyContent] =
     secure.AuthWith(Seq(Customer, Salesman, SalesManager)).async { implicit request =>
       if (request.user.isDefined && request.user.get.id.get != userId) {
         Future.successful(
@@ -118,6 +139,19 @@ class Products @Inject()(products: ProductService,
         }
       }
     }
+
+  def retrieveOne(id: Long): Action[AnyContent] = Action.async {
+    products.retrieveOne(id) map {
+      case Some(product) =>
+        Ok(Json.toJson(ProductResponse.fromDomain(product)))
+
+      case None =>
+        NotFound(
+          Json.toJson(
+            ErrorResponse(errors = Seq(Error(NOT_FOUND.toString, s"Product $id doesn't exist!")))
+          ))
+    }
+  }
 
   def fillStock(id: Long, quantity: Int): Action[AnyContent] =
     secure.AuthWith(Seq(Salesman)).async {
