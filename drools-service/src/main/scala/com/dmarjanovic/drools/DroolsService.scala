@@ -8,14 +8,16 @@ import com.dmarjanovic.drools.external.{BillsProxy, ProductsProxy}
 import com.dmarjanovic.drools.hateoas._
 import com.typesafe.config.{Config, ConfigFactory}
 
+import scala.concurrent.ExecutionContextExecutor
+
 object DroolsService extends JsonSupport {
 
   def main(args: Array[String]): Unit = {
 
-    implicit val system = ActorSystem("drools-service-system")
-    implicit val materializer = ActorMaterializer()
+    implicit val system: ActorSystem = ActorSystem("drools-service-system")
+    implicit val materializer: ActorMaterializer = ActorMaterializer()
 
-    implicit val executionContext = system.dispatcher
+    implicit val executionContext: ExecutionContextExecutor = system.dispatcher
 
     val routes =
       pathPrefix("api") {

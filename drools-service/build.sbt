@@ -17,6 +17,7 @@ lazy val utils = Seq(akkaLogger, logback, logbackColorizer, jodaTime, sprayJson)
 lazy val tests = Seq(scalaTest)
 
 lazy val root = (project in file("."))
+  .enablePlugins(JavaAppPackaging)
   .settings(buildSettings: _*)
   .settings(
     resolvers ++= Seq(jBoss),
