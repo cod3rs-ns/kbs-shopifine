@@ -69,6 +69,10 @@ class BillService @Inject()(
   def setState(id: Long, state: BillState): Future[Int] = {
     if (BillState.SUCCESSFUL == state) {
       retrieveOne(id).flatMap(bill => setBillToSuccessful(bill.get))
+    } else if (BillState.DISPATCHED == state) {
+      // default address
+      repository.updateAddress(id, "Pozorišni Trg 6, 21000 Novi Sad", 19.842856, 45.254469)
+      repository.setState(id, state)
     } else {
       repository.setState(id, state)
     }
