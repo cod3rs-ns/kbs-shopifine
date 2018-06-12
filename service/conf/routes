@@ -1,6 +1,12 @@
 ###
 #  summary: Retrieve all products in the store
 #  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
 #    - name: filter[name]
 #      description: Value for filtering products by name.
 #      in: query
@@ -54,7 +60,8 @@
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/products           controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/:userId/products           controllers.Products.retrieveAllByUser(userId: Long, `page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
+GET     /api/products                   controllers.Products.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 10)
 
 ###
 #  summary: Retrieve all products needs to be filled in stock
@@ -92,6 +99,12 @@ GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfSto
 ###
 #  summary: Retrieves a product
 #  parameters:
+#    - name: userId
+#      description: Identifier of user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
 #    - name: id
 #      description: Unique identifier of Product to retrieve
 #      in: path
@@ -115,7 +128,8 @@ GET     /api/products/out-of-stock      controllers.Products.retrieveAllOutOfSto
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
+GET     /api/:userId/products/:id       controllers.Products.retrieveOneByUser(userId: Long, id: Long)
+GET     /api/products/:id               controllers.Products.retrieveOne(id: Long)
 
 ###
 #  summary: Modifies product quantity in the stock
@@ -145,7 +159,7 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    404:
-#      description: A project with provided id doesn't exist.
+#      description: A product with provided id doesn't exist.
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 #    500:
@@ -154,6 +168,36 @@ GET     /api/products/:id       controllers.Products.retrieveOne(id: Long)
 #        $ref: '#/definitions/ErrorResponse'
 ###
 PUT     /api/products/:id       controllers.Products.fillStock(id: Long, quantity: Int)
+
+###
+#  summary: Modifies product price
+#  parameters:
+#    - name: productSpec
+#      description: JSON document containing a Product specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateProductRequest'
+#  tags:
+#    - Products
+#  responses:
+#    200:
+#      description: Product successfully modified.
+#      schema:
+#        $ref: '#/definitions/ProductResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: A product with provided id doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT  /api/products       controllers.Products.updatePrice()
 
 ###
 #  summary: Create new product
@@ -188,7 +232,7 @@ POST    /api/products           controllers.Products.add()
 #      description: JSON document containing a User specification
 #      in: body
 #      schema:
-#        $ref: '#/definitions/UserRequest'
+#        $ref: '#/definitions/UpdateUserRequest'
 #  tags:
 #    - Users
 #  responses:
@@ -209,7 +253,7 @@ POST    /api/products           controllers.Products.add()
 #      schema:
 #        $ref: '#/definitions/ErrorResponse'
 ###
-POST    /api/users              controllers.Users.registerUser()
+POST    /api/users               controllers.Users.registerUser()
 
 ###
 #  summary: Authenticate user
@@ -245,7 +289,34 @@ POST    /api/users              controllers.Users.registerUser()
 ###
 POST    /api/users/auth         controllers.Users.auth()
 
-
+###
+#  summary: Authenticate user via Google
+#  parameters:
+#    - name: googleAuthSpec
+#      description: JSON document containing a GoogleAuth specification
+#  summary: Google Auth
+#  parameters:
+#    - name: googleAuthSpec
+#      description: JSON document containing a Google Auth specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/GoogleAuthRequest'
+#  tags:
+#    - Users
+#  responses:
+#    200:
+#      description: Successfull Google Auth.
+#      schema:
+#        $ref: '#/definitions/GoogleAuthResponse'
+#    400:
+#      description: Invalid token.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
 POST    /api/auth/google        controllers.Users.googleAuth()
 
 ###
@@ -275,6 +346,32 @@ POST    /api/auth/google        controllers.Users.googleAuth()
 #        $ref: '#/definitions/ErrorResponse'
 ###
 GET     /api/users/:id          controllers.Users.retrieveOne(id: Long)
+
+###
+#  summary: Update a customer
+#  parameters:
+#    - name: userSpec
+#      description: JSON document containing a Customer specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateUserRequest'
+#  tags:
+#    - Users
+#  responses:
+#    200:
+#      description: Customer updated.
+#      schema:
+#        $ref: '#/definitions/UserResponse'
+#    404:
+#      description: A user with provided id doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT     /api/users          controllers.Users.updateCustomer()
 
 ###
 #  summary: Create new buyer category
@@ -548,6 +645,11 @@ POST    /api/users/:userId/bills                        controllers.Bills.create
 #      type: integer
 #      format: int64
 #      required: true
+#    - name: filter[status]
+#      description: Value for filtering bills by status.
+#      in: query
+#      type: string
+#      required: false
 #    - name: page[offset]
 #      description: Identifier of a position to start retrieving items from.
 #      in: query
@@ -699,6 +801,36 @@ GET     /api/users/:userId/bills/:billId/discounts      controllers.Discounts.re
 #        $ref: '#/definitions/ErrorResponse'
 ###
 GET     /api/bills                                      controllers.Bills.retrieveAll(`page[offset]`: Int ?= 0, `page[limit]`: Int ?= 100)
+
+###
+#  summary: Modify order address
+#  parameters:
+#    - name: UpdateOrderAddressSpec
+#      description: JSON document containing Order address specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/UpdateBillAddressRequest'
+#  tags:
+#    - Bills
+#  responses:
+#    200:
+#      description: Order address updated.
+#      schema:
+#        $ref: '#/definitions/BillResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Bill doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+PUT     /api/bills                                  controllers.Bills.updateAddress()
 
 ###
 #  summary: Modify bill state
@@ -1349,6 +1481,162 @@ POST    /api/action-discounts/:id/product-categories/:categoryId    controllers.
 #        $ref: '#/definitions/ErrorResponse'
 ###
 DELETE  /api/action-discounts/:id/product-categories/:categoryId    controllers.ActionDiscounts.removeProductCategory(id: Long, categoryId: Long)
+
+###
+#  summary: Retrieve all items on the wishlist.
+#  parameters:
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    200:
+#      description: Wishlist successfully retrieved.
+#      schema:
+#        $ref: '#/definitions/WishlistItemCollectionResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: User doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+GET     /api/users/:userId/wishlist                                 controllers.Wishlist.retrieve(userId: Long)
+
+###
+#  summary: Add product to wishlist.
+#  parameters:
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: wishlistItemSpec
+#      description: JSON document containing WishlistItem specification
+#      in: body
+#      schema:
+#        $ref: '#/definitions/WishlistItemRequest'
+#  required:
+#    - userId
+#    - wishlistItemSpec
+#  tags:
+#    - Wishlist
+#  responses:
+#    200:
+#      description: Product successfully added to wishlist.
+#      schema:
+#        $ref: '#/definitions/WishlistItemResponse'
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    400:
+#      description: Product already on wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Product doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: User doesn't exist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+POST    /api/users/:userId/wishlist                                 controllers.Wishlist.addProduct(userId: Long)
+
+###
+#  summary: Remove item from user wishlist
+#  parameters:
+#    - name: id
+#      description: Identifier of the Item.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - id
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    204:
+#      description: Successfully removed wishlist item (product).
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Item not on Wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/users/:userId/wishlist/:id                             controllers.Wishlist.removeItem(userId: Long, id: Long)
+
+###
+#  summary: Remove product from user wishlist
+#  parameters:
+#    - name: productId
+#      description: Identifier of product.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#    - name: userId
+#      description: Identifier of the user.
+#      in: path
+#      type: integer
+#      format: int64
+#      required: true
+#  required:
+#    - productId
+#    - userId
+#  tags:
+#    - Wishlist
+#  responses:
+#    204:
+#      description: Successfully removed wishlist item (product).
+#    400:
+#      description: Malformed request specified.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    404:
+#      description: Item not on Wishlist.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+#    500:
+#      description: Internal server error occured.
+#      schema:
+#        $ref: '#/definitions/ErrorResponse'
+###
+DELETE  /api/users/:userId/wishlist/products/:productId                             controllers.Wishlist.removeProduct(userId: Long, productId: Long)
 
 ### NoDocs ###
 GET     /ws                 controllers.WebSockets.ws

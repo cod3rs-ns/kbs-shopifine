@@ -9,4 +9,5 @@ package object hateoas {
   val BillItemsType: String = "bill-items"
   val BillItemDiscountsType: String = "bill-item-discounts"
   val ActionDiscountsType: String = "action-discounts"
+  val WishlistItemsType: String = "wishlist-items"
 }

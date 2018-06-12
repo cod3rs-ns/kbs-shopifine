@@ -10,9 +10,9 @@ import repositories.UserRepository
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
+class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ex: ExecutionContext)
     extends UserRepository
     with HasDatabaseConfigProvider[JdbcProfile]
     with DatabaseSchema {
@@ -20,6 +20,14 @@ class MySqlUserRepository @Inject()(protected val dbConfigProvider: DatabaseConf
   override def save(user: User): Future[User] = {
     val items = users returning users.map(_.id) into ((item, id) => item.copy(id = Some(id)))
     db.run(items += user)
+  }
+
+  override def update(user: User): Future[User] = {
+    val action = users.filter(_.id === user.id.get).update(user).map {
+      case 0 => throw new IllegalArgumentException(s"User with id ${user.id.get} does not exists.")
+      case _ => user
+    }
+    db.run(action)
   }
 
   override def retrieve(id: Long): Future[Option[User]] = {

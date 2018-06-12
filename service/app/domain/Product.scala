@@ -12,4 +12,5 @@ case class Product(id: Option[Long] = None,
                    lastBoughtAt: Option[DateTime] = None,
                    fillStock: Boolean = false,
                    status: ProductStatus = ProductStatus.ACTIVE,
-                   minQuantity: Long)
+                   minQuantity: Long,
+                   isInWishlist: Boolean = false)

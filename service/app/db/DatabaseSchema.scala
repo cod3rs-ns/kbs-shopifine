@@ -25,6 +25,8 @@ trait DatabaseSchema {
   val actionDiscounts: TableQuery[ActionDiscounts] = TableQuery[ActionDiscounts]
   val actionDiscountsProductCategories: TableQuery[ActionDiscountsProductCategories] = TableQuery[ActionDiscountsProductCategories]
 
+  val wishlistItems: TableQuery[WishlistItems] = TableQuery[WishlistItems]
+
   implicit val dateTimeMapper: JdbcType[DateTime] with BaseTypedType[DateTime] = MappedColumnType.base[DateTime, Timestamp](
     dt => new Timestamp(dt.getMillis),
     ts => new DateTime(ts.getTime)
@@ -52,7 +54,7 @@ trait DatabaseSchema {
 
   class Users(tag: Tag) extends Table[User](tag, "users") {
     def * : ProvenShape[User] = {
-      val props = (id.?, username, password, firstName, lastName, role, address, buyerCategory, points, registeredAt, googleAccountId)
+      val props = (id.?, username, password, firstName, lastName, role, address, longitude, latitude, buyerCategory, points, registeredAt, googleAccountId)
 
       props <> (User.tupled, User.unapply)
     }
@@ -70,6 +72,10 @@ trait DatabaseSchema {
     def role: Rep[UserRole] = column[UserRole]("role")
 
     def address: Rep[Option[String]] = column[Option[String]]("address")
+
+    def longitude: Rep[Option[Double]] = column[Option[Double]]("longitude")
+
+    def latitude: Rep[Option[Double]] = column[Option[Double]]("latitude")
 
     def buyerCategory: Rep[Option[Long]] = column[Option[Long]]("buyer_category_id")
 
@@ -108,7 +114,7 @@ trait DatabaseSchema {
 
   class Products(tag: Tag) extends Table[Product](tag, "products") {
     def * : ProvenShape[Product] = {
-      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, lastBoughtAt.?, fillStock, status, minQuantity)
+      val props = (id.?, name, imageUrl, productCategory, price, quantity, createdAt, lastBoughtAt.?, fillStock, status, minQuantity, false)
 
       props <> (Product.tupled, Product.unapply)
     }
@@ -142,7 +148,7 @@ trait DatabaseSchema {
 
   class Bills(tag: Tag) extends Table[Bill](tag, "bills") {
     def * : ProvenShape[Bill] = {
-      val props = (id.?, createdAt, customer, state, totalItems, amount, discount, discountAmount, pointsSpent, pointsGained)
+      val props = (id.?, createdAt, customer, state, totalItems, amount, discount, discountAmount, pointsSpent, pointsGained, address, longitude, latitude)
 
       props <> (Bill.tupled, Bill.unapply)
     }
@@ -170,6 +176,12 @@ trait DatabaseSchema {
     def pointsSpent: Rep[Long] = column[Long]("points_spent")
 
     def pointsGained: Rep[Long] = column[Long]("points_gained")
+
+    def address: Rep[Option[String]] = column[Option[String]]("address")
+
+    def longitude: Rep[Option[Double]] = column[Option[Double]]("longitude")
+
+    def latitude: Rep[Option[Double]] = column[Option[Double]]("latitude")
   }
 
   class BillItems(tag: Tag) extends Table[BillItem](tag, "bill_items") {
@@ -310,6 +322,31 @@ trait DatabaseSchema {
     def categoryFK: ForeignKeyQuery[ProductCategories, ProductCategory] = foreignKey("fk_action_discounts_product_categories_product_categories_id", category, productCategories)(category =>
       category.id, onDelete = ForeignKeyAction.Cascade
     )
+  }
+
+  class WishlistItems(tag: Tag) extends Table[WishlistItem](tag, "wishlist_items") {
+    def * : ProvenShape[WishlistItem] = {
+      val props = (id.?, productId, customerId, createdAt)
+
+      props <> (WishlistItem.tupled, WishlistItem.unapply)
+    }
+
+    def id: Rep[Long] = column[Long]("id", O.PrimaryKey, O.AutoInc)
+
+    def createdAt: Rep[DateTime] = column[DateTime]("created_at")
+
+    def customerId: Rep[Long] = column[Long]("customer_id")
+
+    def productId: Rep[Long] = column[Long]("product_id")
+
+    def customerFK: ForeignKeyQuery[Users, User] = foreignKey("fk_wishlist_items_customer_id", customerId, users)(user =>
+      user.id, onDelete = ForeignKeyAction.Cascade
+    )
+
+    def productFK: ForeignKeyQuery[Products, Product] = foreignKey("fk_wishlist_items_product_id", productId, products)(user =>
+      user.id, onDelete = ForeignKeyAction.Cascade
+    )
+
   }
 
 }

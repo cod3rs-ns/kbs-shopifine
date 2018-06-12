@@ -71,6 +71,40 @@ definitions:
       - price
       - quantity
       - minQuantity
+  UpdateProductRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateProductRequestData'
+    required:
+      - data
+  UpdateProductRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - products
+        description: Type of requested Product
+      id:
+        type: integer
+        description: Unique identifier of Product
+        example: 1
+      attributes:
+        $ref: '#/definitions/ProductRequestAttributes'
+    required:
+      - type
+      - attributes
+      - id
+  ProductRequestAttributes:
+    type: object
+    properties:
+      price:
+        type: double
+        description: Product price
+        example: 1999.99
+    required:
+      - price
   ProductRequestRelationships:
     type: object
     properties:
@@ -151,6 +185,9 @@ definitions:
       fillStock:
         type: boolean
         description: Indicate if Product available on stock
+      isInWishlist:
+        type: boolean
+        description: Indicate if Product is in User's Wishlist
       status:
         type: string
         description: Current status of Product
@@ -305,6 +342,14 @@ definitions:
         type: string
         description: Address of the resident
         example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
     required:
       - username
       - firstName
@@ -325,6 +370,93 @@ definitions:
         type: string
         description: Time when User is stored
         example: '2017-08-06T01:56:10.000+02:00'
+  UpdateUserRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateUserRequestData'
+    required:
+      - data
+  UpdateUserRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - users
+        description: Type of requsted User
+      attributes:
+        $ref: '#/definitions/UpdateUserRequestAttributes'
+    required:
+      - type
+      - attributes
+  UpdateUserRequestAttributes:
+    type: object
+    properties:
+      firstName:
+        type: string
+        description: User first name
+        example: Dragutin
+      lastName:
+        type: string
+        description: User last name
+        example: Marjanovic
+      address:
+        type: string
+        description: Address of the resident
+        example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
+    required:
+      - firstName
+      - lastName
+      - address
+      - longitude
+      - latitude
+  GoogleAuthRequest:
+    type: object
+    properties:
+      idToken:
+        type: string
+        description: Google token obtained from personal address
+    required:
+      - idToken
+  GoogleAuthResponse:
+    type: object
+    properties:
+      aud:
+        type: string
+      sub:
+        type: string
+      email:
+        type: string
+        description: User's Google email
+      email_verified:
+        type: string
+        description: Whether is email verified or not
+      picture:
+        type: string
+        description: Picture used on Google's account
+      given_name:
+        type: string
+        description: Given name of the user
+      family_name:
+        type: string
+        description: Family name of the user
+    required:
+      - aud
+      - sub
+      - email
+      - email_verified
+      - picture
+      - given_name
+      - family_name
   BuyerCategoryRequest:
     type: object
     properties:
@@ -540,6 +672,7 @@ definitions:
         description: Bill state
         enum:
           - ORDERED
+          - DISPATCHED
           - CANCELLED
           - SUCCESSFUL
       totalItems:
@@ -618,6 +751,7 @@ definitions:
         description: Bill state
         enum:
           - ORDERED
+          - DISPATCHED
           - CANCELLED
           - SUCCESSFUL
       totalItems:
@@ -647,6 +781,18 @@ definitions:
         format: int64
         description: Total spent points in shopping
         example: 10
+      address:
+        type: string
+        description: Address of the current order location
+        example: Pozorišni trg 6
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
     required:
       - createdAt
       - state
@@ -923,6 +1069,50 @@ definitions:
         $ref: '#/definitions/ResponseRelationship'
     required:
       - billItem
+  UpdateBillAddressRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/UpdateBillAddressRequestData'
+    required:
+      - data
+  UpdateBillAddressRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - bills
+        description: Type of requested Bill
+      id:
+        type: integer
+        description: Unique identifier of Bill
+        example: 1
+      attributes:
+        $ref: '#/definitions/UpdateBillAddressRequestAttributes'
+    required:
+      - type
+      - id
+      - attributes
+  UpdateBillAddressRequestAttributes:
+    type: object
+    properties:
+      address:
+        type: string
+        description: Order address
+        example: Pozorisni Trg 6, Novi Sad
+      longitude:
+        type: double
+        description: Location longitude
+        example: 45.26
+      latitude:
+        type: double
+        description: Location latitude
+        example: 19.83
+    required:
+      - address
+      - longitude
+      - latitude
   ProductCategoryRequest:
     type: object
     properties:
@@ -1042,6 +1232,135 @@ definitions:
         $ref: '#/definitions/ResponseRelationshipCollection'
     required:
       - subcategories
+  WishlistItemRequest:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/WishlistItemRequestData'
+    required:
+      - data
+  WishlistItemResponse:
+    type: object
+    properties:
+      data:
+        $ref: '#/definitions/WishlistItemResponseData'
+    required:
+      - data
+  WishlistItemRequestData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - wishlist-items
+        description: Type of requested Wihslist Item
+      attributes:
+        $ref: '#/definitions/WishlistItemRequestAttributes'
+      relationships:
+        $ref: '#/definitions/WishlistItemRequestRelationships'
+    required:
+      - type
+      - attributes
+      - relationships
+  WishlistItemResponseData:
+    type: object
+    properties:
+      type:
+        type: string
+        enum:
+          - wishlist-items
+        description: Type of requested Wihslist Item
+      id:
+        type: integer
+        description: Unique identifier of Wishlist Item
+        example: 1
+      attributes:
+        $ref: '#/definitions/WishlistItemResponseAttributes'
+      relationships:
+        $ref: '#/definitions/WishlistItemResponseRelationships'
+    required:
+      - id
+      - type
+      - attributes
+      - relationships
+  WishlistItemRequestAttributes:
+    type: object
+  WishlistItemResponseAttributes:
+    type: object
+    properties:
+      createdAt:
+        type: string
+    required:
+      - createdAt
+  WishlistItemRequestRelationships:
+    type: object
+    properties:
+      customer:
+        $ref: '#/definitions/RequestRelationship'
+      product:
+        $ref: '#/definitions/RequestRelationship'
+    required:
+      - customer
+      - product
+  WishlistItemResponseRelationships:
+    type: object
+    properties:
+      customer:
+        $ref: '#/definitions/ResponseRelationship'
+      product:
+        $ref: '#/definitions/ResponseRelationship'
+    required:
+      - customer
+      - product
+  WishlistItemCollectionResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        minItems: 0
+        uniqueItems: true
+        items:
+          $ref: '#/definitions/WishlistItemResponseData'
+      links:
+        $ref: '#/definitions/CollectionLinks'
+    required:
+      - data
+      - links
+  GoogleAuthRequest:
+    type: object
+    properties:
+      idToken:
+        type: string
+    required:
+      - idToken
+  GoogleAuthResponse:
+    type: object
+    properties:
+      aud:
+        type: string
+      sub:
+        type: string
+      email:
+        type: string
+      email_verified:
+        type: string
+      exp:
+        type: string
+      picture:
+        type: string
+      given_name:
+        type: string
+      family_name:
+        type: string
+    required:
+      - aud
+      - sub
+      - email
+      - email_verified
+      - exp
+      - picture
+      - given_name
+      - family_name
   ActionDiscountRequest:
     type: object
     properties:

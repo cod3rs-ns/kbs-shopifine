@@ -10,12 +10,13 @@ import hateoas.bill_items._
 import hateoas.buyer_categories._
 import hateoas.drools_service._
 import hateoas.product_categories._
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{OFormat, Json, Reads, OWrites, JsObject}
 import products._
 import relationships._
 import user_auth.{UserAuthRequest, UserAuthResponse}
 import users._
 import util.JwtPayload
+import wishlist._
 
 object JsonApi {
 
@@ -34,6 +35,9 @@ object JsonApi {
   implicit val prodReqRels: OFormat[ProductRequestRelationships] = Json.format[ProductRequestRelationships]
   implicit val prodReqData: OFormat[ProductRequestData] = Json.format[ProductRequestData]
   implicit val prodReq: OFormat[ProductRequest] = Json.format[ProductRequest]
+  implicit val updateProdReqAttrs: OFormat[UpdateProductRequestAttributes] = Json.format[UpdateProductRequestAttributes]
+  implicit val updateProdReqData: OFormat[UpdateProductRequestData] = Json.format[UpdateProductRequestData]
+  implicit val updateProdReq: OFormat[UpdateProductRequest] = Json.format[UpdateProductRequest]
   implicit val prodResAttrs: OFormat[ProductResponseAttributes] = Json.format[ProductResponseAttributes]
   implicit val prodResRels: OFormat[ProductResponseRelationships] = Json.format[ProductResponseRelationships]
   implicit val prodResData: OFormat[ProductResponseData] = Json.format[ProductResponseData]
@@ -54,6 +58,9 @@ object JsonApi {
   implicit val userReqRels: OFormat[UserRequestRelationships] = Json.format[UserRequestRelationships]
   implicit val userReqData: OFormat[UserRequestData] = Json.format[UserRequestData]
   implicit val userReq: OFormat[UserRequest] = Json.format[UserRequest]
+  implicit val updateUserReqAttrs: OFormat[UpdateUserRequestAttributes] = Json.format[UpdateUserRequestAttributes]
+  implicit val updateUserReqData: OFormat[UpdateUserRequestData] = Json.format[UpdateUserRequestData]
+  implicit val updateUserReq: OFormat[UpdateUserRequest] = Json.format[UpdateUserRequest]
   implicit val userResAttrs: OFormat[UserResponseAttributes] = Json.format[UserResponseAttributes]
   implicit val userResRels: OFormat[UserResponseRelationships] = Json.format[UserResponseRelationships]
   implicit val userResMeta: OFormat[UserResponseMeta] = Json.format[UserResponseMeta]
@@ -64,6 +71,9 @@ object JsonApi {
   implicit val billReqRels: OFormat[BillRequestRelationships] = Json.format[BillRequestRelationships]
   implicit val billReqData: OFormat[BillRequestData] = Json.format[BillRequestData]
   implicit val billReq: OFormat[BillRequest] = Json.format[BillRequest]
+  implicit val billAddressReqAttrs: OFormat[UpdateBillAddressRequestAttributes] = Json.format[UpdateBillAddressRequestAttributes]
+  implicit val billAddressReqData: OFormat[UpdateBillAddressRequestData] = Json.format[UpdateBillAddressRequestData]
+  implicit val billAddressReq: OFormat[UpdateBillAddressRequest] = Json.format[UpdateBillAddressRequest]
   implicit val billResAttrs: OFormat[BillResponseAttributes] = Json.format[BillResponseAttributes]
   implicit val billResRels: OFormat[BillResponseRelationships] = Json.format[BillResponseRelationships]
   implicit val billResData: OFormat[BillResponseData] = Json.format[BillResponseData]
@@ -116,6 +126,17 @@ object JsonApi {
   implicit val actionDiscResData: OFormat[ActionDiscountResponseData] = Json.format[ActionDiscountResponseData]
   implicit val actionDiscRes: OFormat[ActionDiscountResponse] = Json.format[ActionDiscountResponse]
   implicit val actionDiscResCollection: OFormat[ActionDiscountCollectionResponse] = Json.format[ActionDiscountCollectionResponse]
+
+  implicit val wishlistReqAttrsReads: Reads[WishlistItemRequestAttributes] = Reads[WishlistItemRequestAttributes](json => json.validate[JsObject].filter(_.values.isEmpty).map(_ => WishlistItemRequestAttributes()))
+  implicit val wishlistReqAttrsWrites: OWrites[WishlistItemRequestAttributes] = OWrites[WishlistItemRequestAttributes](_ => Json.obj())
+  implicit val wishlistReqRels: OFormat[WishlistItemRequestRelationships] = Json.format[WishlistItemRequestRelationships]
+  implicit val wishlistReqData: OFormat[WishlistItemRequestData] = Json.format[WishlistItemRequestData]
+  implicit val wishlistReq: OFormat[WishlistItemRequest] = Json.format[WishlistItemRequest]
+  implicit val wishlistResRels: OFormat[WishlistItemResponseRelationships] = Json.format[WishlistItemResponseRelationships]
+  implicit val wishlistResAttrs: OFormat[WishlistItemResponseAttributes] = Json.format[WishlistItemResponseAttributes]
+  implicit val wishlistResData: OFormat[WishlistItemResponseData] = Json.format[WishlistItemResponseData]
+  implicit val wishlistRes: OFormat[WishlistItemResponse] = Json.format[WishlistItemResponse]
+  implicit val wishlistResCollection: OFormat[WishlistItemCollectionResponse] = Json.format[WishlistItemCollectionResponse]
 
   // Auth based classes
   implicit val jwtPayload: OFormat[JwtPayload] = Json.format[JwtPayload]

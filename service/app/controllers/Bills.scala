@@ -2,7 +2,7 @@ package controllers
 
 import javax.inject.Singleton
 
-import bills.{BillCollectionResponse, BillRequest, BillResponse}
+import bills.{BillCollectionResponse, BillRequest, BillResponse, UpdateBillAddressRequest}
 import com.google.inject.Inject
 import commons.{CollectionLinks, Error, ErrorResponse}
 import domain.BillState
@@ -59,7 +59,11 @@ class Bills @Inject()(bills: BillService,
       )))
     }
     else {
-      bills.retrieveByUser(userId, offset, limit).map(result => {
+      val filters = request.queryString.filterKeys(_.startsWith(FilterStartsWith)).map {
+        case (k, v) => k.substring(FilterStartsWith.length, k.length - 1) -> v.mkString
+      }
+
+      bills.retrieveByUserWithFilters(userId, filters, offset, limit).map(result => {
         val self = routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()
         val next = if (result.size == limit) Some(routes.Bills.retrieveAllByUser(userId, offset, limit).absoluteURL()) else None
 
@@ -136,6 +140,40 @@ class Bills @Inject()(bills: BillService,
     }
   }
 
+  def updateAddress(): Action[JsValue] = secure.AuthWith(Seq(SalesManager)).async(parse.json) {
+    implicit request =>
+      if (request.user.isEmpty || request.user.get.id.isEmpty) {
+        Future.successful(
+          Forbidden(
+            Json.toJson(
+              ErrorResponse(errors = Seq(Error(FORBIDDEN.toString, "No privileges.")))
+            )))
+      } else {
+        request.body
+          .validate[UpdateBillAddressRequest]
+          .fold(
+            _ =>
+              Future.successful(
+                BadRequest(
+                  Json.toJson(
+                    ErrorResponse(
+                      errors = Seq(Error(BAD_REQUEST.toString, "Malformed JSON specified.")))
+                  ))),
+            spec => {
+              val billId     = spec.data.id
+              val attributes = spec.data.attributes
+              bills
+                .updateAddress(billId, attributes.address, attributes.longitude, attributes.latitude)
+                .map {
+                  case Some(bill) => Ok(Json.toJson(BillResponse.fromDomain(bill)))
+                  case None =>
+                    NotFound(Json.toJson(ErrorResponse(
+                      errors = Seq(Error(NOT_FOUND.toString, s"Bill $billId does not exist.")))))
+                }
+            }
+          )
+      }
+  }
   def addBillItem(userId: Long, billId: Long): Action[JsValue] = secure.AuthWith(Seq(Customer)).async(parse.json) { implicit request =>
     if (request.user.isDefined && request.user.get.id.get != userId) {
       Future.successful(Forbidden(Json.toJson(

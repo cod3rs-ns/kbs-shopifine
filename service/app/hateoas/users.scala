@@ -16,7 +16,9 @@ package object users {
                                    firstName: String,
                                    lastName: String,
                                    role: String,
-                                   address: Option[String])
+                                   address: Option[String],
+                                   latitude: Option[Double],
+                                   longitude: Option[Double])
 
   case class UserRequestRelationships(buyerCategory: RequestRelationship)
 
@@ -37,9 +39,33 @@ package object users {
         lastName = attributes.lastName,
         role = UserRole.valueOf(attributes.role.toUpperCase),
         address = attributes.address,
+        longitude = attributes.longitude,
+        latitude = attributes.latitude,
         buyerCategoryId = if (isCustomer) Some(relationships.get.buyerCategory.data.id) else None,
         points = if (isCustomer) Some(0) else None,
         registeredAt = DateTime.now
+      )
+    }
+  }
+
+  case class UpdateUserRequestAttributes(firstName: Option[String],
+                                         lastName: Option[String],
+                                         address: Option[String],
+                                         longitude: Option[Double],
+                                         latitude: Option[Double])
+
+  case class UpdateUserRequestData(`type`: String, attributes: UpdateUserRequestAttributes)
+
+  case class UpdateUserRequest(data: UpdateUserRequestData) {
+    def toDomain(user: User): User = {
+      val attributes = data.attributes
+
+      user.copy(
+        firstName = attributes.firstName.getOrElse(user.firstName),
+        lastName = attributes.lastName.getOrElse(user.lastName),
+        address = attributes.address.orElse(user.address),
+        longitude = attributes.longitude.orElse(user.longitude),
+        latitude = attributes.latitude.orElse(user.latitude)
       )
     }
   }
@@ -49,6 +75,8 @@ package object users {
                                     lastName: String,
                                     role: String,
                                     address: Option[String],
+                                    longitude: Option[Double],
+                                    latitude: Option[Double],
                                     points: Option[Long])
 
   case class UserResponseRelationships(buyerCategory: ResponseRelationship)
@@ -69,6 +97,8 @@ package object users {
         lastName = user.lastName,
         role = user.role.toString,
         address = user.address,
+        longitude = user.longitude,
+        latitude = user.latitude,
         points = user.points
       )
 
